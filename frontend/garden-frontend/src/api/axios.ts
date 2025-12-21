@@ -1,41 +1,27 @@
 import axios from "axios";
-import { getAccessToken, getRefreshToken, setAccessToken } from "../auth/useAuth";
+import { getAccessToken } from "../auth/useAuth";
 
 const api = axios.create({
     baseURL: "http://localhost:8000",
 });
 
+// Añadir token a cada petición
 api.interceptors.request.use((config) => {
     const token = getAccessToken();
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 
+// Manejo de errores sin refresh tokens
 api.interceptors.response.use(
     (res) => res,
-    async (error) => {
-        const original = error.config;
-
-        if (error.response?.status === 401 && !original._retry) {
-            original._retry = true;
-
-            const refresh = getRefreshToken();
-            if (!refresh) return Promise.reject(error);
-
-            try {
-                const { data } = await axios.post("http://localhost:8000/auth/refresh", {
-                    refresh_token: refresh,
-                });
-
-                setAccessToken(data.access_token);
-                original.headers.Authorization = `Bearer ${data.access_token}`;
-
-                return api(original);
-            } catch (err) {
-                return Promise.reject(err);
-            }
+    (error) => {
+        // Si el token no es válido → logout en el frontend
+        if (error.response?.status === 401) {
+            console.warn("Token inválido o expirado");
         }
-
         return Promise.reject(error);
     }
 );

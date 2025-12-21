@@ -14,7 +14,7 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await api.get("/dashboard/stats");
+                const res = await api.get("/dashboard");
                 setStats(res.data);
             } catch {
                 // fallback si la API aún no existe

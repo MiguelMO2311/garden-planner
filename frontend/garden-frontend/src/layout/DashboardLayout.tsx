@@ -4,14 +4,23 @@ import Navbar from "./Navbar";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="flex">
+        <div className="flex min-h-screen bg-gray-100">
+            {/* Sidebar fijo */}
             <Sidebar />
 
-            <div className="ml-64 flex-1 min-h-screen bg-gray-100">
+            {/* Contenido principal */}
+            <div className="flex-1 ml-64 flex flex-col">
+                {/* Navbar */}
                 <Navbar />
 
-                <main className="p-6">{children}</main>
+                {/* Contenido */}
+                <main className="p-8">
+                    <div className="bg-white shadow-md rounded-xl p-6">
+                        {children}
+                    </div>
+                </main>
             </div>
         </div>
     );
 }
+
