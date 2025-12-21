@@ -1,29 +1,16 @@
 import axios from "axios";
-import { getAccessToken } from "../auth/useAuth";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "http://localhost:8000", // o tu URL real
 });
 
-// Añadir token a cada petición
+// Interceptor para añadir el token
 api.interceptors.request.use((config) => {
-    const token = getAccessToken();
+    const token = localStorage.getItem("access");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
-
-// Manejo de errores sin refresh tokens
-api.interceptors.response.use(
-    (res) => res,
-    (error) => {
-        // Si el token no es válido → logout en el frontend
-        if (error.response?.status === 401) {
-            console.warn("Token inválido o expirado");
-        }
-        return Promise.reject(error);
-    }
-);
 
 export default api;

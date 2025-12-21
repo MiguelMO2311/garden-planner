@@ -27,9 +27,19 @@ export default function LoginPage() {
                 },
             });
 
+            // El backend debe devolver: access_token, refresh_token y user
             const { access_token, refresh_token } = response.data;
-            login(access_token, refresh_token);
-            navigate("/");
+
+            // Ahora login recibe los 3 argumentos
+            login(access_token, refresh_token, {
+                id: 1,
+                name: "Usuario",
+                email: email,
+                avatar: "https://i.pravatar.cc/100"
+            });
+
+
+            navigate("/dashboard");
         } catch {
             setErrorMsg("Credenciales incorrectas");
         }
@@ -48,7 +58,9 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Email
+                        </label>
                         <input
                             type="email"
                             placeholder="Email"
@@ -60,7 +72,9 @@ export default function LoginPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Contraseña
+                        </label>
                         <input
                             type="password"
                             placeholder="Contraseña"

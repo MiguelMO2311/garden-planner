@@ -8,38 +8,45 @@ interface Props {
 
 export default function ParcelaTable({ parcelas, onEdit, onDelete }: Props) {
     return (
-        <table className="w-full bg-white shadow rounded-lg overflow-hidden">
-            <thead className="bg-gray-100">
-                <tr>
-                    <th className="p-3 text-left">Nombre</th>
-                    <th className="p-3 text-left">Tamaño</th>
-                    <th className="p-3 text-left">Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {parcelas.map((p) => (
-                    <tr key={p.id} className="border-t">
-                        <td className="p-3">{p.nombre}</td>
-                        <td className="p-3">{p.tamano} m²</td>
-                        <td className="p-3 flex gap-2">
-                            <button
-                                onClick={() => onEdit(p.id!)}
-                                className="px-3 py-1 bg-blue-600 text-white rounded"
-                            >
-                                Editar
-                            </button>
-
-                            <button
-                                onClick={() => onDelete(p.id!)}
-                                className="px-3 py-1 bg-red-600 text-white rounded"
-                            >
-                                Eliminar
-                            </button>
-                        </td>
+        <div className="card shadow-sm">
+            <table className="table table-hover mb-0">
+                <thead className="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tamaño (m²)</th>
+                        <th>Ubicación</th>
+                        <th>Tipo de suelo</th>
+                        <th className="text-end">Acciones</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    {parcelas.map((p) => (
+                        <tr key={p.id}>
+                            <td>{p.name}</td>
+                            <td>{p.size_m2 || "-"}</td>
+                            <td>{p.location || "-"}</td>
+                            <td>{p.soil_type || "-"}</td>
+
+                            <td className="text-end">
+                                <button
+                                    className="btn btn-sm btn-primary me-2"
+                                    onClick={() => onEdit(p.id)}
+                                >
+                                    Editar
+                                </button>
+
+                                <button
+                                    className="btn btn-sm btn-danger"
+                                    onClick={() => onDelete(p.id)}
+                                >
+                                    Borrar
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }

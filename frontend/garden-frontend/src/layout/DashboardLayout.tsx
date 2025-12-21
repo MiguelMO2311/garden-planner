@@ -1,21 +1,18 @@
-import type { ReactNode } from "react";
+import "./layout.css";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import type { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            {/* Sidebar fijo */}
-            <Sidebar />
+        <div className="dashboard-container d-flex flex-column">
+            <Navbar />
 
-            {/* Contenido principal */}
-            <div className="flex-1 ml-64 flex flex-col">
-                {/* Navbar */}
-                <Navbar />
+            <div className="d-flex flex-grow-1">
+                <Sidebar />
 
-                {/* Contenido */}
-                <main className="p-8">
-                    <div className="bg-white shadow-md rounded-xl p-6">
+                <main className="flex-grow-1 p-4">
+                    <div className="card shadow-sm p-4">
                         {children}
                     </div>
                 </main>
@@ -23,4 +20,3 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
     );
 }
-

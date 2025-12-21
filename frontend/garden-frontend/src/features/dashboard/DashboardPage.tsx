@@ -1,63 +1,58 @@
 import DashboardLayout from "../../layout/DashboardLayout";
-import MetricCard from "./components/MetricCard";
-import { useEffect, useState } from "react";
-import api from "../../api/axios";
+import { useNavigate } from "react-router-dom";
+import "./dashboard.css";
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState({
-        parcelas: 0,
-        cultivos: 0,
-        tareas: 0,
-        clima: "—",
-    });
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const res = await api.get("/dashboard");
-                setStats(res.data);
-            } catch {
-                // fallback si la API aún no existe
-                setStats({
-                    parcelas: 4,
-                    cultivos: 12,
-                    tareas: 7,
-                    clima: "Soleado",
-                });
-            }
-        };
-
-        fetchStats();
-    }, []);
+    const navigate = useNavigate();
 
     return (
         <DashboardLayout>
-            <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
+            <div className="row g-4">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                <MetricCard
-                    title="Parcelas"
-                    value={stats.parcelas}
-                    icon={<span>🌱</span>}
-                />
+                {/* PARCELAS */}
+                <div className="col-md-3">
+                    <div
+                        className="card shadow-sm p-4 dashboard-card"
+                        onClick={() => navigate("/parcelas")}
+                    >
+                        <h4 className="fw-bold">Parcelas</h4>
+                        <p className="text-muted">Ver parcelas</p>
+                    </div>
+                </div>
 
-                <MetricCard
-                    title="Cultivos"
-                    value={stats.cultivos}
-                    icon={<span>🥕</span>}
-                />
+                {/* CULTIVOS */}
+                <div className="col-md-3">
+                    <div
+                        className="card shadow-sm p-4 dashboard-card"
+                        onClick={() => navigate("/cultivos")}
+                    >
+                        <h4 className="fw-bold">Cultivos</h4>
+                        <p className="text-muted">Ver cultivos</p>
+                    </div>
+                </div>
 
-                <MetricCard
-                    title="Tareas pendientes"
-                    value={stats.tareas}
-                    icon={<span>📋</span>}
-                />
+                {/* TAREAS */}
+                <div className="col-md-3">
+                    <div
+                        className="card shadow-sm p-4 dashboard-card"
+                        onClick={() => navigate("/tareas")}
+                    >
+                        <h4 className="fw-bold">Tareas pendientes</h4>
+                        <p className="text-muted">Ver tareas</p>
+                    </div>
+                </div>
 
-                <MetricCard
-                    title="Clima"
-                    value={stats.clima}
-                    icon={<span>☀️</span>}
-                />
+                {/* CALENDARIO */}
+                <div className="col-md-3">
+                    <div
+                        className="card shadow-sm p-4 dashboard-card"
+                        onClick={() => navigate("/calendario")}
+                    >
+                        <h4 className="fw-bold">Calendario</h4>
+                        <p className="text-muted">Ver calendario</p>
+                    </div>
+                </div>
+
             </div>
         </DashboardLayout>
     );

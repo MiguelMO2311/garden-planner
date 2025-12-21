@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 
 import LoginPage from "../features/login/LoginPage";
@@ -21,9 +21,9 @@ export const AppRouter = () => (
             {/* Ruta pública */}
             <Route path="/login" element={<LoginPage />} />
 
-            {/* Rutas protegidas */}
+            {/* Dashboard explícito */}
             <Route
-                path="/"
+                path="/dashboard"
                 element={
                     <ProtectedRoute>
                         <DashboardPage />
@@ -31,6 +31,10 @@ export const AppRouter = () => (
                 }
             />
 
+            {/* Redirección de "/" → "/dashboard" */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+            {/* Rutas protegidas */}
             <Route
                 path="/parcelas"
                 element={
@@ -57,47 +61,67 @@ export const AppRouter = () => (
                     </ProtectedRoute>
                 }
             />
+
             <Route
                 path="/cultivos"
-                element={<ProtectedRoute>
-                    <CultivoListPage />
-                </ProtectedRoute>
+                element={
+                    <ProtectedRoute>
+                        <CultivoListPage />
+                    </ProtectedRoute>
                 }
             />
+
             <Route
                 path="/cultivos/nuevo"
-                element={<ProtectedRoute>
-                    <CultivoFormPage />
-                </ProtectedRoute>
+                element={
+                    <ProtectedRoute>
+                        <CultivoFormPage />
+                    </ProtectedRoute>
                 }
             />
-            <Route path="/cultivos/:id"
-                element={<ProtectedRoute>
-                    <CultivoFormPage />
-                </ProtectedRoute>
+
+            <Route
+                path="/cultivos/:id"
+                element={
+                    <ProtectedRoute>
+                        <CultivoFormPage />
+                    </ProtectedRoute>
                 }
             />
-            <Route path="/calendario"
-                element={<ProtectedRoute>
-                    <CalendarioPage />
-                </ProtectedRoute>
+
+            <Route
+                path="/calendario"
+                element={
+                    <ProtectedRoute>
+                        <CalendarioPage />
+                    </ProtectedRoute>
                 }
             />
-            <Route path="/tareas"
-                element={<ProtectedRoute>
-                    <TareaListPage />
-                </ProtectedRoute>
+
+            <Route
+                path="/tareas"
+                element={
+                    <ProtectedRoute>
+                        <TareaListPage />
+                    </ProtectedRoute>
                 }
             />
-            <Route path="/tareas/nueva"
-                element={<ProtectedRoute>
-                    <TareaFormPage />
-                </ProtectedRoute>
+
+            <Route
+                path="/tareas/nueva"
+                element={
+                    <ProtectedRoute>
+                        <TareaFormPage />
+                    </ProtectedRoute>
                 }
-            /> <Route path="/tareas/:id"
-                element={<ProtectedRoute>
-                    <TareaFormPage />
-                </ProtectedRoute>
+            />
+
+            <Route
+                path="/tareas/:id"
+                element={
+                    <ProtectedRoute>
+                        <TareaFormPage />
+                    </ProtectedRoute>
                 }
             />
         </Routes>

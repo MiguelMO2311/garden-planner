@@ -1,31 +1,75 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { FaLeaf, FaCalendarAlt, FaSignOutAlt } from "react-icons/fa";
 
 export default function Navbar() {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth(); // user debe existir en AuthContext
 
     return (
-        <header className="h-16 bg-green-600 text-white shadow flex items-center justify-between px-6">
-            <Link to="/" className="text-lg font-bold flex items-center gap-2">
-                <FaLeaf className="text-xl" />
-                Garden Planner
-            </Link>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm px-3">
 
-            <nav className="flex items-center gap-6 text-sm font-medium">
-                <Link to="/dashboard" className="hover:text-green-200 transition">Dashboard</Link>
-                <Link to="/calendario" className="hover:text-green-200 transition flex items-center gap-1">
-                    <FaCalendarAlt />
-                    Calendario
-                </Link>
-                <button
-                    onClick={logout}
-                    className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded hover:bg-red-700 transition"
-                >
-                    <FaSignOutAlt />
-                    Cerrar sesión
-                </button>
-            </nav>
-        </header>
+            {/* Logo → Dashboard */}
+            <NavLink className="navbar-brand fw-bold" to="/dashboard">
+                🌱 Garden Planner
+            </NavLink>
+
+            {/* Botón hamburguesa accesible */}
+            <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarContent"
+                aria-label="Abrir menú de navegación"
+            >
+                <span className="navbar-toggler-icon"></span>
+            </button>
+
+            {/* Contenido colapsable */}
+            <div className="collapse navbar-collapse" id="navbarContent">
+                <ul className="navbar-nav ms-auto">
+
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/dashboard">
+                            Dashboard
+                        </NavLink>
+                    </li>
+
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to="/calendario">
+                            Calendario
+                        </NavLink>
+                    </li>
+
+                    {/* Avatar + menú */}
+                    <li className="nav-item dropdown ms-3">
+                        <img
+                            src={user?.avatar || "https://i.pravatar.cc/100"}
+                            className="nav-avatar dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            alt="avatar"
+                        />
+
+                        <ul className="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <NavLink className="dropdown-item" to="/perfil">
+                                    Perfil
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink className="dropdown-item" to="/ajustes">
+                                    Ajustes
+                                </NavLink>
+                            </li>
+                            <li><hr className="dropdown-divider" /></li>
+                            <li>
+                                <button className="dropdown-item text-danger" onClick={logout}>
+                                    Cerrar sesión
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
     );
 }
