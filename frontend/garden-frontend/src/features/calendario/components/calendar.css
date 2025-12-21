@@ -1,0 +1,37 @@
+.evento-calendario {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Colores por tipo */
+.evento-tarea {
+    background-color: #2563eb;
+}
+
+.evento-riego {
+    background-color: #16a34a;
+}
+
+.evento-plaga {
+    background-color: #dc2626;
+}
+
+.evento-siembra {
+    background-color: #ca8a04;
+}
+
+.evento-cosecha {
+    background-color: #ea580c;
+}
+
+/* fallback */
+.evento-default {
+    background-color: #3b82f6;
+}
