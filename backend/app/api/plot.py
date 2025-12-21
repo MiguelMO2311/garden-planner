@@ -57,6 +57,30 @@ def get_plot(
 
     return plot
 
+# -----------------------------
+# UPDATE PLOT (admin only)
+# -----------------------------
+@router.put("/{plot_id}", response_model=PlotRead)
+def update_plot(
+    plot_id: int,
+    plot_data: PlotCreate,
+    db: Session = Depends(get_db),
+    user = Depends(require_role("admin"))
+):
+    plot = db.query(Plot).filter(Plot.id == plot_id).first()
+
+    if not plot:
+        raise HTTPException(status_code=404, detail="Plot not found")
+
+    # Actualizar campos
+    for key, value in plot_data.model_dump().items():
+        setattr(plot, key, value)
+
+    db.commit()
+    db.refresh(plot)
+
+    return plot
+
 
 # -----------------------------
 # DELETE PLOT (admin only)
