@@ -9,6 +9,7 @@ import app.models.user  # ensure models are imported
 import app.models.plot
 
 
+
 Base.metadata.create_all(bind=engine)
 # Crear usuario admin si no existe
 from app.core.database import SessionLocal
