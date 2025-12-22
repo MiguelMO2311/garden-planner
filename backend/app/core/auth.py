@@ -1,14 +1,13 @@
+# app/core/auth.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from app.core.jwt import decode_token
 from app.core.database import get_db
 from app.models.user import User
 
-from app.core.auth_settings import ACCESS_TOKEN_SECRET, ALGORITHM  # si lo separas
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def get_current_user(
@@ -22,11 +21,12 @@ def get_current_user(
     )
 
     try:
-        payload = jwt.decode(token, ACCESS_TOKEN_SECRET, algorithms=[ALGORITHM])
-        user_id: int | None = payload.get("sub")
-        if user_id is None:
+        payload = decode_token(token)
+        sub = payload.get("sub")
+        if sub is None:
             raise credentials_exception
-    except JWTError:
+        user_id = int(sub)
+    except Exception:
         raise credentials_exception
 
     user = db.query(User).filter(User.id == user_id).first()

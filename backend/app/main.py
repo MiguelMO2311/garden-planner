@@ -1,65 +1,52 @@
+# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app import models
+
+from app.api.router import api_router
+from app.core.config import settings
 from app.core.database import Base, engine
-
-# Routers
-from app.api.plot import router as plot_router
-from app.api.crop import router as crop_router
-from app.api.crop_plan import router as crop_plan_router
-from app.api.irrigation import router as irrigation_router
-from app.api.pest import router as pest_router
-from app.api.seasonal import router as seasonal_router
-from app.api.calendar import router as calendar_router
-from app.api.dashboard import router as dashboard_router
-from app.api.auth import router as auth_router
-from app.api import clima
+import app.models.user  # ensure models are imported
+import app.models.plot
 
 
+Base.metadata.create_all(bind=engine)
+# Crear usuario admin si no existe
+from app.core.database import SessionLocal
+from app.core.security import hash_password
+from app.models.user import User
 
-app = FastAPI(title="Garden Planner API")
+def create_admin_user():
+    db = SessionLocal()
+    admin = db.query(User).filter(User.email == "admin@example.com").first()
+    if not admin:
+        new_admin = User(
+            email="admin@example.com",
+            hashed_password=hash_password("12345"),
+            role="admin"
+        )
+        db.add(new_admin)
+        db.commit()
+        print(">>> Usuario admin creado correctamente")
+    else:
+        print(">>> Usuario admin ya existe")
+    db.close()
 
-# -----------------------------
-# CORS (Frontend: React + Vite)
-# -----------------------------
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174"  # Vite
-    "http://localhost:3000",  # fallback
-]
+create_admin_user()
+
+
+app = FastAPI(title=settings.PROJECT_NAME)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "Authorization", "Content-Type"],
 )
 
-# -----------------------------
-# Crear tablas
-# -----------------------------
-Base.metadata.create_all(bind=engine)
+app.include_router(api_router)
 
-# -----------------------------
-# Registrar routers
-# -----------------------------
-app.include_router(auth_router)
-app.include_router(plot_router)
-app.include_router(crop_router)
-app.include_router(crop_plan_router)
-app.include_router(irrigation_router)
-app.include_router(pest_router)
-app.include_router(seasonal_router)
-app.include_router(calendar_router)
-app.include_router(dashboard_router)
-app.include_router(clima.router)
 
-# -----------------------------
-# Health Check
-# -----------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
