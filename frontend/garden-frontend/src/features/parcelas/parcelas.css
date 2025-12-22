@@ -1,0 +1,8 @@
+.parcelas-bg {
+    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
+}

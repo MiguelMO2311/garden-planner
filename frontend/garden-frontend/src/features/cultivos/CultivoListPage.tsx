@@ -4,6 +4,7 @@ import CultivoTable from "./components/CultivoTable";
 import { getCultivos, deleteCultivo } from "./api/cultivosApi";
 import { useNavigate } from "react-router-dom";
 import type { Cultivo } from "./types";
+import "./cultivos.css";
 
 export default function CultivoListPage() {
     const [cultivos, setCultivos] = useState<Cultivo[]>([]);
@@ -26,22 +27,26 @@ export default function CultivoListPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Cultivos</h2>
+            <div className="cultivos-bg">
 
-                <button
-                    onClick={() => navigate("/cultivos/nuevo")}
-                    className="px-4 py-2 bg-green-600 text-white rounded"
-                >
-                    Nuevo cultivo
-                </button>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold">Cultivos</h2>
+
+                    <button
+                        onClick={() => navigate("/cultivos/nuevo")}
+                        className="px-4 py-2 bg-green-600 text-white rounded"
+                    >
+                        Nuevo cultivo
+                    </button>
+                </div>
+
+                <CultivoTable
+                    cultivos={cultivos}
+                    onEdit={(id) => navigate(`/cultivos/${id}`)}
+                    onDelete={handleDelete}
+                />
+
             </div>
-
-            <CultivoTable
-                cultivos={cultivos}
-                onEdit={(id) => navigate(`/cultivos/${id}`)}
-                onDelete={handleDelete}
-            />
         </DashboardLayout>
     );
 }

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import type { TareaAgricola } from "./types";
 import type { Parcela } from "../parcelas/types";
 import type { Cultivo } from "../cultivos/types";
+import "./tareas.css";
 
 export default function TareaListPage() {
     const [tareas, setTareas] = useState<TareaAgricola[]>([]);
@@ -37,24 +38,28 @@ export default function TareaListPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Tareas agrícolas</h2>
+            <div className="tareas-bg">
 
-                <button
-                    onClick={() => navigate("/tareas/nueva")}
-                    className="px-4 py-2 bg-green-600 text-white rounded"
-                >
-                    Nueva tarea
-                </button>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold">Tareas agrícolas</h2>
+
+                    <button
+                        onClick={() => navigate("/tareas/nueva")}
+                        className="px-4 py-2 bg-green-600 text-white rounded"
+                    >
+                        Nueva tarea
+                    </button>
+                </div>
+
+                <TareaTable
+                    tareas={tareas}
+                    parcelas={parcelas}
+                    cultivos={cultivos}
+                    onEdit={(id) => navigate(`/tareas/${id}`)}
+                    onDelete={handleDelete}
+                />
+
             </div>
-
-            <TareaTable
-                tareas={tareas}
-                parcelas={parcelas}
-                cultivos={cultivos}
-                onEdit={(id) => navigate(`/tareas/${id}`)}
-                onDelete={handleDelete}
-            />
         </DashboardLayout>
     );
 }

@@ -1,6 +1,7 @@
 .nav-link.active {
     font-weight: bold;
     text-decoration: underline;
+    
 }
 
 .nav-avatar {
@@ -9,4 +10,6 @@
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
+    
 }
+

@@ -1,9 +1,26 @@
 .dashboard-card {
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+
+    /* Compatibilidad total */
+    -webkit-backdrop-filter: blur(2px);
+    /* Safari / iOS */
+    backdrop-filter: blur(2px);
+    /* Chrome / Firefox / Edge */
 }
 
 .dashboard-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-bg {
+    background-image: url("../../assets/backgrounds/dashboard-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
 }

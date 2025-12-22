@@ -1,0 +1,8 @@
+.cultivos-bg {
+    background-image: url("../../assets/backgrounds/cultivos-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
+}

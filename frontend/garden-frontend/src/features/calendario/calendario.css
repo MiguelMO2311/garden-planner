@@ -1,0 +1,9 @@
+.calendario-bg {
+    background-image: url("../../assets/backgrounds/calendario-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
+    font-weight: bold;
+}

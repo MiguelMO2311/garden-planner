@@ -6,9 +6,9 @@ import {
     getEventos,
     createEvento,
     updateEvento,
-    // deleteEvento,
 } from "./api/calendarioApi";
 import type { EventoAgricola } from "./types";
+import "./calendario.css";
 
 export default function CalendarioPage() {
     const [eventos, setEventos] = useState<EventoAgricola[]>([]);
@@ -57,22 +57,25 @@ export default function CalendarioPage() {
 
     return (
         <DashboardLayout>
-            <h2 className="text-2xl font-bold mb-6">Calendario agrícola</h2>
+            <div className="calendario-bg">
+                <h2 className="text-2xl font-bold mb-6 text-white"
+                >Calendario agrícola</h2>
 
-            <Calendar
-                eventos={eventos}
-                onSelectDate={handleSelectDate}
-                onSelectEvent={handleSelectEvent}
-            />
-
-            {modalOpen && (
-                <EventModal
-                    form={form}
-                    setForm={setForm}
-                    onSubmit={handleSubmit}
-                    onClose={() => setModalOpen(false)}
+                <Calendar
+                    eventos={eventos}
+                    onSelectDate={handleSelectDate}
+                    onSelectEvent={handleSelectEvent}
                 />
-            )}
+
+                {modalOpen && (
+                    <EventModal
+                        form={form}
+                        setForm={setForm}
+                        onSubmit={handleSubmit}
+                        onClose={() => setModalOpen(false)}
+                    />
+                )}
+            </div>
         </DashboardLayout>
     );
 }

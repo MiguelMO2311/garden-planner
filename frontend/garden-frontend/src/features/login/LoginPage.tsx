@@ -21,23 +21,21 @@ export default function LoginPage() {
             formData.append("username", email);
             formData.append("password", password);
 
-            const response = await api.post("/auth/login", formData, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            });
+            // ❌ NO PONER HEADERS MANUALMENTE
+            const response = await api.post("/auth/login", formData);
 
-            // El backend debe devolver: access_token, refresh_token y user
-            const { access_token, refresh_token } = response.data;
+            const { access_token } = response.data;
 
-            // Ahora login recibe los 3 argumentos
-            login(access_token, refresh_token, {
+            // ✅ CLAVE CORRECTA PARA EL INTERCEPTOR
+            localStorage.setItem("access", access_token);
+
+            // Actualizar contexto de autenticación
+            login(access_token, "", {
                 id: 1,
                 name: "Usuario",
                 email: email,
-                avatar: "https://i.pravatar.cc/100"
+                avatar: "https://i.pravatar.cc/100",
             });
-
 
             navigate("/dashboard");
         } catch {
@@ -53,7 +51,9 @@ export default function LoginPage() {
                 </h1>
 
                 {errorMsg && (
-                    <p className="text-red-600 text-center mb-4">{errorMsg}</p>
+                    <p className="text-red-600 text-center mb-4">
+                        {errorMsg}
+                    </p>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">

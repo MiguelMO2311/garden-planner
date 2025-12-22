@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 
 import LoginPage from "../features/login/LoginPage";
@@ -16,114 +16,112 @@ import TareaListPage from "../features/tareas/TareaListPage";
 import TareaFormPage from "../features/tareas/TareaFormPage";
 
 export const AppRouter = () => (
-    <BrowserRouter>
-        <Routes>
-            {/* Ruta pública */}
-            <Route path="/login" element={<LoginPage />} />
+    <Routes>
+        {/* Ruta pública */}
+        <Route path="/login" element={<LoginPage />} />
 
-            {/* Dashboard explícito */}
-            <Route
-                path="/dashboard"
-                element={
-                    <ProtectedRoute>
-                        <DashboardPage />
-                    </ProtectedRoute>
-                }
-            />
+        {/* Dashboard explícito */}
+        <Route
+            path="/dashboard"
+            element={
+                <ProtectedRoute>
+                    <DashboardPage />
+                </ProtectedRoute>
+            }
+        />
 
-            {/* Redirección de "/" → "/dashboard" */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Redirección de "/" → "/dashboard" */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Rutas protegidas */}
-            <Route
-                path="/parcelas"
-                element={
-                    <ProtectedRoute>
-                        <ParcelaListPage />
-                    </ProtectedRoute>
-                }
-            />
+        {/* Rutas protegidas */}
+        <Route
+            path="/parcelas"
+            element={
+                <ProtectedRoute>
+                    <ParcelaListPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/parcelas/nueva"
-                element={
-                    <ProtectedRoute>
-                        <ParcelaFormPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/parcelas/nueva"
+            element={
+                <ProtectedRoute>
+                    <ParcelaFormPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/parcelas/:id"
-                element={
-                    <ProtectedRoute>
-                        <ParcelaFormPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/parcelas/:id"
+            element={
+                <ProtectedRoute>
+                    <ParcelaFormPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/cultivos"
-                element={
-                    <ProtectedRoute>
-                        <CultivoListPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/cultivos"
+            element={
+                <ProtectedRoute>
+                    <CultivoListPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/cultivos/nuevo"
-                element={
-                    <ProtectedRoute>
-                        <CultivoFormPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/cultivos/nuevo"
+            element={
+                <ProtectedRoute>
+                    <CultivoFormPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/cultivos/:id"
-                element={
-                    <ProtectedRoute>
-                        <CultivoFormPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/cultivos/:id"
+            element={
+                <ProtectedRoute>
+                    <CultivoFormPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/calendario"
-                element={
-                    <ProtectedRoute>
-                        <CalendarioPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/calendario"
+            element={
+                <ProtectedRoute>
+                    <CalendarioPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/tareas"
-                element={
-                    <ProtectedRoute>
-                        <TareaListPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/tareas"
+            element={
+                <ProtectedRoute>
+                    <TareaListPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/tareas/nueva"
-                element={
-                    <ProtectedRoute>
-                        <TareaFormPage />
-                    </ProtectedRoute>
-                }
-            />
+        <Route
+            path="/tareas/nueva"
+            element={
+                <ProtectedRoute>
+                    <TareaFormPage />
+                </ProtectedRoute>
+            }
+        />
 
-            <Route
-                path="/tareas/:id"
-                element={
-                    <ProtectedRoute>
-                        <TareaFormPage />
-                    </ProtectedRoute>
-                }
-            />
-        </Routes>
-    </BrowserRouter>
+        <Route
+            path="/tareas/:id"
+            element={
+                <ProtectedRoute>
+                    <TareaFormPage />
+                </ProtectedRoute>
+            }
+        />
+    </Routes>
 );

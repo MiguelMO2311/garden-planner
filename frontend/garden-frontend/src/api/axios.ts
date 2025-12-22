@@ -1,15 +1,17 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000", // o tu URL real
+    baseURL: "http://localhost:8000/api/v1",
+
 });
 
-// Interceptor para añadir el token
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("access");
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem("access"); // token correcto
     if (token) {
+        config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
 });
 
