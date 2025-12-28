@@ -17,9 +17,11 @@ export default function CultivoFormPage() {
 
     const [form, setForm] = useState<Cultivo>({
         nombre: "",
-        variedad: "",
-        temporada: "",
-        parcela_id: undefined,
+        temporada_optima: "",
+        dias_crecimiento: undefined,
+        litros_agua_semana: undefined,
+        notas: "",
+        plot_id: undefined,
     });
 
     const [parcelas, setParcelas] = useState<Parcela[]>([]);

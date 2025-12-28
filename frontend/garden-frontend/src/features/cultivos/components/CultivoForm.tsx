@@ -23,7 +23,6 @@ export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props
                     id="nombre"
                     type="text"
                     placeholder="Nombre del cultivo"
-                    title="Nombre del cultivo"
                     className="w-full border rounded px-3 py-2"
                     value={form.nombre}
                     onChange={(e) => setForm({ ...form, nombre: e.target.value })}
@@ -31,61 +30,96 @@ export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props
                 />
             </div>
 
-            {/* Variedad */}
+            {/* Temporada óptima */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="variedad">
-                    Variedad
+                <label className="block text-sm font-medium mb-1" htmlFor="temporada_optima">
+                    Temporada óptima
                 </label>
                 <input
-                    id="variedad"
-                    type="text"
-                    placeholder="Variedad del cultivo"
-                    title="Variedad del cultivo"
-                    className="w-full border rounded px-3 py-2"
-                    value={form.variedad}
-                    onChange={(e) => setForm({ ...form, variedad: e.target.value })}
-                    required
-                />
-            </div>
-
-            {/* Temporada */}
-            <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="temporada">
-                    Temporada
-                </label>
-                <input
-                    id="temporada"
+                    id="temporada_optima"
                     type="text"
                     placeholder="Primavera, verano, etc."
-                    title="Temporada del cultivo"
                     className="w-full border rounded px-3 py-2"
-                    value={form.temporada}
-                    onChange={(e) => setForm({ ...form, temporada: e.target.value })}
-                    required
+                    value={form.temporada_optima ?? ""}
+                    onChange={(e) => setForm({ ...form, temporada_optima: e.target.value })}
                 />
             </div>
 
-            {/* Parcela asignada */}
+            {/* Días de crecimiento */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="parcela">
-                    Parcela
+                <label className="block text-sm font-medium mb-1" htmlFor="dias_crecimiento">
+                    Días de crecimiento
                 </label>
-                <select
-                    id="parcela"
-                    title="Parcela donde se cultiva"
+                <input
+                    id="dias_crecimiento"
+                    type="number"
+                    placeholder="Ej: 90"
                     className="w-full border rounded px-3 py-2"
-                    value={form.parcela_id ?? ""}
+                    value={form.dias_crecimiento ?? ""}
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            parcela_id: e.target.value ? Number(e.target.value) : undefined,
+                            dias_crecimiento: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                    }
+                />
+            </div>
+
+            {/* Litros de agua por semana */}
+            <div>
+                <label className="block text-sm font-medium mb-1" htmlFor="litros_agua_semana">
+                    Litros de agua por semana
+                </label>
+                <input
+                    id="litros_agua_semana"
+                    type="number"
+                    step="0.1"
+                    placeholder="Ej: 12.5"
+                    className="w-full border rounded px-3 py-2"
+                    value={form.litros_agua_semana ?? ""}
+                    onChange={(e) =>
+                        setForm({
+                            ...form,
+                            litros_agua_semana: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                    }
+                />
+            </div>
+
+            {/* Notas */}
+            <div>
+                <label className="block text-sm font-medium mb-1" htmlFor="notas">
+                    Notas
+                </label>
+                <textarea
+                    id="notas"
+                    placeholder="Notas adicionales"
+                    className="w-full border rounded px-3 py-2"
+                    value={form.notas ?? ""}
+                    onChange={(e) => setForm({ ...form, notas: e.target.value })}
+                />
+            </div>
+
+            {/* Parcela */}
+            <div>
+                <label className="block text-sm font-medium mb-1" htmlFor="plot_id">
+                    Parcela
+                </label>
+                <select
+                    id="plot_id"
+                    className="w-full border rounded px-3 py-2"
+                    value={form.plot_id ?? ""}
+                    onChange={(e) =>
+                        setForm({
+                            ...form,
+                            plot_id: e.target.value ? Number(e.target.value) : undefined,
                         })
                     }
                 >
                     <option value="">Sin parcela asignada</option>
                     {parcelas.map((p) => (
                         <option key={p.id} value={p.id}>
-                            {p.nombre}
+                            {p.name}
                         </option>
                     ))}
                 </select>
