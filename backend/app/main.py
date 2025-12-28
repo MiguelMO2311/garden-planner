@@ -1,17 +1,15 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.database import Base, engine
-import app.models.user  # ensure models are imported
-import app.models.plot
 
-
+# IMPORTA EL MÓDULO DE MODELOS ANTES DE create_all
+from app.models import tarea
 
 Base.metadata.create_all(bind=engine)
-# Crear usuario admin si no existe
+
 from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models.user import User
@@ -34,7 +32,6 @@ def create_admin_user():
 
 create_admin_user()
 
-
 app = FastAPI(title=settings.PROJECT_NAME)
 
 app.add_middleware(
@@ -45,9 +42,5 @@ app.add_middleware(
     allow_headers=["*", "Authorization", "Content-Type"],
 )
 
-app.include_router(api_router)
+app.include_router(api_router, prefix="/api/v1")
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}

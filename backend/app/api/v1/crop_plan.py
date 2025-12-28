@@ -5,7 +5,7 @@ from typing import List
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.core.roles import require_role
-from app.models.crop_plan import CropPlan
+from app.models.cultivo_plan import CultivoPlan
 from app.schemas.crop_plan import CropPlanCreate, CropPlanRead
 
 router = APIRouter(prefix="/crop-plans", tags=["Crop Plans"])
@@ -18,7 +18,7 @@ def create_crop_plan(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    db_plan = CropPlan(**plan.model_dump(), user_id=user.id)
+    db_plan = CultivoPlan(**plan.model_dump(), user_id=user.id)
     db.add(db_plan)
     db.commit()
     db.refresh(db_plan)
@@ -31,7 +31,7 @@ def list_crop_plans(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    return db.query(CropPlan).filter(CropPlan.user_id == user.id).all()
+    return db.query(CultivoPlan).filter(CultivoPlan.user_id == user.id).all()
 
 
 # GET ONE (must belong to user)
@@ -41,7 +41,7 @@ def get_crop_plan(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    plan = db.query(CropPlan).filter(CropPlan.id == plan_id).first()
+    plan = db.query(CultivoPlan).filter(CultivoPlan.id == plan_id).first()
 
     if not plan:
         raise HTTPException(status_code=404, detail="Crop plan not found")
@@ -59,7 +59,7 @@ def delete_crop_plan(
     db: Session = Depends(get_db),
     user = Depends(require_role("admin"))
 ):
-    plan = db.query(CropPlan).filter(CropPlan.id == plan_id).first()
+    plan = db.query(CultivoPlan).filter(CultivoPlan.id == plan_id).first()
 
     if not plan:
         raise HTTPException(status_code=404, detail="Crop plan not found")

@@ -5,8 +5,8 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.models.crop_plan import CropPlan
-from app.models.irrigation import IrrigationLog
+from app.models.cultivo_plan import CultivoPlan
+from app.models.irrigation import Irrigation
 from app.models.pest import Pest
 from pydantic import BaseModel
 
@@ -39,9 +39,9 @@ def get_calendar(
     events: list[CalendarEvent] = []
 
     # --- Crop Plans (usar start_date y end_date del plan) ---
-    q_plans = db.query(CropPlan)
+    q_plans = db.query(CultivoPlan)
     if user.role != "admin":
-        q_plans = q_plans.filter(CropPlan.user_id == user.id)
+        q_plans = q_plans.filter(CultivoPlan.user_id == user.id)
     plans = q_plans.all()
 
     for plan in plans:
@@ -69,12 +69,12 @@ def get_calendar(
             )
 
     # --- Riegos ---
-    q_irrigation = db.query(IrrigationLog).filter(
-        IrrigationLog.date >= start_date,
-        IrrigationLog.date <= end_date,
+    q_irrigation = db.query(Irrigation).filter(
+        Irrigation.date >= start_date,
+        Irrigation.date <= end_date,
     )
     if user.role != "admin":
-        q_irrigation = q_irrigation.filter(IrrigationLog.user_id == user.id)
+        q_irrigation = q_irrigation.filter(Irrigation.user_id == user.id)
     irrigations = q_irrigation.all()
 
     for log in irrigations:

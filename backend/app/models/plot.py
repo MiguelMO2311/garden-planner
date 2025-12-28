@@ -1,9 +1,6 @@
-# app/models/plot.py
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
-
 from app.core.database import Base
-
 
 class Plot(Base):
     __tablename__ = "plots"
@@ -17,3 +14,10 @@ class Plot(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     owner = relationship("User")
+
+    # relación con riegos
+    irrigations = relationship("Irrigation", back_populates="plot")
+
+    cultivos = relationship("Cultivo", back_populates="plot", cascade="all, delete")
+    tareas = relationship("Tarea", back_populates="parcela")
+

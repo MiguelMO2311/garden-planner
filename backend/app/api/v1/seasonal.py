@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.core.database import get_db
-from app.models.crop import Crop
+from app.models.cultivo import Cultivo
+
 
 router = APIRouter(prefix="/season", tags=["Seasonal Recommendations"])
 
@@ -27,7 +28,7 @@ def get_recommendations(month: int | None = None, db: Session = Depends(get_db))
     season = SEASONS.get(month, "Desconocida")
 
     # Buscar cultivos cuya estación óptima coincida
-    crops = db.query(Crop).filter(Crop.optimal_season == season).all()
+    crops = db.query(Cultivo).filter(Cultivo.optimal_season == season).all()
 
     return {
         "month": month,

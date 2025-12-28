@@ -7,8 +7,8 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.plot import Plot
-from app.models.crop_plan import CropPlan
-from app.models.irrigation import IrrigationLog
+from app.models.cultivo_plan import CultivoPlan
+from app.models.irrigation import Irrigation
 from app.models.pest import Pest
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
@@ -33,13 +33,13 @@ def get_dashboard(
     # Filtro base según rol
     if user.role == "admin":
         plots_q = db.query(Plot)
-        plans_q = db.query(CropPlan)
-        irrigation_q = db.query(IrrigationLog)
+        plans_q = db.query(CultivoPlan)
+        irrigation_q = db.query(Irrigation)
         pests_q = db.query(Pest)
     else:
         plots_q = db.query(Plot).filter(Plot.user_id == user.id)
-        plans_q = db.query(CropPlan).filter(CropPlan.user_id == user.id)
-        irrigation_q = db.query(IrrigationLog).filter(IrrigationLog.user_id == user.id)
+        plans_q = db.query(CultivoPlan).filter(CultivoPlan.user_id == user.id)
+        irrigation_q = db.query(Irrigation).filter(Irrigation.user_id == user.id)
         pests_q = db.query(Pest).filter(Pest.user_id == user.id)
 
     # Número de parcelas
@@ -47,14 +47,14 @@ def get_dashboard(
 
     # Planes activos (start_date <= hoy <= end_date o sin end_date)
     crop_plans_active = plans_q.filter(
-        CropPlan.start_date <= today,
-        (CropPlan.end_date == None) | (CropPlan.end_date >= today),
+        CultivoPlan.start_date <= today,
+        (CultivoPlan.end_date == None) | (CultivoPlan.end_date >= today),
     ).count()
 
     # Riegos últimos 7 días
     irrigations_last_7_days = irrigation_q.filter(
-        IrrigationLog.date >= seven_days_ago,
-        IrrigationLog.date <= today,
+        Irrigation.date >= seven_days_ago,
+        Irrigation.date <= today,
     ).count()
 
     # Plagas últimos 30 días

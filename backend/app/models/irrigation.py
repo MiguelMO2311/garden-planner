@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, Float, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-class IrrigationLog(Base):
+class Irrigation(Base):
     __tablename__ = "irrigation_logs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -12,5 +12,5 @@ class IrrigationLog(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User")
-    plot = relationship("Plot")
+    owner = relationship("User", back_populates="irrigations")
+    plot = relationship("Plot", back_populates="irrigations")

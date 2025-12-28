@@ -4,7 +4,6 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
-from app.core.roles import require_role
 from app.models.pest import Pest
 from app.schemas.pest import PestCreate, PestRead
 
@@ -18,7 +17,7 @@ def create_pest(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    db_pest = Pest(**pest.model_dump(), user_id=user.id)
+    db_pest = Pest(**pest.dict(), user_id=user.id)
     db.add(db_pest)
     db.commit()
     db.refresh(db_pest)
@@ -57,8 +56,12 @@ def get_pest(
 def delete_pest(
     pest_id: int,
     db: Session = Depends(get_db),
-    user = Depends(require_role("admin"))
+    user = Depends(get_current_user)
 ):
+    # Solo admin puede borrar
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+
     pest = db.query(Pest).filter(Pest.id == pest_id).first()
 
     if not pest:
