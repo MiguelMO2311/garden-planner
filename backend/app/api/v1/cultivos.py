@@ -6,11 +6,10 @@ from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
 from app.models.cultivo import Cultivo
-from app.schemas.cultivo import CultivoCreate, CultivoRead
+from app.schemas.cultivo import CultivoCreate, CultivoRead, CultivoUpdate
 from app.models.plot import Plot
 
-router = APIRouter(prefix="/cultivos", tags=["Cultivos"])
-
+router = APIRouter(tags=["Cultivos"])
 
 @router.post("/", response_model=CultivoRead)
 def create_cultivo(
@@ -89,3 +88,39 @@ def delete_cultivo(
     db.delete(cultivo)
     db.commit()
     return {"message": "Cultivo eliminado correctamente"}
+@router.put("/{cultivo_id}", response_model=CultivoRead)
+def update_cultivo(
+    cultivo_id: int,
+    cultivo_in: CultivoUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    cultivo = db.query(Cultivo).filter(
+        Cultivo.id == cultivo_id,
+        Cultivo.user_id == current_user.id
+    ).first()
+
+    if not cultivo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Cultivo no encontrado"
+        )
+
+    # Si se cambia de parcela, validar que pertenece al usuario
+    if cultivo_in.plot_id is not None:
+        plot = db.query(Plot).filter(
+            Plot.id == cultivo_in.plot_id,
+            Plot.user_id == current_user.id
+        ).first()
+        if not plot:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="La nueva parcela no existe o no pertenece al usuario"
+            )
+
+    for field, value in cultivo_in.model_dump(exclude_unset=True).items():
+        setattr(cultivo, field, value)
+
+    db.commit()
+    db.refresh(cultivo)
+    return cultivo

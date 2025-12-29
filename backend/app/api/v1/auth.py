@@ -9,8 +9,7 @@ from app.core.jwt import create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, Token
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
-
+router = APIRouter(tags=["Auth"])
 
 @router.post("/register", response_model=UserRead)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):

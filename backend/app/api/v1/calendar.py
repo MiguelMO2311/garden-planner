@@ -10,10 +10,7 @@ from app.models.irrigation import Irrigation
 from app.models.pest import Pest
 from pydantic import BaseModel
 
-
-router = APIRouter(prefix="/calendar", tags=["Calendar"])
-
-
+router = APIRouter(tags=["Calendar"])
 class CalendarEvent(BaseModel):
     date: date
     type: str  # "crop_plan", "irrigation", "pest"

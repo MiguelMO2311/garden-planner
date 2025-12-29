@@ -20,3 +20,10 @@ class PlotRead(PlotBase):
 
     class Config:
         from_attributes = True
+
+
+class PlotUpdate(BaseModel):
+    name: Optional[str] = None
+    location: Optional[str] = None
+    soil_type: Optional[str] = None
+    size_m2: Optional[float] = None

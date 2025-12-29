@@ -52,13 +52,11 @@ def update_tarea(db: Session, tarea_id: int, data: TareaUpdate):
     return tarea
 
 
-def delete_tarea(db: Session, tarea_id: int):
-    # Eliminar evento asociado
-    evento = db.query(EventoAgricola).filter(EventoAgricola.tarea_id == tarea_id).first()
-    if evento:
-        delete_evento(db, evento.id)
+def delete(self, db: Session, id: int):
+    obj = db.query(self.model).filter(self.model.id == id).first()
+    if not obj:
+        return None
+    db.delete(obj)
+    db.commit()
+    return obj
 
-    tarea = db.query(TareaAgricola).filter(TareaAgricola.id == tarea_id).first()
-    if tarea:
-        db.delete(tarea)
-        db.commit()
