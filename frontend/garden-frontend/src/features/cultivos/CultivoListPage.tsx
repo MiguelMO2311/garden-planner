@@ -4,6 +4,7 @@ import CultivoTable from "./components/CultivoTable";
 import { getCultivos, deleteCultivo } from "./api/cultivosApi";
 import { useNavigate } from "react-router-dom";
 import type { Cultivo } from "./types";
+import { showToast } from "../../utils/toast";
 import "./cultivos.css";
 
 export default function CultivoListPage() {
@@ -20,14 +21,20 @@ export default function CultivoListPage() {
     }, []);
 
     const handleDelete = async (id: number) => {
-        await deleteCultivo(id);
-        const res = await getCultivos();
-        setCultivos(res.data);
+        try {
+            await deleteCultivo(id);
+            showToast("Cultivo eliminado correctamente", "success");
+
+            const res = await getCultivos();
+            setCultivos(res.data);
+        } catch {
+            showToast("Error al eliminar el cultivo", "error");
+        }
     };
 
     return (
         <DashboardLayout>
-            <div className="cultivos-bg">
+            <div className="cultivos-bg text-gray-900">
 
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Cultivos</h2>

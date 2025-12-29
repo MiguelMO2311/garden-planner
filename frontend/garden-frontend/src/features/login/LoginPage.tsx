@@ -21,21 +21,25 @@ export default function LoginPage() {
             formData.append("username", email);
             formData.append("password", password);
 
-            // ❌ NO PONER HEADERS MANUALMENTE
-            const response = await api.post("/auth/login", formData);
+            const response = await api.post("/auth/login", formData, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            });
 
             const { access_token } = response.data;
 
-            // ✅ CLAVE CORRECTA PARA EL INTERCEPTOR
-            localStorage.setItem("access", access_token);
+            // Guardar token con la clave correcta
+            localStorage.setItem("access_token", access_token);
 
             // Actualizar contexto de autenticación
-            login(access_token, "", {
+            login(access_token, {
                 id: 1,
                 name: "Usuario",
                 email: email,
                 avatar: "https://i.pravatar.cc/100",
             });
+
 
             navigate("/dashboard");
         } catch {
@@ -44,7 +48,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-green-100 via-blue-100 to-purple-100 px-4">
             <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
                     Garden Planner 🌿

@@ -11,16 +11,19 @@ interface Props {
 }
 
 export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelete }: Props) {
-    const getParcelaNombre = (id?: number) => {
+
+    // Parcela: usa p.name (NO p.nombre)
+    const getParcelaNombre = (id: number | null | undefined) => {
         if (!id) return "—";
         const p = parcelas.find((x) => x.id === id);
-        return p ? p.nombre : "—";
+        return p ? p.name : "—";
     };
 
-    const getCultivoNombre = (id?: number) => {
+    // Cultivo: usa c.nombre (NO c.variedad)
+    const getCultivoNombre = (id: number | null | undefined) => {
         if (!id) return "—";
         const c = cultivos.find((x) => x.id === id);
-        return c ? `${c.nombre} (${c.variedad})` : "—";
+        return c ? c.nombre : "—";
     };
 
     return (

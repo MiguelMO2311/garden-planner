@@ -1,13 +1,13 @@
 import api from "../../../api/axios";
 import type { EventoAgricola } from "../types";
 
-export const getEventos = () => api.get<EventoAgricola[]>("/calendario");
+export const getEventos = () => api.get<EventoAgricola[]>("/calendar");
 
 export const createEvento = (data: EventoAgricola) =>
-    api.post("/calendario", data);
+    api.post("/calendar", data);
 
 export const updateEvento = (id: number, data: EventoAgricola) =>
-    api.put(`/calendario/${id}`, data);
+    api.put(`/calendar/${id}`, data);
 
 export const deleteEvento = (id: number) =>
-    api.delete(`/calendario/${id}`);
+    api.delete(`/calendar/${id}`);

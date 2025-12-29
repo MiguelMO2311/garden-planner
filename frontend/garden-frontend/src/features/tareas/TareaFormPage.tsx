@@ -21,13 +21,14 @@ export default function TareaFormPage() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    // Estado inicial corregido: parcela_id y cultivo_id pueden ser null
     const [form, setForm] = useState<TareaAgricola>({
         titulo: "",
         fecha: "",
         estado: "pendiente",
         descripcion: "",
-        parcela_id: undefined,
-        cultivo_id: undefined,
+        parcela_id: null,
+        cultivo_id: null,
     });
 
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
@@ -35,18 +36,28 @@ export default function TareaFormPage() {
 
     useEffect(() => {
         const load = async () => {
-            // Cargar parcelas
-            const resParcelas = await getParcelas();
-            setParcelas(resParcelas.data);
+            try {
+                // Cargar parcelas
+                const resParcelas = await getParcelas();
+                setParcelas(resParcelas.data);
 
-            // Cargar cultivos
-            const resCultivos = await getCultivos();
-            setCultivos(resCultivos.data);
+                // Cargar cultivos
+                const resCultivos = await getCultivos();
+                setCultivos(resCultivos.data);
 
-            // Si estamos editando, cargar la tarea
-            if (id) {
-                const resTarea = await getTarea(Number(id));
-                setForm(resTarea.data);
+                // Si estamos editando, cargar la tarea
+                if (id) {
+                    const resTarea = await getTarea(Number(id));
+
+                    // Asegurar que parcela_id y cultivo_id nunca sean undefined
+                    setForm({
+                        ...resTarea.data,
+                        parcela_id: resTarea.data.parcela_id ?? null,
+                        cultivo_id: resTarea.data.cultivo_id ?? null,
+                    });
+                }
+            } catch (error) {
+                console.error("Error cargando datos:", error);
             }
         };
 
@@ -55,6 +66,17 @@ export default function TareaFormPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validación mínima
+        if (form.parcela_id === null) {
+            alert("Debes seleccionar una parcela");
+            return;
+        }
+
+        if (form.cultivo_id === null) {
+            alert("Debes seleccionar un cultivo");
+            return;
+        }
 
         if (id) {
             await updateTarea(Number(id), form);

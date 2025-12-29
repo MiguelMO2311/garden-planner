@@ -3,12 +3,13 @@ import DashboardLayout from "../../layout/DashboardLayout";
 import { createParcela, updateParcela, getParcela } from "./api/parcelasApi";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ParcelaCreateDTO } from "./types";
+import { showToast } from "../../utils/toast";
 
 interface ParcelaFormState {
   name: string;
   location: string;
   soil_type: string;
-  size_m2: string; // siempre string en el formulario
+  size_m2: string;
 }
 
 export default function ParcelaFormPage() {
@@ -45,15 +46,21 @@ export default function ParcelaFormPage() {
       size_m2: form.size_m2 ? Number(form.size_m2) : undefined
     };
 
-    if (id) {
-      await updateParcela(Number(id), payload);
-    } else {
-      await createParcela(payload);
+    try {
+      if (id) {
+        await updateParcela(Number(id), payload);
+        showToast("Parcela actualizada correctamente", "success");
+      } else {
+        await createParcela(payload);
+        showToast("Parcela creada correctamente", "success");
+      }
+
+      navigate("/parcelas");
+    } catch (error) {
+      console.error(error);
+      showToast("Error al guardar la parcela", "error");
     }
-
-    navigate("/parcelas");
   };
-
   return (
     <DashboardLayout>
       <div className="card shadow-sm p-4">
@@ -64,8 +71,10 @@ export default function ParcelaFormPage() {
         <form onSubmit={handleSubmit}>
           {/* Nombre */}
           <div className="mb-3">
-            <label className="form-label">Nombre</label>
+            <label htmlFor="name" className="form-label">Nombre</label>
             <input
+              id="name"
+              name="name"
               className="form-control"
               placeholder="Nombre de la parcela"
               value={form.name}
@@ -76,8 +85,10 @@ export default function ParcelaFormPage() {
 
           {/* Ubicación */}
           <div className="mb-3">
-            <label className="form-label">Ubicación</label>
+            <label htmlFor="location" className="form-label">Ubicación</label>
             <input
+              id="location"
+              name="location"
               className="form-control"
               placeholder="Ej: Huerto norte"
               value={form.location}
@@ -87,8 +98,10 @@ export default function ParcelaFormPage() {
 
           {/* Tipo de suelo */}
           <div className="mb-3">
-            <label className="form-label">Tipo de suelo</label>
+            <label htmlFor="soil_type" className="form-label">Tipo de suelo</label>
             <input
+              id="soil_type"
+              name="soil_type"
               className="form-control"
               placeholder="Arcilloso, arenoso..."
               value={form.soil_type}
@@ -98,8 +111,10 @@ export default function ParcelaFormPage() {
 
           {/* Tamaño */}
           <div className="mb-3">
-            <label className="form-label">Tamaño (m²)</label>
+            <label htmlFor="size_m2" className="form-label">Tamaño (m²)</label>
             <input
+              id="size_m2"
+              name="size_m2"
               type="number"
               className="form-control"
               placeholder="Ej: 25"

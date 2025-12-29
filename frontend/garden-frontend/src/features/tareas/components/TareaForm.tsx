@@ -85,14 +85,14 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            parcela_id: e.target.value ? Number(e.target.value) : undefined,
+                            parcela_id: e.target.value ? Number(e.target.value) : null,
                         })
                     }
                 >
-                    <option value="">Sin parcela asignada</option>
+                    <option value="">Selecciona una parcela</option>
                     {parcelas.map((p) => (
                         <option key={p.id} value={p.id}>
-                            {p.nombre}
+                            {p.name}
                         </option>
                     ))}
                 </select>
@@ -111,16 +111,18 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            cultivo_id: e.target.value ? Number(e.target.value) : undefined,
+                            cultivo_id: e.target.value ? Number(e.target.value) : null,
                         })
                     }
                 >
-                    <option value="">Sin cultivo asignado</option>
+                    <option value="">Selecciona un cultivo</option>
                     {cultivos.map((c) => (
                         <option key={c.id} value={c.id}>
-                            {c.nombre} — {c.variedad}
+                            {c.nombre}
                         </option>
                     ))}
+
+
                 </select>
             </div>
 

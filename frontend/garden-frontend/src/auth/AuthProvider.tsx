@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
 
-    // 1️⃣ Inicializamos el usuario directamente, sin useEffect
+    // Inicializar usuario desde localStorage
     const [user, setUser] = useState<AuthUser | null>(() => {
         try {
             const stored = localStorage.getItem("user");
@@ -20,19 +20,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const [loading] = useState(false);
 
-    // 2️⃣ login
-    const login = (access: string, refresh: string, userData: AuthUser) => {
-        localStorage.setItem("access", access);
-        localStorage.setItem("refresh", refresh);
+    // LOGIN CORRECTO PARA FASTAPI
+    const login = (accessToken: string, userData: AuthUser) => {
+        localStorage.setItem("access_token", accessToken);
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
         navigate("/parcelas");
     };
 
-    // 3️⃣ logout
+    // LOGOUT CORRECTO
     const logout = () => {
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
+        localStorage.removeItem("access_token");
         localStorage.removeItem("user");
         setUser(null);
         navigate("/login");
