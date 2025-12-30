@@ -8,10 +8,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="dashboard-container d-flex flex-column">
             <Navbar />
 
-            <div className="d-flex flex-grow-1">
+            <div className="d-flex grow">
                 <Sidebar />
 
-                <main className="flex-grow-1 p-4">
+                <main className="grow p-4">
                     <div className="card shadow-sm p-4">
                         {children}
                     </div>

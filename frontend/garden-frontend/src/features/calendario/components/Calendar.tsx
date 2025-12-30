@@ -1,6 +1,15 @@
-import type { EventoAgricola } from "../types";
-import "./calendar.css";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import rrulePlugin from "@fullcalendar/rrule";
+import esLocale from "@fullcalendar/core/locales/es";
 
+import type { EventoAgricola } from "../types";
+import type { EventContentArg } from "@fullcalendar/core";
+
+import "./calendar.css";
 
 interface Props {
     eventos: EventoAgricola[];
@@ -9,68 +18,113 @@ interface Props {
 }
 
 export default function Calendar({ eventos, onSelectDate, onSelectEvent }: Props) {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    const mappedEvents = eventos.map((ev) => ({
+        id: String(ev.id),
+        title: ev.titulo,
+        start: ev.fecha,
+        backgroundColor: ev.color
+            ? ev.color
+            : ev.tipo === "riego"
+                ? "#16a34a"
+                : ev.tipo === "plaga"
+                    ? "#dc2626"
+                    : ev.tipo === "siembra"
+                        ? "#ca8a04"
+                        : ev.tipo === "cosecha"
+                            ? "#ea580c"
+                            : "#2563eb",
+        borderColor: "transparent",
+        extendedProps: {
+            ...ev,
+            icon:
+                ev.tipo === "riego"
+                    ? "💧"
+                    : ev.tipo === "plaga"
+                        ? "🐛"
+                        : ev.tipo === "siembra"
+                            ? "🌱"
+                            : ev.tipo === "cosecha"
+                                ? "🌾"
+                                : "📌",
+        },
+    }));
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const days = [];
-
-    for (let i = 0; i < firstDay; i++) {
-        days.push(null);
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-        days.push(d);
-    }
-
-    const eventosPorDia = (dia: number) => {
-        const fecha = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-            dia
-        ).padStart(2, "0")}`;
-
-        return eventos.filter((e) => e.fecha === fecha);
+    const renderEventContent = (info: EventContentArg) => {
+        const icon = info.event.extendedProps.icon as string;
+        return (
+            <div className="fc-event-custom">
+                <span className="mr-1">{icon}</span>
+                <span>{info.event.title}</span>
+            </div>
+        );
     };
 
     return (
-        <div className="grid grid-cols-7 gap-2">
-            {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
-                <div key={d} className="text-center font-semibold">
-                    {d}
-                </div>
-            ))}
-
-            {days.map((dia, i) => (
-                <div
-                    key={i}
-                    className="border rounded p-2 h-24 cursor-pointer bg-white hover:bg-gray-100"
-                    onClick={() => dia && onSelectDate(
-                        `${year}-${String(month + 1).padStart(2, "0")}-${String(
-                            dia
-                        ).padStart(2, "0")}`
-                    )}
-                >
-                    {dia && <div className="font-bold">{dia}</div>}
-
-                    <div className="mt-1 space-y-1">
-                        {dia &&
-                            eventosPorDia(dia).map((ev) => (
-                                <div
-                                    key={ev.id}
-                                    className={`evento-calendario evento-${ev.tipo ?? "default"}`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onSelectEvent(ev);
-                                    }}
-                                >
-                                    {ev.titulo}
-                                </div>
-                            ))}
-                    </div>
-                </div>
-            ))}
+        <div className="fullcalendar-wrapper">
+            <FullCalendar
+                plugins={[
+                    dayGridPlugin,
+                    timeGridPlugin,
+                    interactionPlugin,
+                    listPlugin,
+                    rrulePlugin,
+                ]}
+                locale={esLocale}
+                initialView="dayGridMonth"
+                height="80vh"
+                events={[
+                    ...mappedEvents,
+                    {
+                        title: "Revisión semanal",
+                        rrule: {
+                            freq: "weekly",
+                            byweekday: ["mo"],
+                        },
+                        backgroundColor: "#6b7280",
+                        borderColor: "transparent",
+                    },
+                ]}
+                headerToolbar={{
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                }}
+                selectable={true}
+                editable={true}
+                eventResizableFromStart={true}
+                eventContent={renderEventContent}
+                dayMaxEvents={true}
+                navLinks={true}
+                expandRows={true}
+                slotMinTime="06:00:00"
+                slotMaxTime="22:00:00"
+                displayEventEnd={false}
+                progressiveEventRendering={true}
+                dateClick={(info) => onSelectDate(info.dateStr)}
+                eventClick={(info) => {
+                    const ev = info.event.extendedProps as EventoAgricola;
+                    onSelectEvent(ev);
+                }}
+                eventDrop={(info) => {
+                    const ev = info.event.extendedProps as EventoAgricola;
+                    onSelectEvent({
+                        ...ev,
+                        fecha: info.event.startStr,
+                    });
+                }}
+                eventResize={(info) => {
+                    const ev = info.event.extendedProps as EventoAgricola;
+                    onSelectEvent({
+                        ...ev,
+                        fecha: info.event.startStr,
+                    });
+                }}
+                viewDidMount={() => {
+                    document
+                        .querySelector(".fc-view-harness")
+                        ?.classList.add("fade-in");
+                }}
+            />
         </div>
     );
 }

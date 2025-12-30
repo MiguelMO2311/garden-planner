@@ -5,5 +5,5 @@ export interface EventoAgricola {
     tipo: string;
     descripcion?: string;
     tarea_id?: number;
-    color?: string; // NUEVO
+    color?: string;
 }

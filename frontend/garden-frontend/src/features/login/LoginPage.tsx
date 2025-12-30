@@ -21,6 +21,7 @@ export default function LoginPage() {
             formData.append("username", email);
             formData.append("password", password);
 
+            // 1) Login → obtener token
             const response = await api.post("/auth/login", formData, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -29,20 +30,25 @@ export default function LoginPage() {
 
             const { access_token } = response.data;
 
-            // Guardar token con la clave correcta
+            // Guardar token
             localStorage.setItem("access_token", access_token);
 
-            // Actualizar contexto de autenticación
-            login(access_token, {
-                id: 1,
-                name: "Usuario",
+            // 2) Como NO existe /auth/me, creamos un usuario mínimo
+            const fakeUser = {
+                id: 0,               // No lo devuelve el backend
                 email: email,
-                avatar: "https://i.pravatar.cc/100",
-            });
+                name: email.split("@")[0], // Nombre provisional
+                avatar: "https://i.pravatar.cc/100"
+            };
 
+            // 3) Guardar usuario en el AuthContext
+            login(access_token, fakeUser);
 
+            // 4) Redirigir
             navigate("/dashboard");
-        } catch {
+
+        } catch (err) {
+            console.error(err);
             setErrorMsg("Credenciales incorrectas");
         }
     };

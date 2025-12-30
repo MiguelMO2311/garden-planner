@@ -24,3 +24,28 @@
     min-height: 100vh;
     padding: 2rem;
 }
+
+.dashboard-card-saas {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card-saas:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-icon {
+    font-size: 48px;
+}
+
+.dashboard-counter {
+    font-size: 40px;
+    font-weight: 700;
+    margin-top: 10px;
+}

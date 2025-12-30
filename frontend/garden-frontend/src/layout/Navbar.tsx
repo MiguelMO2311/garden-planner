@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 
 export default function Navbar() {
-    const { logout, user } = useAuth(); // user debe existir en AuthContext
+    const { logout, user } = useAuth();
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm px-3">
@@ -12,7 +12,7 @@ export default function Navbar() {
                 🌱 Garden Planner
             </NavLink>
 
-            {/* Botón hamburguesa accesible */}
+            {/* Botón hamburguesa */}
             <button
                 className="navbar-toggler"
                 type="button"
@@ -23,7 +23,7 @@ export default function Navbar() {
                 <span className="navbar-toggler-icon"></span>
             </button>
 
-            {/* Contenido colapsable */}
+            {/* Contenido */}
             <div className="collapse navbar-collapse" id="navbarContent">
                 <ul className="navbar-nav ms-auto">
 
@@ -39,8 +39,15 @@ export default function Navbar() {
                         </NavLink>
                     </li>
 
-                    {/* Avatar + menú */}
-                    <li className="nav-item dropdown ms-3">
+                    {/* Usuario + Avatar + Dropdown */}
+                    <li className="nav-item dropdown ms-3 d-flex align-items-center">
+
+                        {/* Nombre del usuario */}
+                        <span className="text-white me-2 fw-semibold">
+                            {user?.name || user?.username || user?.email}
+                        </span>
+
+                        {/* Avatar */}
                         <img
                             src={user?.avatar || "https://i.pravatar.cc/100"}
                             className="nav-avatar dropdown-toggle"
@@ -48,6 +55,7 @@ export default function Navbar() {
                             alt="avatar"
                         />
 
+                        {/* Menú desplegable */}
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li>
                                 <NavLink className="dropdown-item" to="/perfil">
@@ -61,7 +69,10 @@ export default function Navbar() {
                             </li>
                             <li><hr className="dropdown-divider" /></li>
                             <li>
-                                <button className="dropdown-item text-danger" onClick={logout}>
+                                <button
+                                    className="dropdown-item text-danger"
+                                    onClick={logout}
+                                >
                                     Cerrar sesión
                                 </button>
                             </li>

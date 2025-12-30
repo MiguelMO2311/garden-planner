@@ -1,12 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getEventos } from "./api/eventosApi";
+import type { EventoAgricola } from "./types";
 
 export function useEventos() {
-    const [eventos, setEventos] = useState([]);
+    const [eventos, setEventos] = useState<EventoAgricola[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        getEventos().then((res) => setEventos(res.data));
+    const loadEventos = useCallback(async () => {
+        try {
+            setLoading(true);
+            const res = await getEventos();
+            setEventos(res.data);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return eventos;
+    useEffect(() => {
+        let mounted = true;
+
+        const fetch = async () => {
+            const res = await getEventos();
+            if (mounted) {
+                setEventos(res.data);
+                setLoading(false);
+            }
+        };
+
+        fetch();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    return {
+        eventos,
+        loading,
+        reload: loadEventos,
+    };
 }

@@ -1,3 +1,5 @@
-import axios from "../../../api/axios";
+import api from "../../../api/axios";
+import type { EventoAgricola } from "../types";
 
-export const getEventos = () => axios.get("/eventos");
+export const getEventos = () =>
+    api.get<EventoAgricola[]>("/eventos");
