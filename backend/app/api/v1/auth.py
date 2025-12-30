@@ -8,8 +8,12 @@ from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, Token
+from app.core.deps import get_current_user
 
 router = APIRouter(tags=["Auth"])
+
+@router.get("/me", response_model=UserRead)
+def read_current_user(current_user: User = Depends(get_current_user)): return current_user
 
 @router.post("/register", response_model=UserRead)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):

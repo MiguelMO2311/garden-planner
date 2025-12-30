@@ -13,9 +13,12 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: int
     role: str
+    name: str | None = None
+    avatar: str | None = None
 
     class Config:
         from_attributes = True
+
 
 
 class Token(BaseModel):

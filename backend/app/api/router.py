@@ -17,7 +17,7 @@ from app.api.v1 import (
 
 api_router = APIRouter()
 
-api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(crop.router, prefix="/crop", tags=["crop"])
 api_router.include_router(pest.router, prefix="/pest", tags=["pest"])
 api_router.include_router(irrigation.router, prefix="/irrigation", tags=["irrigation"])

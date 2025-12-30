@@ -10,5 +10,9 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, default="user", nullable=False)
 
+    # NUEVOS CAMPOS
+    name = Column(String, nullable=True)     # nombre visible en el frontend
+    avatar = Column(String, nullable=True)   # URL del avatar
+
     # relación con riegos
     irrigations = relationship("Irrigation", back_populates="owner")
