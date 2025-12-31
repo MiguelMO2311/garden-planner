@@ -25,12 +25,13 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         email=user_in.email,
         hashed_password=hash_password(user_in.password),
         role="user",
+        name=user_in.name,        # NUEVO
+        avatar=user_in.avatar,    # NUEVO
     )
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
-
 
 @router.post("/login", response_model=Token)
 def login(

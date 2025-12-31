@@ -8,7 +8,8 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-
+    name: str | None = None
+    avatar: str | None = None
 
 class UserRead(UserBase):
     id: int
