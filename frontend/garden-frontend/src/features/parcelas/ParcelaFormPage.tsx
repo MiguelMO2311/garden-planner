@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layout/DashboardLayout";
 import { createParcela, updateParcela, getParcela } from "./api/parcelasApi";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ParcelaCreateDTO } from "./types";
@@ -24,16 +23,28 @@ export default function ParcelaFormPage() {
   });
 
   useEffect(() => {
-    if (!id) return;
+    let isMounted = true;
 
-    getParcela(Number(id)).then(({ data }) => {
+    const load = async () => {
+      if (!id) return;
+
+      const { data } = await getParcela(Number(id));
+
+      if (!isMounted) return;
+
       setForm({
         name: data.name,
         location: data.location || "",
         soil_type: data.soil_type || "",
         size_m2: data.size_m2 ? String(data.size_m2) : ""
       });
-    });
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,8 +72,9 @@ export default function ParcelaFormPage() {
       showToast("Error al guardar la parcela", "error");
     }
   };
+
   return (
-    <DashboardLayout>
+    <div className="container py-4">
       <div className="card shadow-sm p-4">
         <h3 className="fw-bold mb-3">
           {id ? "Editar parcela" : "Nueva parcela"}
@@ -126,6 +138,6 @@ export default function ParcelaFormPage() {
           <button className="btn btn-success">Guardar</button>
         </form>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

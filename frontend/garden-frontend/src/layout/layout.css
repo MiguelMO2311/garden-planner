@@ -1,22 +1,95 @@
-.nav-link.active {
-    font-weight: bold;
-    text-decoration: underline;
-    
+/* ----------------------------- */
+/* SIDEBAR (ESCRITORIO)          */
+/* ----------------------------- */
+.sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    z-index: 100;
+    /* Sidebar debajo del navbar */
+    overflow-y: auto;
 }
 
+/* ----------------------------- */
+/* CONTENIDO PRINCIPAL           */
+/* ----------------------------- */
+.main-content {
+    margin-left: 240px;
+    /* Evita que el contenido quede debajo del sidebar */
+    padding: 20px;
+}
+
+/* ----------------------------- */
+/* NAVBAR                        */
+/* ----------------------------- */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+    /* Navbar por encima del sidebar y del dropdown */
+}
+
+/* ----------------------------- */
+/* AVATAR DEL NAVBAR             */
+/* ----------------------------- */
 .nav-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    cursor: pointer;
-    
 }
 
-.nav-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+/* ----------------------------- */
+/* DROPDOWN (REPARACIÓN TAILWIND v4) */
+/* ----------------------------- */
+.dropdown-menu {
+    position: absolute !important;
+    inset: auto !important;
+    transform: translate3d(0, 40px, 0) !important;
+    z-index: 6000 !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* ----------------------------- */
+/* RESPONSIVE (MÓVIL)            */
+/* ----------------------------- */
+@media (max-width: 991.98px) {
+    .sidebar-container {
+        position: static;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.btn-accion {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    object-fit: cover;
+    border: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-accion:hover {
+    background: linear-gradient(135deg, #22c55e, #15803d);
+    transform: translateY(-2px);
+}
+
+.btn-accion:active {
+    transform: translateY(0);
+    background: #15803d;
 }

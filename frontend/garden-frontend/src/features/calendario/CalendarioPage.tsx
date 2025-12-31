@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layout/DashboardLayout";
 
 import Calendar from "./components/Calendar";
 import EventModal from "./components/EventModal";
@@ -40,7 +39,6 @@ export default function CalendarioPage() {
     // -----------------------------
     const loadEventos = async () => {
         const res = await getEventos();
-        console.log("EVENTOS RECIBIDOS:", res.data);
 
         const eventosTransformados = res.data.map((ev: BackendEvent) => ({
             id: ev.id,
@@ -56,24 +54,19 @@ export default function CalendarioPage() {
 
     // Cargar eventos al montar
     useEffect(() => {
-        const fetch = async () => {
-            const res = await getEventos();
+        let isMounted = true;
 
-            const eventosTransformados = res.data.map((ev: BackendEvent) => ({
-                id: ev.id,
-                titulo: ev.title,
-                fecha: ev.date,
-                tipo: ev.type,
-                descripcion: ev.description ?? "",
-                color: "#2563eb",
-            }));
-
-            setEventos(eventosTransformados);
+        const run = async () => {
+            if (!isMounted) return;
+            await loadEventos();
         };
 
-        fetch();
-    }, []);
+        run();
 
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     // Crear evento desde un día del calendario
     const handleSelectDate = (fecha: string) => {
@@ -95,10 +88,16 @@ export default function CalendarioPage() {
 
     // Guardar (crear o actualizar)
     const handleSubmit = async () => {
+        const payload = {
+            ...form,
+            color: form.color || "#2563eb",
+            tipo: form.tipo || "tarea",
+        };
+
         if (form.id) {
-            await updateEvento(form.id, form);
+            await updateEvento(form.id, payload);
         } else {
-            await createEvento(form);
+            await createEvento(payload);
         }
 
         setModalOpen(false);
@@ -106,27 +105,53 @@ export default function CalendarioPage() {
     };
 
     return (
-        <DashboardLayout>
-            <div className="calendario-bg">
-                <h2 className="text-2xl font-bold mb-6 text-white">
-                    Calendario agrícola
-                </h2>
+        <div className="calendario-bg p-4">
 
-                <Calendar
-                    eventos={eventos}
-                    onSelectDate={handleSelectDate}
-                    onSelectEvent={handleSelectEvent}
-                />
+            <h2 className="fw-bold mb-4 text-white">
+                Calendario agrícola
+            </h2>
 
-                {modalOpen && (
-                    <EventModal
-                        form={form}
-                        setForm={setForm}
-                        onSubmit={handleSubmit}
-                        onClose={() => setModalOpen(false)}
-                    />
+            {/* ================================
+                LISTA DE TAREAS PENDIENTES
+            ================================= */}
+            <div className="bg-white bg-opacity-60 p-4 rounded shadow mb-4">
+                <h4 className="fw-bold mb-3">Tareas pendientes</h4>
+
+                {eventos.length === 0 && (
+                    <p className="text-gray-700">No hay tareas pendientes.</p>
                 )}
+
+                <ul className="list-group">
+                    {eventos.map((ev) => (
+                        <li
+                            key={ev.id}
+                            className="list-group-item d-flex justify-content-between align-items-center cursor-pointer"
+                            onClick={() => handleSelectEvent(ev)}
+                        >
+                            <span>{ev.titulo}</span>
+                            <span className="badge bg-primary">{ev.fecha}</span>
+                        </li>
+                    ))}
+                </ul>
             </div>
-        </DashboardLayout>
+
+            {/* ================================
+                CALENDARIO (20% MÁS PEQUEÑO)
+            ================================= */}
+            <Calendar
+                eventos={eventos}
+                onSelectDate={handleSelectDate}
+                onSelectEvent={handleSelectEvent}  // <-- tamaño reducido
+            />
+
+            {modalOpen && (
+                <EventModal
+                    form={form}
+                    setForm={setForm}
+                    onSubmit={handleSubmit}
+                    onClose={() => setModalOpen(false)}
+                />
+            )}
+        </div>
     );
 }

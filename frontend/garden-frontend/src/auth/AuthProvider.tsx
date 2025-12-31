@@ -1,38 +1,77 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./authContext";
 import type { AuthUser } from "./types";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
 
-    // Inicializar usuario desde localStorage
-    const [user, setUser] = useState<AuthUser | null>(() => {
-        try {
-            const stored = localStorage.getItem("user");
-            if (!stored || stored === "undefined" || stored === "null") return null;
-            return JSON.parse(stored);
-        } catch {
-            localStorage.removeItem("user");
-            return null;
-        }
-    });
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [token, setToken] = useState<string | null>(localStorage.getItem("access_token"));
+    const [loading, setLoading] = useState(true);
 
-    const [loading] = useState(false);
+    // Cargar usuario desde token al refrescar
+    useEffect(() => {
+        const loadUser = async () => {
+            const storedToken = localStorage.getItem("access_token");
 
-    // LOGIN CORRECTO PARA FASTAPI
-    const login = (accessToken: string, userData: AuthUser) => {
+            if (!storedToken) {
+                setLoading(false);
+                return;
+            }
+
+            setToken(storedToken);
+
+            // Cargar usuario guardado si existe
+            const savedUser = localStorage.getItem("user");
+            if (savedUser) {
+                setUser(JSON.parse(savedUser));
+            }
+
+            try {
+                const res = await api.get("/auth/me", {
+                    headers: { Authorization: `Bearer ${storedToken}` }
+                });
+
+                setUser(res.data);
+                localStorage.setItem("user", JSON.stringify(res.data));
+            } catch {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user");
+                setUser(null);
+                setToken(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUser();
+    }, []);
+
+    // LOGIN
+    const login = async (accessToken: string) => {
         localStorage.setItem("access_token", accessToken);
-        localStorage.setItem("user", JSON.stringify(userData));
-        setUser(userData);
-        navigate("/parcelas");
+        setToken(accessToken);
+
+        const res = await api.get("/auth/me", {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        const realUser = res.data;
+
+        localStorage.setItem("user", JSON.stringify(realUser));
+        setUser(realUser);
+
+        navigate("/dashboard");
     };
 
-    // LOGOUT CORRECTO
+    // LOGOUT
     const logout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("user");
         setUser(null);
+        setToken(null);
         navigate("/login");
     };
 
@@ -40,6 +79,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         <AuthContext.Provider
             value={{
                 user,
+                token,
                 isAuthenticated: !!user,
                 login,
                 logout,

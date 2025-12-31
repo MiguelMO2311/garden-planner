@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layout/DashboardLayout";
 import CultivoTable from "./components/CultivoTable";
 import { getCultivos, deleteCultivo } from "./api/cultivosApi";
 import { useNavigate } from "react-router-dom";
@@ -12,12 +11,19 @@ export default function CultivoListPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetch = async () => {
+        let isMounted = true;
+
+        const load = async () => {
             const res = await getCultivos();
+            if (!isMounted) return;
             setCultivos(res.data);
         };
 
-        fetch();
+        load();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const handleDelete = async (id: number) => {
@@ -33,27 +39,26 @@ export default function CultivoListPage() {
     };
 
     return (
-        <DashboardLayout>
-            <div className="cultivos-bg text-gray-900">
+        <div className="cultivos-bg p-4 text-gray-900">
 
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">Cultivos</h2>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Cultivos</h2>
 
-                    <button
-                        onClick={() => navigate("/cultivos/nuevo")}
-                        className="px-4 py-2 bg-green-600 text-white rounded"
-                    >
-                        Nuevo cultivo
-                    </button>
-                </div>
-
-                <CultivoTable
-                    cultivos={cultivos}
-                    onEdit={(id) => navigate(`/cultivos/${id}`)}
-                    onDelete={handleDelete}
-                />
+                <button
+                    onClick={() => navigate("/cultivos/nuevo")}
+                    className="btn-accion"
+                >
+                    Nuevo cultivo
+                </button>
 
             </div>
-        </DashboardLayout>
+
+            <CultivoTable
+                cultivos={cultivos}
+                onEdit={(id) => navigate(`/cultivos/${id}`)}
+                onDelete={handleDelete}
+            />
+
+        </div>
     );
 }

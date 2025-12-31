@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../auth/useAuth";
 import { FaSignInAlt } from "react-icons/fa";
 
 export default function LoginPage() {
-    const navigate = useNavigate();
     const { login } = useAuth();
 
     const [email, setEmail] = useState("");
@@ -27,25 +25,11 @@ export default function LoginPage() {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             });
-
+            console.log("LOGIN RESPONSE:", response.data);
             const { access_token } = response.data;
 
-            // Guardar token
-            localStorage.setItem("access_token", access_token);
-
-            // 2) Como NO existe /auth/me, creamos un usuario mínimo
-            const fakeUser = {
-                id: 0,               // No lo devuelve el backend
-                email: email,
-                name: email.split("@")[0], // Nombre provisional
-                avatar: "https://i.pravatar.cc/100"
-            };
-
-            // 3) Guardar usuario en el AuthContext
-            login(access_token, fakeUser);
-
-            // 4) Redirigir
-            navigate("/dashboard");
+            // 2) Llamar al login REAL del AuthProvider
+            await login(access_token);
 
         } catch (err) {
             console.error(err);

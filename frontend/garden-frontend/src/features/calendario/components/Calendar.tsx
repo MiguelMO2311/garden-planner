@@ -71,7 +71,7 @@ export default function Calendar({ eventos, onSelectDate, onSelectEvent }: Props
                 ]}
                 locale={esLocale}
                 initialView="dayGridMonth"
-                height="80vh"
+                height="50vh"
                 events={[
                     ...mappedEvents,
                     {

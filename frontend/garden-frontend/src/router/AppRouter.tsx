@@ -15,113 +15,44 @@ import CalendarioPage from "../features/calendario/CalendarioPage";
 import TareaListPage from "../features/tareas/TareaListPage";
 import TareaFormPage from "../features/tareas/TareaFormPage";
 
+import AppLayout from "../layout/AppLayout";
+
 export const AppRouter = () => (
     <Routes>
         {/* Ruta pública */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Dashboard explícito */}
+        {/* Rutas protegidas con layout */}
         <Route
-            path="/dashboard"
             element={
                 <ProtectedRoute>
-                    <DashboardPage />
+                    <AppLayout />
                 </ProtectedRoute>
             }
-        />
+        >
+            {/* Redirección "/" → "/dashboard" */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Redirección de "/" → "/dashboard" */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Dashboard */}
+            <Route path="/dashboard" element={<DashboardPage />} />
 
-        {/* Rutas protegidas */}
-        <Route
-            path="/parcelas"
-            element={
-                <ProtectedRoute>
-                    <ParcelaListPage />
-                </ProtectedRoute>
-            }
-        />
+            {/* Parcelas */}
+            <Route path="/parcelas" element={<ParcelaListPage />} />
+            <Route path="/parcelas/nueva" element={<ParcelaFormPage />} />
+            <Route path="/parcelas/:id" element={<ParcelaFormPage />} />
 
-        <Route
-            path="/parcelas/nueva"
-            element={
-                <ProtectedRoute>
-                    <ParcelaFormPage />
-                </ProtectedRoute>
-            }
-        />
+            {/* Cultivos */}
+            <Route path="/cultivos" element={<CultivoListPage />} />
+            <Route path="/cultivos/nuevo" element={<CultivoFormPage />} />
+            <Route path="/cultivos/:id" element={<CultivoFormPage />} />
 
-        <Route
-            path="/parcelas/:id"
-            element={
-                <ProtectedRoute>
-                    <ParcelaFormPage />
-                </ProtectedRoute>
-            }
-        />
+            {/* Calendario */}
+            <Route path="/calendario" element={<CalendarioPage />} />
 
-        <Route
-            path="/cultivos"
-            element={
-                <ProtectedRoute>
-                    <CultivoListPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/cultivos/nuevo"
-            element={
-                <ProtectedRoute>
-                    <CultivoFormPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/cultivos/:id"
-            element={
-                <ProtectedRoute>
-                    <CultivoFormPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/calendario"
-            element={
-                <ProtectedRoute>
-                    <CalendarioPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/tareas"
-            element={
-                <ProtectedRoute>
-                    <TareaListPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/tareas/nueva"
-            element={
-                <ProtectedRoute>
-                    <TareaFormPage />
-                </ProtectedRoute>
-            }
-        />
-
-        <Route
-            path="/tareas/:id"
-            element={
-                <ProtectedRoute>
-                    <TareaFormPage />
-                </ProtectedRoute>
-            }
-        />
+            {/* Tareas */}
+            <Route path="/tareas" element={<TareaListPage />} />
+            <Route path="/tareas/nueva" element={<TareaFormPage />} />
+            <Route path="/tareas/:id" element={<TareaFormPage />} />
+        </Route>
     </Routes>
 );

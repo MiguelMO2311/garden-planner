@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layout/DashboardLayout";
 import TareaForm from "./components/TareaForm";
 
 import {
@@ -8,6 +7,7 @@ import {
     updateTarea,
 } from "./api/tareasApi";
 
+import { createEvento } from "../calendario/api/calendarioApi";
 import { getParcelas } from "../parcelas/api/parcelasApi";
 import { getCultivos } from "../cultivos/api/cultivosApi";
 
@@ -21,7 +21,6 @@ export default function TareaFormPage() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    // Estado inicial corregido: parcela_id y cultivo_id pueden ser null
     const [form, setForm] = useState<TareaAgricola>({
         titulo: "",
         fecha: "",
@@ -37,19 +36,15 @@ export default function TareaFormPage() {
     useEffect(() => {
         const load = async () => {
             try {
-                // Cargar parcelas
                 const resParcelas = await getParcelas();
                 setParcelas(resParcelas.data);
 
-                // Cargar cultivos
                 const resCultivos = await getCultivos();
                 setCultivos(resCultivos.data);
 
-                // Si estamos editando, cargar la tarea
                 if (id) {
                     const resTarea = await getTarea(Number(id));
 
-                    // Asegurar que parcela_id y cultivo_id nunca sean undefined
                     setForm({
                         ...resTarea.data,
                         parcela_id: resTarea.data.parcela_id ?? null,
@@ -67,7 +62,6 @@ export default function TareaFormPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validación mínima
         if (form.parcela_id === null) {
             alert("Debes seleccionar una parcela");
             return;
@@ -82,14 +76,30 @@ export default function TareaFormPage() {
             await updateTarea(Number(id), form);
         } else {
             await createTarea(form);
+
+            // 🔥 Crear evento automáticamente en el calendario
+            await createEvento({
+                titulo: form.titulo,
+                fecha: form.fecha,
+                tipo: "tarea",
+                descripcion: form.descripcion,
+                color: "#2563eb",
+            });
+        }
+
+        navigate("/tareas");
+        if (id) {
+            await updateTarea(Number(id), form);
+        } else {
+            await createTarea(form);
         }
 
         navigate("/tareas");
     };
 
     return (
-        <DashboardLayout>
-            <h2 className="text-2xl font-bold mb-6">
+        <div className="container py-4">
+            <h2 className="fw-bold mb-4">
                 {id ? "Editar tarea" : "Nueva tarea"}
             </h2>
 
@@ -100,6 +110,6 @@ export default function TareaFormPage() {
                 cultivos={cultivos}
                 onSubmit={handleSubmit}
             />
-        </DashboardLayout>
+        </div>
     );
 }

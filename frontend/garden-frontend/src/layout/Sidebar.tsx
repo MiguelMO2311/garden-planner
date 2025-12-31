@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
     return (
-        <div className="sidebar-container">
+        <aside className="sidebar-container">
             <div className="p-4 border-bottom">
                 <h4 className="fw-bold text-success">Garden Planner</h4>
             </div>
@@ -14,6 +14,6 @@ export default function Sidebar() {
                 <NavLink className="nav-link text-dark mb-2" to="/tareas">📝 Tareas</NavLink>
                 <NavLink className="nav-link text-dark mb-2" to="/calendario">📅 Calendario</NavLink>
             </nav>
-        </div>
+        </aside>
     );
 }

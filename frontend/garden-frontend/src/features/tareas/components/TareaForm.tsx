@@ -121,8 +121,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                             {c.nombre}
                         </option>
                     ))}
-
-
                 </select>
             </div>
 
@@ -141,13 +139,25 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 />
             </div>
 
-            {/* Botón */}
-            <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-                Guardar
-            </button>
+            {/* BOTONES */}
+            <div className="flex justify-end gap-3 pt-4">
+                <button
+                    type="button"
+                    onClick={() => history.back()}
+                    className="px-4 py-2 rounded-lg bg-gray-300 text-black shadow hover:bg-gray-400 transition-colors bg-gray-300! text-black!"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors bg-blue-600! text-white!"
+                >
+                    Guardar tarea
+                </button>
+
+
+            </div>
         </form>
     );
 }
