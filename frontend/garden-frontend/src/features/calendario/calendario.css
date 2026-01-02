@@ -7,3 +7,34 @@
     padding: 2rem;
     font-weight: bold;
 }
+
+/* Leyenda de estados */
+.leyenda-estados {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.leyenda-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.color-pendiente {
+    background-color: #fde047;
+    /* amarillo */
+}
+
+.color-en-progreso {
+    background-color: #3b82f6;
+    /* azul */
+}

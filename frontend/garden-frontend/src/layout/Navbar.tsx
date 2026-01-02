@@ -22,7 +22,7 @@ export default function Navbar() {
                     </span>
 
                     <img
-                        src={user.avatar || "https://i.pravatar.cc/100"}
+                        src={user?.avatar ? `${user.avatar}?v=${Date.now()}` : "https://i.pravatar.cc/100"}
                         className="nav-avatar"
                         alt="avatar"
                     />

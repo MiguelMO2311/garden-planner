@@ -6,4 +6,6 @@ export interface EventoAgricola {
     descripcion?: string;
     tarea_id?: number;
     color?: string;
+
+    estado?: "pendiente" | "en_progreso" | "completada";
 }

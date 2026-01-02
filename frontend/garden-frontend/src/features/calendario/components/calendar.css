@@ -4,41 +4,32 @@
 
 .fullcalendar-wrapper .fc {
     background: rgba(255, 255, 255, 0.65);
-    /* semi-transparente */
     -webkit-backdrop-filter: blur(4px);
-    /* Safari */
     backdrop-filter: blur(4px);
-    /* Chrome, Edge, Firefox */
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .fc .fc-toolbar-title {
     font-size: 1.4rem;
     font-weight: 700;
 }
 
+/* ============================
+   EVENTOS
+   ============================ */
+
 .fc-event {
-    border-radius: 6px;
-    padding: 2px 4px;
-    font-size: 0.75rem;
+    border-radius: 6px !important;
+    padding: 2px 4px !important;
+    font-size: 0.75rem !important;
     transition: transform 0.15s ease;
+    border: none !important;
 }
 
 .fc-event:hover {
     transform: scale(1.03);
-}
-
-/* ============================
-   EVENTOS PERSONALIZADOS
-   ============================ */
-
-.fc-event-custom {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
-    padding: 2px 4px;
 }
 
 /* ============================
@@ -62,61 +53,45 @@
 }
 
 /* ============================
-   COLORES POR TIPO
+   COLORES DEL EVENTO
    ============================ */
 
-.evento-tarea {
-    background-color: #2563eb;
+.fc-event,
+.fc-daygrid-event,
+.fc-event-main {
+    background-color: inherit !important;
+    /* ← deja pasar el color del JS */
+    border: none !important;
+    color: #1f2937 !important;
 }
 
-.evento-riego {
-    background-color: #16a34a;
+/* ============================================
+   CONTENIDO INTERNO DEL EVENTO (ICONOS + TEXTO)
+   ============================================ */
+
+/* Este es el contenedor que generamos con eventContent */
+.fc-custom-event {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 2px;
+    background: transparent !important;
 }
 
-.evento-plaga {
-    background-color: #dc2626;
+/* Icono */
+.fc-custom-icon {
+    font-size: 1rem;
+    line-height: 1;
 }
 
-.evento-siembra {
-    background-color: #ca8a04;
+/* Título */
+.fc-custom-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1;
 }
 
-.evento-cosecha {
-    background-color: #ea580c;
-}
-
-/* ============================
-   COLORES LEGACY
-   ============================ */
-
-.evento-irrigation {
-    background-color: #3b82f6;
-}
-
-.evento-pest {
-    background-color: #ef4444;
-}
-
-.evento-crop_plan {
-    background-color: #22c55e;
-}
-
-/* ============================
-   COLOR POR DEFECTO
-   ============================ */
-
-.evento-default {
-    background-color: #8b5cf6;
-}
-
-/* ============================
-   COLOR PERSONALIZADO
-   ============================ */
-
-.evento-custom-wrapper {
-    --evento-color: attr(data-color color);
-}
-
-.evento-custom {
-    background-color: var(--evento-color);
+.tarea-item {
+    border-left: 6px solid var(--tarea-color);
+    background-color: var(--tarea-bg);
 }

@@ -1,130 +1,113 @@
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import rrulePlugin from "@fullcalendar/rrule";
-import esLocale from "@fullcalendar/core/locales/es";
-
-import type { EventoAgricola } from "../types";
-import type { EventContentArg } from "@fullcalendar/core";
-
+import { useEffect, useRef } from "react";
 import "./calendar.css";
+import type { EventoAgricola } from "../types";
 
-interface Props {
+interface CalendarProps {
     eventos: EventoAgricola[];
     onSelectDate: (date: string) => void;
     onSelectEvent: (evento: EventoAgricola) => void;
 }
 
-export default function Calendar({ eventos, onSelectDate, onSelectEvent }: Props) {
-    const mappedEvents = eventos.map((ev) => ({
-        id: String(ev.id),
-        title: ev.titulo,
-        start: ev.fecha,
-        backgroundColor: ev.color
-            ? ev.color
-            : ev.tipo === "riego"
-                ? "#16a34a"
-                : ev.tipo === "plaga"
-                    ? "#dc2626"
-                    : ev.tipo === "siembra"
-                        ? "#ca8a04"
-                        : ev.tipo === "cosecha"
-                            ? "#ea580c"
-                            : "#2563eb",
-        borderColor: "transparent",
-        extendedProps: {
-            ...ev,
-            icon:
-                ev.tipo === "riego"
-                    ? "💧"
-                    : ev.tipo === "plaga"
-                        ? "🐛"
-                        : ev.tipo === "siembra"
-                            ? "🌱"
-                            : ev.tipo === "cosecha"
-                                ? "🌾"
-                                : "📌",
-        },
-    }));
+export default function Calendar({
+    eventos,
+    onSelectDate,
+    onSelectEvent,
+}: CalendarProps) {
+    const calendarRef = useRef<HTMLDivElement | null>(null);
 
-    const renderEventContent = (info: EventContentArg) => {
-        const icon = info.event.extendedProps.icon as string;
-        return (
-            <div className="fc-event-custom">
-                <span className="mr-1">{icon}</span>
-                <span>{info.event.title}</span>
-            </div>
-        );
+    // Iconos según tipo de evento
+    const getIcon = (tipo: string) => {
+        switch (tipo) {
+            case "riego":
+                return "💧";
+            case "plaga":
+                return "🐛";
+            case "siembra":
+                return "🌱";
+            case "cosecha":
+                return "🌾";
+            case "tarea":
+                return "📌";
+            default:
+                return "📅";
+        }
     };
 
-    return (
-        <div className="fullcalendar-wrapper">
-            <FullCalendar
-                plugins={[
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    interactionPlugin,
-                    listPlugin,
-                    rrulePlugin,
-                ]}
-                locale={esLocale}
-                initialView="dayGridMonth"
-                height="50vh"
-                events={[
-                    ...mappedEvents,
-                    {
-                        title: "Revisión semanal",
-                        rrule: {
-                            freq: "weekly",
-                            byweekday: ["mo"],
-                        },
-                        backgroundColor: "#6b7280",
-                        borderColor: "transparent",
-                    },
-                ]}
-                headerToolbar={{
-                    left: "prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
-                }}
-                selectable={true}
-                editable={true}
-                eventResizableFromStart={true}
-                eventContent={renderEventContent}
-                dayMaxEvents={true}
-                navLinks={true}
-                expandRows={true}
-                slotMinTime="06:00:00"
-                slotMaxTime="22:00:00"
-                displayEventEnd={false}
-                progressiveEventRendering={true}
-                dateClick={(info) => onSelectDate(info.dateStr)}
-                eventClick={(info) => {
-                    const ev = info.event.extendedProps as EventoAgricola;
-                    onSelectEvent(ev);
-                }}
-                eventDrop={(info) => {
-                    const ev = info.event.extendedProps as EventoAgricola;
-                    onSelectEvent({
-                        ...ev,
-                        fecha: info.event.startStr,
-                    });
-                }}
-                eventResize={(info) => {
-                    const ev = info.event.extendedProps as EventoAgricola;
-                    onSelectEvent({
-                        ...ev,
-                        fecha: info.event.startStr,
-                    });
-                }}
-                viewDidMount={() => {
-                    document
-                        .querySelector(".fc-view-harness")
-                        ?.classList.add("fade-in");
-                }}
-            />
-        </div>
-    );
+    // Colores según estado real
+    const getEstadoColor = (estado: string | undefined) => {
+        switch (estado) {
+            case "pendiente":
+                return "#facc15"; // amarillo
+            case "en_progreso":
+                return "#3b82f6"; // azul
+            case "completada":
+                return "#16a34a"; // verde
+            default:
+                return "#6b7280"; // gris
+        }
+    };
+
+    useEffect(() => {
+        const calendarEl = calendarRef.current;
+        if (!calendarEl) return;
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: "dayGridMonth",
+            locale: "es",
+            height: "50vh",
+            selectable: true,
+            editable: true,
+            eventResizableFromStart: true,
+            dayMaxEvents: true,
+            navLinks: true,
+            expandRows: true,
+            slotMinTime: "06:00:00",
+            slotMaxTime: "22:00:00",
+
+            headerToolbar: {
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+            },
+
+            events: eventos.map((ev: EventoAgricola) => ({
+                id: String(ev.id),
+                title: ev.titulo,
+                start: ev.fecha,
+                backgroundColor: getEstadoColor(ev.estado ?? "Pendiente"),
+                borderColor: "transparent",
+                extendedProps: ev,
+            })),
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            eventContent: (arg: any) => {
+                const ev = arg.event.extendedProps as EventoAgricola;
+                const icon = getIcon(ev.tipo);
+
+                return {
+                    html: `
+            <div class="fc-custom-event">
+              <span class="fc-custom-icon">${icon}</span>
+              <span class="fc-custom-title">${arg.event.title}</span>
+            </div>
+          `,
+                };
+            },
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            dateClick(info: any) {
+                onSelectDate(info.dateStr);
+            },
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            eventClick(info: any) {
+                onSelectEvent(info.event.extendedProps as EventoAgricola);
+            },
+        });
+
+        calendar.render();
+        return () => calendar.destroy();
+    }, [eventos, onSelectDate, onSelectEvent]);
+
+    return <div ref={calendarRef} className="fullcalendar-wrapper"></div>;
 }

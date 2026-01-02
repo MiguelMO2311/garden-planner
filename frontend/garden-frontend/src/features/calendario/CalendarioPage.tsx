@@ -1,107 +1,78 @@
 import { useEffect, useState } from "react";
+import React from "react";
+import { formatFecha } from "../../utils/formatFecha";
 
 import Calendar from "./components/Calendar";
 import EventModal from "./components/EventModal";
 
-import {
-    getEventos,
-    createEvento,
-    updateEvento,
-} from "./api/calendarioApi";
-
 import type { EventoAgricola } from "./types";
+import type { TareaAgricola } from "../tareas/types";
+
+import { useTareasStore } from "../../store/tareasStore";
 
 import "./calendario.css";
 
-// Tipo EXACTO que devuelve tu backend
-type BackendEvent = {
-    id: number;
-    date: string;
-    type: string;
-    title: string;
-    description?: string;
+// Colores por estado (versión backend: minúsculas)
+const getEstadoColor = (estado?: string) => {
+    switch (estado) {
+        case "pendiente":
+            return "#fde047"; // amarillo
+        case "en_progreso":
+            return "#3b82f6"; // azul
+        case "completada":
+            return "#16a34a"; // verde
+        default:
+            return "#6b7280"; // gris
+    }
 };
 
 export default function CalendarioPage() {
-    const [eventos, setEventos] = useState<EventoAgricola[]>([]);
-    const [modalOpen, setModalOpen] = useState(false);
+    const { tareas, loadTareas } = useTareasStore();
 
+    const [modalOpen, setModalOpen] = useState(false);
     const [form, setForm] = useState<EventoAgricola>({
         titulo: "",
         fecha: "",
         tipo: "tarea",
         descripcion: "",
-        color: "#2563eb",
+        estado: "pendiente",
     });
 
-    // -----------------------------
-    // Cargar eventos desde el backend
-    // -----------------------------
-    const loadEventos = async () => {
-        const res = await getEventos();
+    useEffect(() => {
+        loadTareas();
+    }, [loadTareas]);
 
-        const eventosTransformados = res.data.map((ev: BackendEvent) => ({
-            id: ev.id,
-            titulo: ev.title,
-            fecha: ev.date,
-            tipo: ev.type,
-            descripcion: ev.description ?? "",
-            color: "#2563eb",
+    // Convertimos tareas → eventos para el calendario
+    const eventos: EventoAgricola[] = tareas
+        .filter((t: TareaAgricola) => t.estado !== "completada")
+        .map((t: TareaAgricola) => ({
+            id: t.id,
+            titulo: t.titulo,
+            fecha: t.fecha,
+            tipo: "tarea",
+            descripcion: t.descripcion ?? "",
+            estado: t.estado,
+            color: getEstadoColor(t.estado),
         }));
 
-        setEventos(eventosTransformados);
-    };
-
-    // Cargar eventos al montar
-    useEffect(() => {
-        let isMounted = true;
-
-        const run = async () => {
-            if (!isMounted) return;
-            await loadEventos();
-        };
-
-        run();
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
-
-    // Crear evento desde un día del calendario
     const handleSelectDate = (fecha: string) => {
         setForm({
             titulo: "",
             fecha,
             tipo: "tarea",
             descripcion: "",
-            color: "#2563eb",
+            estado: "pendiente",
         });
         setModalOpen(true);
     };
 
-    // Editar evento existente
     const handleSelectEvent = (ev: EventoAgricola) => {
         setForm(ev);
         setModalOpen(true);
     };
 
-    // Guardar (crear o actualizar)
-    const handleSubmit = async () => {
-        const payload = {
-            ...form,
-            color: form.color || "#2563eb",
-            tipo: form.tipo || "tarea",
-        };
-
-        if (form.id) {
-            await updateEvento(form.id, payload);
-        } else {
-            await createEvento(payload);
-        }
-
+    const handleSubmit = () => {
         setModalOpen(false);
-        loadEventos();
     };
 
     return (
@@ -111,11 +82,25 @@ export default function CalendarioPage() {
                 Calendario agrícola
             </h2>
 
-            {/* ================================
-                LISTA DE TAREAS PENDIENTES
-            ================================= */}
+            {/* LISTA DE TAREAS PENDIENTES */}
             <div className="bg-white bg-opacity-60 p-4 rounded shadow mb-4">
-                <h4 className="fw-bold mb-3">Tareas pendientes</h4>
+
+                {/* Encabezado con leyenda */}
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h4 className="fw-bold">Tareas pendientes</h4>
+
+                    <div className="leyenda-estados">
+                        <div className="leyenda-item">
+                            <span className="leyenda-color color-en-progreso"></span>
+                            En Progreso
+                        </div>
+
+                        <div className="leyenda-item">
+                            <span className="leyenda-color color-pendiente"></span>
+                            Pendiente
+                        </div>
+                    </div>
+                </div>
 
                 {eventos.length === 0 && (
                     <p className="text-gray-700">No hay tareas pendientes.</p>
@@ -125,25 +110,27 @@ export default function CalendarioPage() {
                     {eventos.map((ev) => (
                         <li
                             key={ev.id}
-                            className="list-group-item d-flex justify-content-between align-items-center cursor-pointer"
+                            className="list-group-item d-flex justify-content-between align-items-center cursor-pointer tarea-item"
                             onClick={() => handleSelectEvent(ev)}
+                            style={{ "--tarea-color": ev.color, "--tarea-bg": ev.color + "33" } as React.CSSProperties}
                         >
                             <span>{ev.titulo}</span>
-                            <span className="badge bg-primary">{ev.fecha}</span>
+                            <span className="badge bg-primary">
+                                {formatFecha(ev.fecha)}
+                            </span>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* ================================
-                CALENDARIO (20% MÁS PEQUEÑO)
-            ================================= */}
+            {/* CALENDARIO */}
             <Calendar
                 eventos={eventos}
                 onSelectDate={handleSelectDate}
-                onSelectEvent={handleSelectEvent}  // <-- tamaño reducido
+                onSelectEvent={handleSelectEvent}
             />
 
+            {/* MODAL */}
             {modalOpen && (
                 <EventModal
                     form={form}

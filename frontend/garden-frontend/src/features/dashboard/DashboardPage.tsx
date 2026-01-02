@@ -20,18 +20,31 @@ export default function DashboardPage() {
 
     const loadCounts = useCallback(async () => {
         try {
-            const [p, c, t, cal] = await Promise.all([
+            const [p, c, t] = await Promise.all([
                 api.get("/plots"),
                 api.get("/cultivos"),
                 api.get("/tareas"),
-                api.get("/calendar"),
             ]);
+
+            type Tarea = {
+                id: number;
+                titulo: string;
+                fecha: string;
+                estado: string;
+                descripcion?: string;
+                parcela_id?: number | null;
+                cultivo_id?: number | null;
+            };
+
+            const tareasPendientes = (t.data as Tarea[]).filter(
+                (x) => x.estado !== "completada"
+            ).length;
 
             setCounts({
                 parcelas: p.data.length,
                 cultivos: c.data.length,
                 tareas: t.data.length,
-                calendario: cal.data.length,
+                calendario: tareasPendientes,
             });
         } catch (err) {
             console.error("Error cargando contadores:", err);

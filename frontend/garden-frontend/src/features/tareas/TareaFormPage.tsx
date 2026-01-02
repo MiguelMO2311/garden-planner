@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import TareaForm from "./components/TareaForm";
 
-import {
-    createTarea,
-    getTarea,
-    updateTarea,
-} from "./api/tareasApi";
-
-import { createEvento } from "../calendario/api/calendarioApi";
+import { getTarea } from "./api/tareasApi";
 import { getParcelas } from "../parcelas/api/parcelasApi";
 import { getCultivos } from "../cultivos/api/cultivosApi";
 
@@ -17,9 +11,13 @@ import type { TareaAgricola } from "./types";
 import type { Parcela } from "../parcelas/types";
 import type { Cultivo } from "../cultivos/types";
 
+import { useTareasStore } from "../../store/tareasStore";
+
 export default function TareaFormPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const { addTarea, editTarea } = useTareasStore();
 
     const [form, setForm] = useState<TareaAgricola>({
         titulo: "",
@@ -35,24 +33,19 @@ export default function TareaFormPage() {
 
     useEffect(() => {
         const load = async () => {
-            try {
-                const resParcelas = await getParcelas();
-                setParcelas(resParcelas.data);
+            const resParcelas = await getParcelas();
+            setParcelas(resParcelas.data);
 
-                const resCultivos = await getCultivos();
-                setCultivos(resCultivos.data);
+            const resCultivos = await getCultivos();
+            setCultivos(resCultivos.data);
 
-                if (id) {
-                    const resTarea = await getTarea(Number(id));
-
-                    setForm({
-                        ...resTarea.data,
-                        parcela_id: resTarea.data.parcela_id ?? null,
-                        cultivo_id: resTarea.data.cultivo_id ?? null,
-                    });
-                }
-            } catch (error) {
-                console.error("Error cargando datos:", error);
+            if (id) {
+                const resTarea = await getTarea(Number(id));
+                setForm({
+                    ...resTarea.data,
+                    parcela_id: resTarea.data.parcela_id ?? null,
+                    cultivo_id: resTarea.data.cultivo_id ?? null,
+                });
             }
         };
 
@@ -73,25 +66,9 @@ export default function TareaFormPage() {
         }
 
         if (id) {
-            await updateTarea(Number(id), form);
+            await editTarea(Number(id), form);
         } else {
-            await createTarea(form);
-
-            // 🔥 Crear evento automáticamente en el calendario
-            await createEvento({
-                titulo: form.titulo,
-                fecha: form.fecha,
-                tipo: "tarea",
-                descripcion: form.descripcion,
-                color: "#2563eb",
-            });
-        }
-
-        navigate("/tareas");
-        if (id) {
-            await updateTarea(Number(id), form);
-        } else {
-            await createTarea(form);
+            await addTarea(form);
         }
 
         navigate("/tareas");

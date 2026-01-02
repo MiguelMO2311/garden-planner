@@ -1,3 +1,4 @@
+import { formatFecha } from "../../../utils/formatFecha";
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
 import type { Cultivo } from "../../cultivos/types";
@@ -12,14 +13,12 @@ interface Props {
 
 export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelete }: Props) {
 
-    // Parcela: usa p.name (NO p.nombre)
     const getParcelaNombre = (id: number | null | undefined) => {
         if (!id) return "—";
         const p = parcelas.find((x) => x.id === id);
         return p ? p.name : "—";
     };
 
-    // Cultivo: usa c.nombre (NO c.variedad)
     const getCultivoNombre = (id: number | null | undefined) => {
         if (!id) return "—";
         const c = cultivos.find((x) => x.id === id);
@@ -43,16 +42,14 @@ export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelet
                 {tareas.map((t) => (
                     <tr key={t.id} className="border-t">
                         <td className="p-3">{t.titulo}</td>
-                        <td className="p-3">{t.fecha}</td>
+
+                        {/* ← AQUÍ FORMATEAMOS LA FECHA */}
+                        <td className="p-3">{formatFecha(t.fecha)}</td>
+
                         <td className="p-3 capitalize">{t.estado.replace("_", " ")}</td>
-
-                        {/* Parcela */}
                         <td className="p-3">{getParcelaNombre(t.parcela_id)}</td>
-
-                        {/* Cultivo */}
                         <td className="p-3">{getCultivoNombre(t.cultivo_id)}</td>
 
-                        {/* Acciones */}
                         <td className="p-3 flex gap-2">
                             <button
                                 onClick={() => onEdit(t.id!)}
