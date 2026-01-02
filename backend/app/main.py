@@ -14,6 +14,10 @@ from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models.user import User
 
+from fastapi.staticfiles import StaticFiles
+import os
+
+
 def create_admin_user():
     db = SessionLocal()
     admin = db.query(User).filter(User.email == "admin@example.com").first()
@@ -30,9 +34,15 @@ def create_admin_user():
         print(">>> Usuario admin ya existe")
     db.close()
 
+
 create_admin_user()
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,4 +53,3 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
-

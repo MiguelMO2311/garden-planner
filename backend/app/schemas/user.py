@@ -13,6 +13,7 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
+    email: str
     role: str
     name: str | None = None
     avatar: str | None = None
