@@ -16,6 +16,11 @@ class CultivoPlan(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User")
-    plot = relationship("Plot")
-    cultivo = relationship("Cultivo")
+    # 🔥 Relación correcta con usuario
+    user = relationship("User", back_populates="cultivo_plans")
+
+    # 🔥 Relación correcta con parcela
+    plot = relationship("Plot", back_populates="cultivo_plans")
+
+    # 🔥 Relación correcta con cultivo
+    cultivo = relationship("Cultivo", back_populates="cultivo_plans")

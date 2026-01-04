@@ -13,11 +13,20 @@ class Plot(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User")
+    # 🔥 Relación correcta con User
+    user = relationship("User", back_populates="parcelas")
 
     # relación con riegos
     irrigations = relationship("Irrigation", back_populates="plot")
 
+    # relación con cultivos
     cultivos = relationship("Cultivo", back_populates="plot", cascade="all, delete")
-    tareas = relationship("Tarea", back_populates="parcela")
 
+    # relación con tareas
+    tareas = relationship("Tarea", back_populates="parcela")
+    
+    # relación con plagas
+    pests = relationship("Pest", back_populates="plot")
+
+    # relación con planes de cultivo
+    cultivo_plans = relationship("CultivoPlan", back_populates="plot")

@@ -12,5 +12,28 @@ class User(Base):
     name = Column(String, nullable=True)     # nombre visible en el frontend
     avatar = Column(String, nullable=True)   # URL del avatar
 
-    # relación con riegos
-    irrigations = relationship("Irrigation", back_populates="owner")
+    # --- Relaciones con otras entidades ---
+    
+    # Riegos
+    irrigations = relationship("Irrigation", back_populates="user")
+
+    # Tareas
+    tareas = relationship("Tarea", back_populates="user")
+
+    # Parcelas
+    parcelas = relationship("Plot", back_populates="user")
+
+    # Cultivos
+    cultivos = relationship("Cultivo", back_populates="user")
+
+    # Planes de cultivo
+    cultivo_plans = relationship("CultivoPlan", back_populates="user")
+
+    # Plagas
+    pests = relationship("Pest", back_populates="user")
+
+    # Eventos manuales del calendario
+    calendar_events = relationship("CalendarEventManual", back_populates="user")
+
+    #eventos agricolas
+    eventos_agricolas = relationship("EventoAgricola", back_populates="user")

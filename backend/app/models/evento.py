@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class EventoAgricola(Base):
@@ -9,7 +10,13 @@ class EventoAgricola(Base):
     fecha = Column(Date, nullable=False)
     tipo = Column(String, default="tarea")
     descripcion = Column(String, nullable=True)
-    tarea_id = Column(Integer, nullable=True)
 
-    color = Column(String, default="#2563eb")  # azul por defecto
+    # 🔥 Relación con tarea (si aplica)
+    tarea_id = Column(Integer, ForeignKey("tareas.id"), nullable=True)
 
+    # 🔥 Relación con usuario (obligatoria)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Relaciones
+    user = relationship("User", back_populates="eventos_agricolas")
+    tarea = relationship("Tarea")

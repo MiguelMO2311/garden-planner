@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
 from app.models.user import User
-from app.schemas.user import UserCreate, UserRead, Token
+from app.schemas.user import UserCreate, UserRead, Token, UserUpdate, PasswordChange
 from app.core.deps import get_current_user
 
 # URL base de tu API (AJUSTA EN PRODUCCIÓN)
@@ -77,3 +77,73 @@ def login(
 
     access_token = create_access_token(user.id)
     return {"access_token": access_token, "token_type": "bearer"}
+
+# ============================================================
+#  PUT /auth/me  → Actualizar datos del usuario
+# ============================================================
+@router.put("/me", response_model=UserRead)
+def update_user(
+    data: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Evitar colisión de emails
+    if data.email:
+        existing = db.query(User).filter(
+            User.email == data.email,
+            User.id != current_user.id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use")
+
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(current_user, field, value)
+
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
+# ============================================================
+#  PUT /auth/me/password  → Cambiar contraseña
+# ============================================================
+@router.put("/me/password")
+def change_password(
+    data: PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not verify_password(data.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+
+    current_user.hashed_password = hash_password(data.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}
+
+
+# ============================================================
+#  PUT /auth/me/avatar  → Cambiar avatar
+# ============================================================
+@router.put("/me/avatar", response_model=UserRead)
+def update_avatar(
+    avatar_url: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    current_user.avatar = avatar_url
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
+# ============================================================
+#  DELETE /auth/me  → Borrar cuenta
+# ============================================================
+@router.delete("/me")
+def delete_user(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    db.delete(current_user)
+    db.commit()
+    return {"message": "Account deleted"}

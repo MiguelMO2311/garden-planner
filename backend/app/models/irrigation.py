@@ -12,5 +12,7 @@ class Irrigation(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User", back_populates="irrigations")
+    # 🔥 Relación coherente con el resto del backend
+    user = relationship("User", back_populates="irrigations")
+
     plot = relationship("Plot", back_populates="irrigations")

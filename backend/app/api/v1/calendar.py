@@ -21,7 +21,7 @@ router = APIRouter(tags=["Calendar"])
 
 
 # ---------------------------------------------------------
-# GET - Obtener TODOS los eventos (automáticos + manuales)
+# GET - Obtener SOLO los eventos del usuario (automáticos + manuales)
 # ---------------------------------------------------------
 @router.get("/", response_model=List[CalendarEvent])
 def get_calendar(
@@ -38,10 +38,10 @@ def get_calendar(
 
     events: list[CalendarEvent] = []
 
-    # --- Crop Plans ---
-    q_plans = db.query(CultivoPlan)
-    if user.role != "admin":
-        q_plans = q_plans.filter(CultivoPlan.user_id == user.id)
+    # --- Planes de cultivo (CultivoPlan) ---
+    q_plans = db.query(CultivoPlan).filter(
+        CultivoPlan.user_id == user.id
+    )
 
     for plan in q_plans.all():
         if start_date <= plan.start_date <= end_date:
@@ -62,13 +62,12 @@ def get_calendar(
                 related_id=plan.id
             ))
 
-    # --- Riegos ---
+    # --- Riegos (Irrigation) ---
     q_irrigation = db.query(Irrigation).filter(
         Irrigation.date >= start_date,
-        Irrigation.date <= end_date
+        Irrigation.date <= end_date,
+        Irrigation.user_id == user.id
     )
-    if user.role != "admin":
-        q_irrigation = q_irrigation.filter(Irrigation.user_id == user.id)
 
     for log in q_irrigation.all():
         events.append(CalendarEvent(
@@ -79,13 +78,12 @@ def get_calendar(
             related_id=log.id
         ))
 
-    # --- Plagas ---
+    # --- Plagas (Pest) ---
     q_pests = db.query(Pest).filter(
         Pest.date_detected >= start_date,
-        Pest.date_detected <= end_date
+        Pest.date_detected <= end_date,
+        Pest.user_id == user.id
     )
-    if user.role != "admin":
-        q_pests = q_pests.filter(Pest.user_id == user.id)
 
     for pest in q_pests.all():
         events.append(CalendarEvent(
@@ -96,7 +94,7 @@ def get_calendar(
             related_id=pest.id
         ))
 
-    # --- Eventos manuales ---
+    # --- Eventos manuales (CalendarEventManual) ---
     manual_events = db.query(CalendarEventManual).filter(
         CalendarEventManual.date >= start_date,
         CalendarEventManual.date <= end_date,
@@ -117,7 +115,7 @@ def get_calendar(
 
 
 # ---------------------------------------------------------
-# POST - Crear evento manual
+# POST - Crear evento manual (solo para el usuario actual)
 # ---------------------------------------------------------
 @router.post("/", response_model=CalendarEventRead)
 def create_event(
@@ -136,7 +134,7 @@ def create_event(
 
 
 # ---------------------------------------------------------
-# PUT - Actualizar evento manual
+# PUT - Actualizar evento manual (solo si es del usuario)
 # ---------------------------------------------------------
 @router.put("/{event_id}", response_model=CalendarEventRead)
 def update_event(
@@ -151,7 +149,7 @@ def update_event(
     ).first()
 
     if not event:
-        raise HTTPException(status_code=404, detail="Evento no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")
 
     for field, value in event_in.model_dump(exclude_unset=True).items():
         setattr(event, field, value)
@@ -162,7 +160,7 @@ def update_event(
 
 
 # ---------------------------------------------------------
-# DELETE - Eliminar evento manual
+# DELETE - Eliminar evento manual (solo si es del usuario)
 # ---------------------------------------------------------
 @router.delete("/{event_id}")
 def delete_event(
@@ -176,7 +174,7 @@ def delete_event(
     ).first()
 
     if not event:
-        raise HTTPException(status_code=404, detail="Evento no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")
 
     db.delete(event)
     db.commit()

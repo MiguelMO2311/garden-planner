@@ -14,5 +14,8 @@ class Pest(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    owner = relationship("User")
-    plot = relationship("Plot")
+    # 🔥 Relación correcta con usuario
+    user = relationship("User", back_populates="pests")
+
+    # 🔥 Relación correcta con parcela
+    plot = relationship("Plot", back_populates="pests")
