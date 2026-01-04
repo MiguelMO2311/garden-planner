@@ -64,61 +64,65 @@ export default function LandingPage() {
                 </p>
             </header>
 
-            {/* CARRUSEL */}
-            <div id="carouselExample" className="carousel slide w-75 mx-auto mt-4">
+            {/* CARRUSEL (más pequeño y 16:9 real) */}
+            <div
+                id="carouselExample"
+                className="carousel slide mx-auto mt-4"
+                style={{ width: "40%" }}
+            >
                 <div className="carousel-inner">
 
                     {/* ITEM 1 */}
                     <div className="carousel-item active text-center">
-                        <iframe
-                            width="100%"
-                            height="350"
-                            src="https://www.youtube.com/embed/KQsoJ7n5DX0"
-                            title="Consejos de cultivo"
-                            allowFullScreen
-                        ></iframe>
+                        <div className="ratio ratio-16x9">
+                            <iframe
+                                src="https://www.youtube.com/embed/KQsoJ7n5DX0"
+                                title="Consejos de cultivo"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
                         <p className="mt-2">Consejos prácticos para empezar tu huerto</p>
                     </div>
 
-                    {/* ITEM 2 — TU VIDEO NUEVO */}
+                    {/* ITEM 2 — TU VIDEO */}
                     <div className="carousel-item text-center">
-                        <iframe
-                            width="100%"
-                            height="350"
-                            src="https://www.youtube.com/embed/AhW6X5f9L_w"
-                            title="Cómo empezar un huerto desde cero"
-                            allowFullScreen
-                        ></iframe>
+                        <div className="ratio ratio-16x9">
+                            <iframe
+                                src="https://www.youtube.com/embed/AhW6X5f9L_w"
+                                title="Cómo empezar un huerto desde cero"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
                         <p className="mt-2">Cómo empezar un huerto desde cero</p>
                     </div>
 
                     {/* ITEM 3 */}
                     <div className="carousel-item text-center">
-                        <iframe
-                            width="100%"
-                            height="350"
-                            src="https://www.youtube.com/embed/8wZ2gYdExgA"
-                            title="Noticias agrícolas"
-                            allowFullScreen
-                        ></iframe>
+                        <div className="ratio ratio-16x9">
+                            <iframe
+                                src="https://www.youtube.com/embed/8wZ2gYdExgA"
+                                title="Noticias agrícolas"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
                         <p className="mt-2">Últimas noticias del sector agrícola</p>
                     </div>
 
                     {/* ITEM 4 */}
                     <div className="carousel-item text-center">
-                        <iframe
-                            width="100%"
-                            height="350"
-                            src="https://www.youtube.com/embed/0qkYyqS-gGk"
-                            title="Meteorología"
-                            allowFullScreen
-                        ></iframe>
+                        <div className="ratio ratio-16x9">
+                            <iframe
+                                src="https://www.youtube.com/embed/0qkYyqS-gGk"
+                                title="Meteorología"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
                         <p className="mt-2">Cómo afecta el clima a tus cultivos</p>
                     </div>
 
                 </div>
 
-                {/* CONTROLES */}
+                {/* CONTROLES ACCESIBLES */}
                 <button
                     className="carousel-control-prev"
                     type="button"
@@ -127,7 +131,7 @@ export default function LandingPage() {
                     aria-label="Anterior"
                     title="Anterior"
                 >
-                    <span className="carousel-control-prev-icon"></span>
+                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                 </button>
 
                 <button
@@ -138,7 +142,7 @@ export default function LandingPage() {
                     aria-label="Siguiente"
                     title="Siguiente"
                 >
-                    <span className="carousel-control-next-icon"></span>
+                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
                 </button>
             </div>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import bgRegister from "../../assets/backgrounds/register-bg.webp"; // 🔥 Fondo del registro
 import "./login.css";
 
 interface RegisterPayload {
@@ -17,7 +18,7 @@ export default function RegisterPage() {
         name: "",
         email: "",
         password: "",
-        avatar: "static/avatars/default.jpg", // avatar por defecto del backend
+        avatar: "static/avatars/default.jpg",
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +37,16 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="landing-container d-flex justify-content-center align-items-center">
-
+        <div
+            className="landing-container d-flex justify-content-center align-items-center"
+            style={{
+                backgroundImage: `url(${bgRegister})`,   // 🔥 Fondo aplicado
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                minHeight: "100vh"
+            }}
+        >
             <div className="login-box bg-white p-4 rounded shadow" style={{ width: "380px" }}>
                 <h3 className="fw-bold mb-3 text-center">Crear cuenta</h3>
 
