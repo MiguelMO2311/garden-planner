@@ -1,7 +1,8 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 
-import LoginPage from "../features/login/LoginPage";
+import LandingPage from "../features/login/LandingPage";
+import RegisterPage from "../features/login/RegisterPage";
 import DashboardPage from "../features/dashboard/DashboardPage";
 
 import ParcelaListPage from "../features/parcelas/ParcelaListPage";
@@ -17,12 +18,18 @@ import TareaFormPage from "../features/tareas/TareaFormPage";
 
 import AppLayout from "../layout/AppLayout";
 
+// 🔥 NUEVO: Página de cuenta del usuario
+import AccountPage from "../features/account/AccountPage";
+
 export const AppRouter = () => (
     <Routes>
-        {/* Ruta pública */}
-        <Route path="/login" element={<LoginPage />} />
+        {/* Landing pública */}
+        <Route path="/" element={<LandingPage />} />
 
-        {/* Rutas protegidas con layout */}
+        {/* Register público */}
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Rutas protegidas */}
         <Route
             element={
                 <ProtectedRoute>
@@ -30,11 +37,11 @@ export const AppRouter = () => (
                 </ProtectedRoute>
             }
         >
-            {/* Redirección "/" → "/dashboard" */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
             {/* Dashboard */}
             <Route path="/dashboard" element={<DashboardPage />} />
+
+            {/* 🔥 NUEVO: Página de cuenta */}
+            <Route path="/account" element={<AccountPage />} />
 
             {/* Parcelas */}
             <Route path="/parcelas" element={<ParcelaListPage />} />

@@ -8,5 +8,6 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     // 🔥 Mientras carga, no redirigimos
     if (loading) return null;
 
-    return isAuthenticated ? children : <Navigate to="/login" replace />;
+    return isAuthenticated ? children : <Navigate to="/" replace />;
+
 };

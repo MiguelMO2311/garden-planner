@@ -1,30 +1,40 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import "../layout/layout.css";
 
 export default function Navbar() {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const avatarUrl = user?.avatar
+        ? user.avatar
+        : "https://i.pravatar.cc/100";
 
     return (
         <nav className="navbar navbar-dark bg-success px-3 d-flex justify-content-between align-items-center">
 
-            {/* Logo */}
             <NavLink className="navbar-brand fw-bold" to="/dashboard">
                 🌱 Garden Planner
             </NavLink>
 
-            {/* Usuario */}
             {user && (
                 <div className="d-flex align-items-center gap-3">
 
-                    <span className="text-white fw-semibold">
+                    {/* 🔥 Nombre clicable → /account */}
+                    <button
+                        onClick={() => navigate("/account")}
+                        className="text-white fw-semibold bg-transparent border-0 p-0"
+                        style={{ cursor: "pointer" }}
+                    >
                         {user.name}
-                    </span>
+                    </button>
 
                     <img
-                        src={user?.avatar ? `${user.avatar}?v=${Date.now()}` : "https://i.pravatar.cc/100"}
+                        src={avatarUrl}
                         className="nav-avatar"
                         alt="avatar"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate("/account")}
                     />
 
                     <button

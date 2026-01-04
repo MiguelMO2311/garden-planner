@@ -144,14 +144,14 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 <button
                     type="button"
                     onClick={() => history.back()}
-                    className="px-4 py-2 rounded-lg bg-gray-300 text-black shadow hover:bg-gray-400 transition-colors bg-gray-300! text-black!"
+                    className="px-4 py-2 rounded-lg bg-gray-300 text-black shadow hover:bg-gray-400 transition-colors"
                 >
                     Cancelar
                 </button>
 
                 <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors bg-blue-600! text-white!"
+                    className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors"
                 >
                     Guardar tarea
                 </button>
