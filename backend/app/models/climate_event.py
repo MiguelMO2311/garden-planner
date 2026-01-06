@@ -1,0 +1,16 @@
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy.orm import relationship
+from app.core.database import Base
+
+class ClimateEvent(Base):
+    __tablename__ = "climate_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    plot_id = Column(Integer, ForeignKey("plots.id"), nullable=False)
+
+    date = Column(Date, nullable=False)
+    type = Column(String, nullable=False)
+    intensity = Column(Float, nullable=False)
+    description = Column(String, nullable=False)
+
+    plot = relationship("Plot", back_populates="climate_events")

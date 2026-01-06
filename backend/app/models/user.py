@@ -10,7 +10,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, default="user", nullable=False)
     name = Column(String, nullable=True)     # nombre visible en el frontend
-    avatar = Column(String, nullable=True)   # URL del avatar
+    avatar = Column(String, default="/static/avatars/default.jpg", nullable=True)
 
     # --- Relaciones con otras entidades ---
     

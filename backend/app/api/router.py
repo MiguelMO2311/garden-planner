@@ -11,7 +11,7 @@ from app.api.v1 import (
     dashboard,
     seasonal,
     plots,
-    cultivos,
+    cultivos as cultivos_router,
     tareas,
 )
 
@@ -28,5 +28,5 @@ api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboar
 api_router.include_router(seasonal.router, prefix="/seasonal", tags=["seasonal"])
 
 api_router.include_router(plots.router, prefix="/plots", tags=["plots"])
-api_router.include_router(cultivos.router, prefix="/cultivos", tags=["cultivos"])
+api_router.include_router(cultivos_router.router, prefix="/cultivos", tags=["cultivos"])
 api_router.include_router(tareas.router, prefix="/tareas", tags=["tareas"])

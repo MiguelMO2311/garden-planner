@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
+
 class Plot(Base):
     __tablename__ = "plots"
 
@@ -10,6 +11,10 @@ class Plot(Base):
     location = Column(String, nullable=True)
     soil_type = Column(String, nullable=True)
     size_m2 = Column(Float, nullable=True)
+
+    # 🔥 NUEVO: coordenadas geográficas para integrar clima real
+    lat = Column(Float, nullable=True)
+    lng = Column(Float, nullable=True)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
@@ -30,3 +35,6 @@ class Plot(Base):
 
     # relación con planes de cultivo
     cultivo_plans = relationship("CultivoPlan", back_populates="plot")
+    
+    # relación con eventos agrícolas
+    climate_events = relationship("ClimateEvent", back_populates="plot")

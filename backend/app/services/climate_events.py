@@ -1,5 +1,9 @@
 import random
 from datetime import timedelta, date
+from sqlalchemy.orm import Session
+
+from app.models.plot import Plot
+from app.models.climate_event import ClimateEvent
 
 # Tipos de eventos climáticos posibles
 EVENT_TYPES = [
@@ -12,38 +16,41 @@ EVENT_TYPES = [
 ]
 
 
-def generar_eventos_climaticos(start_date: date, end_date: date, probabilidad: float = 0.2):
+def generar_eventos_climaticos(
+    db: Session,
+    start_date: date,
+    end_date: date,
+    probabilidad: float = 0.2
+):
     """
-    Genera una lista de eventos climáticos simulados entre dos fechas.
-
-    Args:
-        start_date (date): Fecha inicial.
-        end_date (date): Fecha final.
-        probabilidad (float): Probabilidad diaria de que ocurra un evento (0.0 - 1.0).
-
-    Returns:
-        List[dict]: Lista de eventos climáticos generados.
+    Genera eventos climáticos para cada parcela y los guarda en la base de datos.
     """
 
-    eventos = []
-    current = start_date
+    parcelas = db.query(Plot).all()
+    eventos_creados = []
 
-    while current <= end_date:
-        if random.random() < probabilidad:
-            tipo = random.choice(EVENT_TYPES)
+    for parcela in parcelas:
+        current = start_date
 
-            evento = {
-                "date": current,
-                "type": tipo,
-                "intensity": round(random.uniform(0.1, 1.0), 2),
-                "description": generar_descripcion(tipo),
-            }
+        while current <= end_date:
+            if random.random() < probabilidad:
+                tipo = random.choice(EVENT_TYPES)
 
-            eventos.append(evento)
+                evento = ClimateEvent(
+                    plot_id=parcela.id,
+                    date=current,
+                    type=tipo,
+                    intensity=round(random.uniform(0.1, 1.0), 2),
+                    description=generar_descripcion(tipo),
+                )
 
-        current += timedelta(days=1)
+                db.add(evento)
+                eventos_creados.append(evento)
 
-    return eventos
+            current += timedelta(days=1)
+
+    db.commit()
+    return eventos_creados
 
 
 def generar_descripcion(tipo: str) -> str:
