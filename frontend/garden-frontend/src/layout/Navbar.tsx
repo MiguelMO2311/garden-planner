@@ -7,9 +7,10 @@ export default function Navbar() {
     const navigate = useNavigate();
 
     const avatarUrl = user?.avatar
-        ? user.avatar
+        ? (user.avatar.startsWith("http")
+            ? user.avatar
+            : `http://localhost:8000${user.avatar.startsWith("/") ? "" : "/"}${user.avatar}`)
         : "https://i.pravatar.cc/100";
-
     return (
         <nav className="navbar navbar-dark bg-success px-3 d-flex justify-content-between align-items-center">
 

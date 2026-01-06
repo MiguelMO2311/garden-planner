@@ -24,7 +24,7 @@ export default function TareaListPage() {
             const resParcelas = await getParcelas();
             const resCultivos = await getCultivos();
 
-            setParcelas(resParcelas.data);
+            setParcelas(resParcelas);
             setCultivos(resCultivos.data);
         };
 

@@ -34,7 +34,7 @@ export default function TareaFormPage() {
     useEffect(() => {
         const load = async () => {
             const resParcelas = await getParcelas();
-            setParcelas(resParcelas.data);
+            setParcelas(resParcelas);
 
             const resCultivos = await getCultivos();
             setCultivos(resCultivos.data);

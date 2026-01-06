@@ -15,7 +15,7 @@ export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelet
 
     const getParcelaNombre = (id: number | null | undefined) => {
         if (!id) return "—";
-        const p = parcelas.find((x) => x.id === id);
+        const p = parcelas?.find((x) => x.id === id);
         return p ? p.name : "—";
     };
 

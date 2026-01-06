@@ -18,7 +18,8 @@ export default function RegisterPage() {
         name: "",
         email: "",
         password: "",
-        avatar: "static/avatars/default.jpg",
+        avatar: "/static/avatars/default.jpg"
+
     });
 
     const handleSubmit = async (e: React.FormEvent) => {

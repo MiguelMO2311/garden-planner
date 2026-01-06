@@ -1,57 +1,104 @@
 import { useEffect, useState } from "react";
-import ParcelaTable from "./components/ParcelaTable";
-import { getParcelas, deleteParcela } from "./api/parcelasApi";
 import { useNavigate } from "react-router-dom";
+import { getParcelas, deleteParcela } from "./api/parcelasApi";
 import type { Parcela } from "./types";
+import { showToast } from "../../utils/toast";
 import "./parcelas.css";
 
 export default function ParcelaListPage() {
-    const [parcelas, setParcelas] = useState<Parcela[]>([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        let isMounted = true;
+    const [parcelas, setParcelas] = useState<Parcela[]>([]);
+    const [loading, setLoading] = useState(true);
 
-        const load = async () => {
-            const res = await getParcelas();
-            if (!isMounted) return;
-            setParcelas(res.data);
-        };
+    useEffect(() => {
+        async function load() {
+            try {
+                const data = await getParcelas();
+                setParcelas(data);
+            } catch (err) {
+                console.error(err);
+                showToast("Error cargando parcelas", "error");
+            } finally {
+                setLoading(false);
+            }
+        }
 
         load();
-
-        return () => {
-            isMounted = false;
-        };
     }, []);
 
     const handleDelete = async (id: number) => {
-        await deleteParcela(id);
-
-        const res = await getParcelas();
-        setParcelas(res.data);
+        try {
+            await deleteParcela(id);
+            setParcelas(parcelas.filter((p) => p.id !== id));
+            showToast("Parcela eliminada", "success");
+        } catch (err) {
+            console.error(err);
+            showToast("Error eliminando parcela", "error");
+        }
     };
 
-    return (
-        <div className="parcelas-bg p-4">
+    if (loading) return <p className="mt-4">Cargando parcelas...</p>;
 
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Parcelas</h2>
+    return (
+        <div className="parcelas-bg">
+
+            <div className="parcelas-card mb-4 d-flex justify-content-between align-items-center">
+                <h2 className="parcelas-title">Parcelas</h2>
 
                 <button
+                    className="btn btn-success"
                     onClick={() => navigate("/parcelas/nueva")}
-                    className="btn-accion"
                 >
-                    Nueva parcela
+                    + Nueva parcela
                 </button>
-
             </div>
 
-            <ParcelaTable
-                parcelas={parcelas}
-                onEdit={(id) => navigate(`/parcelas/${id}`)}
-                onDelete={handleDelete}
-            />
+            <div className="parcelas-table-container">
+                <table className="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ubicación</th>
+                            <th>Tamaño</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {parcelas.map((p) => (
+                            <tr key={p.id}>
+                                <td>{p.name}</td>
+                                <td>{p.location || "—"}</td>
+                                <td>{p.size_m2 ? `${p.size_m2} m²` : "—"}</td>
+
+                                <td className="d-flex gap-2">
+                                    <button
+                                        className="btn btn-outline-primary btn-sm"
+                                        onClick={() => navigate(`/parcelas/${p.id}`)}
+                                    >
+                                        Ver
+                                    </button>
+
+                                    <button
+                                        className="btn btn-outline-warning btn-sm"
+                                        onClick={() => navigate(`/parcelas/${p.id}/editar`)}
+                                    >
+                                        Editar
+                                    </button>
+
+                                    <button
+                                        className="btn btn-outline-danger btn-sm"
+                                        onClick={() => handleDelete(p.id)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     );

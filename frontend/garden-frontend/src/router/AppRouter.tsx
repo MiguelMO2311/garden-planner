@@ -7,6 +7,7 @@ import DashboardPage from "../features/dashboard/DashboardPage";
 
 import ParcelaListPage from "../features/parcelas/ParcelaListPage";
 import ParcelaFormPage from "../features/parcelas/ParcelaFormPage";
+import ParcelaDetailPage from "../features/parcelas/ParcelaDetailPage";
 
 import CultivoListPage from "../features/cultivos/CultivoListPage";
 import CultivoFormPage from "../features/cultivos/CultivoFormPage";
@@ -17,8 +18,6 @@ import TareaListPage from "../features/tareas/TareaListPage";
 import TareaFormPage from "../features/tareas/TareaFormPage";
 
 import AppLayout from "../layout/AppLayout";
-
-// 🔥 NUEVO: Página de cuenta del usuario
 import AccountPage from "../features/account/AccountPage";
 
 export const AppRouter = () => (
@@ -40,13 +39,14 @@ export const AppRouter = () => (
             {/* Dashboard */}
             <Route path="/dashboard" element={<DashboardPage />} />
 
-            {/* 🔥 NUEVO: Página de cuenta */}
+            {/* Página de cuenta */}
             <Route path="/account" element={<AccountPage />} />
 
             {/* Parcelas */}
             <Route path="/parcelas" element={<ParcelaListPage />} />
             <Route path="/parcelas/nueva" element={<ParcelaFormPage />} />
-            <Route path="/parcelas/:id" element={<ParcelaFormPage />} />
+            <Route path="/parcelas/:id" element={<ParcelaDetailPage />} />
+            <Route path="/parcelas/:id/editar" element={<ParcelaFormPage />} />
 
             {/* Cultivos */}
             <Route path="/cultivos" element={<CultivoListPage />} />

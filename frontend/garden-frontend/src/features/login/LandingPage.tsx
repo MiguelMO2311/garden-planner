@@ -15,13 +15,18 @@ export default function LandingPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const formData = new FormData();
-            formData.append("username", form.email);
-            formData.append("password", form.password);
+            // OAuth2PasswordRequestForm requiere x-www-form-urlencoded
+            const data = new URLSearchParams();
+            data.append("username", form.email);
+            data.append("password", form.password);
 
-            const res = await api.post("/auth/login", formData);
+            const res = await api.post("/auth/login", data, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            });
+
             const token = res.data.access_token;
-
             await login(token);
             setShowLogin(false);
         } catch (error) {
@@ -64,7 +69,7 @@ export default function LandingPage() {
                 </p>
             </header>
 
-            {/* CARRUSEL (más pequeño y 16:9 real) */}
+            {/* CARRUSEL */}
             <div
                 id="carouselExample"
                 className="carousel slide mx-auto mt-4"
@@ -84,7 +89,7 @@ export default function LandingPage() {
                         <p className="mt-2">Consejos prácticos para empezar tu huerto</p>
                     </div>
 
-                    {/* ITEM 2 — TU VIDEO */}
+                    {/* ITEM 2 */}
                     <div className="carousel-item text-center">
                         <div className="ratio ratio-16x9">
                             <iframe
