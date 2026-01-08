@@ -1,3 +1,5 @@
+/* src/features/cultivos_parcela/cultivos_parcela.css */
+
 .cultivos-bg {
     background-image: url("../../assets/backgrounds/parcelas-bg.webp");
     background-size: cover;
@@ -30,21 +32,4 @@
 
 .cultivos-table-container .btn {
     min-width: 80px;
-}
-
-/* Botones de acción estilo SaaS */
-.btn-saas-outline {
-    background: transparent;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    color: #198754;
-    font-weight: 500;
-    padding: 0.3rem 0.8rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.btn-saas-outline:hover {
-    background: rgba(255, 255, 255, 0.6);
-    border-color: rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
 }

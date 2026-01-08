@@ -25,8 +25,8 @@ import "./dashboard.css";
 type WeeklyAlert = {
     plot_id: number;
     plot_name: string;
-    cultivo_id: number;
-    cultivo_name: string;
+    cultivo_parcela_id: number;
+    cultivo_tipo_nombre: string;
     fecha: string | null;
     tipo: string;
     mensaje: string;
@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
     const [counts, setCounts] = useState({
         parcelas: 0,
-        cultivos: 0,
+        cultivos: 0, // cultivos en parcela
         tareas: 0,
         calendario: 0,
     });
@@ -94,29 +94,28 @@ export default function DashboardPage() {
     /* CARGA DE DATOS                                         */
     /* ------------------------------------------------------ */
 
+    interface Tarea {
+        id: number;
+        estado: string;
+        [key: string]: unknown;
+    }
+    
     const loadCounts = useCallback(async () => {
         try {
-            const [p, c, t] = await Promise.all([
+            const [p, cultivosParcela, tareas] = await Promise.all([
                 api.get("/plots"),
-                api.get("/cultivos"),
+                api.get("/cultivo-parcela"),
                 api.get("/tareas"),
             ]);
 
-            type Tarea = {
-                id: number;
-                titulo: string;
-                fecha: string;
-                estado: string;
-            };
-
-            const tareasPendientes = (t.data as Tarea[]).filter(
+            const tareasPendientes = (tareas.data as Tarea[]).filter(
                 (x) => x.estado !== "completada"
             ).length;
 
             setCounts({
                 parcelas: p.data.length,
-                cultivos: c.data.length,
-                tareas: t.data.length,
+                cultivos: cultivosParcela.data.length,
+                tareas: tareas.data.length,
                 calendario: tareasPendientes,
             });
         } catch (err) {
@@ -136,7 +135,17 @@ export default function DashboardPage() {
     const loadWeeklyAlerts = useCallback(async () => {
         try {
             const res = await api.get("/clima/alertas-semana");
-            setWeeklyAlerts(res.data);
+
+            // Tipamos explícitamente lo que devuelve el backend
+            const alerts = res.data as WeeklyAlert[];
+
+            // Ajustamos solo la propiedad cultivo_tipo_nombre
+            const normalized = alerts.map((a) => ({
+                ...a,
+                cultivo_tipo_nombre: a.cultivo_tipo_nombre ?? "Cultivo",
+            }));
+
+            setWeeklyAlerts(normalized);
         } catch (err) {
             console.error("Error cargando alertas semanales:", err);
         } finally {
@@ -249,7 +258,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="col-6 col-lg-3">
-                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivos")}>
+                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivo-parcela")}>
                         <GiPlantRoots className="dashboard-icon text-success small-icon" />
                         <div>
                             <h6 className="fw-bold mb-0">Cultivos</h6>
@@ -279,7 +288,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* NUEVA CARD DE RIESGO CLIMÁTICO (GRÁFICO + LISTA) */}
+            {/* NUEVA CARD DE RIESGO CLIMÁTICO */}
             {highRiskEvents.length > 0 && (
                 <div className="row mb-3">
                     <div className="col-12">
@@ -287,7 +296,6 @@ export default function DashboardPage() {
 
                             <h4 className="fw-bold mb-3">Riesgo climático reciente</h4>
 
-                            {/* Gráfico de barras */}
                             <div className="risk-bars-container mb-3">
                                 {highRiskEvents.map((ev) => (
                                     <div key={ev.id} className="risk-bar-row">
@@ -307,7 +315,6 @@ export default function DashboardPage() {
                                 ))}
                             </div>
 
-                            {/* Lista detallada */}
                             <div className="risk-details-list">
                                 {highRiskEvents.map((ev) => (
                                     <div key={ev.id} className="risk-detail-item">
@@ -361,12 +368,12 @@ export default function DashboardPage() {
                         {!loadingAlerts && weeklyAlerts.length > 0 && (
                             <div>
                                 {visibleAlerts.map((alert, idx) => (
-                                    <div key={`${alert.plot_id}-${alert.cultivo_id}-${alert.fecha}-${idx}`} className="dashboard-item-row dashboard-item-bg-alert">
+                                    <div key={`${alert.plot_id}-${alert.cultivo_parcela_id}-${alert.fecha}-${idx}`} className="dashboard-item-row dashboard-item-bg-alert">
                                         <div className="dashboard-item-icon">{iconForEvent(alert.tipo)}</div>
 
                                         <div className="dashboard-item-content">
                                             <div className="d-flex justify-content-between align-items-center">
-                                                <strong>{alert.plot_name} — {alert.cultivo_name}</strong>
+                                                <strong>{alert.plot_name} — {alert.cultivo_tipo_nombre}</strong>
                                                 <small className="text-muted">{formatFecha(alert.fecha)}</small>
                                             </div>
                                             <div className="mt-1">

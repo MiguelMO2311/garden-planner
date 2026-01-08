@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
-import bgRegister from "../../assets/backgrounds/register-bg.webp"; // 🔥 Fondo del registro
+import bgRegister from "../../assets/backgrounds/register-bg.webp";
 import "./login.css";
 
 interface RegisterPayload {
@@ -19,8 +19,15 @@ export default function RegisterPage() {
         email: "",
         password: "",
         avatar: "/static/avatars/default.jpg"
-
     });
+
+    // 🔥 Aplicamos el background dinámicamente SIN inline styles
+    useEffect(() => {
+        document.documentElement.style.setProperty(
+            "--register-bg",
+            `url(${bgRegister})`
+        );
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +36,7 @@ export default function RegisterPage() {
             await api.post("/auth/register", form);
 
             alert("Registro completado. Ahora puedes iniciar sesión.");
-            navigate("/login");
+            navigate("/");
 
         } catch (error) {
             console.error("Error al registrar usuario:", error);
@@ -38,17 +45,8 @@ export default function RegisterPage() {
     };
 
     return (
-        <div
-            className="landing-container d-flex justify-content-center align-items-center"
-            style={{
-                backgroundImage: `url(${bgRegister})`,   // 🔥 Fondo aplicado
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                minHeight: "100vh"
-            }}
-        >
-            <div className="login-box bg-white p-4 rounded shadow" style={{ width: "380px" }}>
+        <div className="landing-container register-bg dynamic-bg">
+            <div className="login-box register-box bg-white p-4 rounded shadow">
                 <h3 className="fw-bold mb-3 text-center">Crear cuenta</h3>
 
                 <form onSubmit={handleSubmit}>

@@ -1,12 +1,14 @@
-import type { Cultivo } from "../types";
+// src/features/cultivos_tipo/components/CultivoTipoTable.tsx
+
+import type { CultivoTipo } from "../types";
 
 interface Props {
-    cultivos: Cultivo[];
+    cultivos: CultivoTipo[];
     onEdit: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export default function CultivoTable({ cultivos, onEdit, onDelete }: Props) {
+export default function CultivoTipoTable({ cultivos, onEdit, onDelete }: Props) {
     return (
         <table className="table table-striped table-hover">
             <thead>

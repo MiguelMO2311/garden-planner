@@ -1,14 +1,20 @@
 import api from "../../../api/axios";
-import type { TareaAgricola } from "../types";
+import type {
+    TareaAgricola,
+    TareaAgricolaCreate,
+    TareaAgricolaUpdate,
+} from "../types";
 
-export const getTareas = () => api.get<TareaAgricola[]>("/tareas");
+export const getTareas = () =>
+    api.get<TareaAgricola[]>("/tareas");
 
-export const getTarea = (id: number) => api.get<TareaAgricola>(`/tareas/${id}`);
+export const getTarea = (id: number) =>
+    api.get<TareaAgricola>(`/tareas/${id}`);
 
-export const createTarea = (data: TareaAgricola) =>
+export const createTarea = (data: TareaAgricolaCreate) =>
     api.post("/tareas", data);
 
-export const updateTarea = (id: number, data: TareaAgricola) =>
+export const updateTarea = (id: number, data: TareaAgricolaUpdate) =>
     api.put(`/tareas/${id}`, data);
 
 export const deleteTarea = (id: number) =>

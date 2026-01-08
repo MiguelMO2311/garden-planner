@@ -38,3 +38,19 @@
     backdrop-filter: blur(6px);
     /* Resto de navegadores */
 }
+
+.register-bg {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
+/* Esta clase se actualizará dinámicamente desde React */
+.register-bg.dynamic-bg {
+    background-image: var(--register-bg);
+}
+
+.register-box {
+    width: 380px;
+}

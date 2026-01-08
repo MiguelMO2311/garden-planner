@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import "../layout/layout.css";
@@ -5,44 +6,70 @@ import "../layout/layout.css";
 export default function Navbar() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
 
     const avatarUrl = user?.avatar
         ? (user.avatar.startsWith("http")
             ? user.avatar
             : `http://localhost:8000${user.avatar.startsWith("/") ? "" : "/"}${user.avatar}`)
         : "https://i.pravatar.cc/100";
+
     return (
-        <nav className="navbar navbar-dark bg-success px-3 d-flex justify-content-between align-items-center">
+        <nav className="navbar-modern shadow-sm">
+            {/* IZQUIERDA */}
+            <div className="navbar-left">
+                <NavLink className="navbar-logo" to="/dashboard">
+                    🌱 Garden Planner
+                </NavLink>
+            </div>
 
-            <NavLink className="navbar-brand fw-bold" to="/dashboard">
-                🌱 Garden Planner
-            </NavLink>
-
+            {/* DERECHA */}
             {user && (
-                <div className="d-flex align-items-center gap-3">
+                <div className="navbar-right">
 
-                    {/* 🔥 Nombre clicable → /account */}
+                    {/* Nombre (oculto en móvil) */}
                     <button
                         onClick={() => navigate("/account")}
-                        className="text-white fw-semibold bg-transparent border-0 p-0"
-                        style={{ cursor: "pointer" }}
+                        className="navbar-username"
                     >
                         {user.name}
                     </button>
 
-                    <img
-                        src={avatarUrl}
-                        className="nav-avatar"
-                        alt="avatar"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => navigate("/account")}
-                    />
+                    {/* Avatar */}
+                    <div className="navbar-avatar-wrapper">
+                        <img
+                            src={avatarUrl}
+                            alt="avatar"
+                            className="navbar-avatar"
+                            onClick={() => setOpen(!open)}
+                        />
 
+                        {/* Dropdown */}
+                        {open && (
+                            <div className="navbar-dropdown">
+                                <button
+                                    onClick={() => navigate("/account")}
+                                    className="dropdown-item"
+                                >
+                                    Mi cuenta
+                                </button>
+
+                                <button
+                                    onClick={logout}
+                                    className="dropdown-item logout"
+                                >
+                                    Cerrar sesión
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Botón hamburguesa (solo móvil) */}
                     <button
-                        className="btn btn-outline-light btn-sm"
-                        onClick={logout}
+                        className="navbar-burger"
+                        onClick={() => navigate("/sidebar")}
                     >
-                        Cerrar sesión
+                        ☰
                     </button>
                 </div>
             )}

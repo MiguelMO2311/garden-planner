@@ -1,14 +1,12 @@
-import type { Cultivo } from "../types";
-import type { Parcela } from "../../parcelas/types";
+import type { CultivoTipo, CultivoTipoCreate } from "../types";
 
 interface Props {
-    form: Cultivo;
-    setForm: (data: Cultivo) => void;
-    parcelas: Parcela[];
+    form: CultivoTipoCreate | CultivoTipo;
+    setForm: (data: CultivoTipoCreate | CultivoTipo) => void;
     onSubmit: (e: React.FormEvent) => void;
 }
 
-export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props) {
+export default function CultivoTipoForm({ form, setForm, onSubmit }: Props) {
     return (
         <form
             onSubmit={onSubmit}
@@ -59,7 +57,7 @@ export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            dias_crecimiento: e.target.value ? Number(e.target.value) : undefined,
+                            dias_crecimiento: e.target.value ? Number(e.target.value) : null,
                         })
                     }
                 />
@@ -80,7 +78,7 @@ export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            litros_agua_semana: e.target.value ? Number(e.target.value) : undefined,
+                            litros_agua_semana: e.target.value ? Number(e.target.value) : null,
                         })
                     }
                 />
@@ -98,31 +96,6 @@ export default function CultivoForm({ form, setForm, parcelas, onSubmit }: Props
                     value={form.notas ?? ""}
                     onChange={(e) => setForm({ ...form, notas: e.target.value })}
                 />
-            </div>
-
-            {/* Parcela */}
-            <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="plot_id">
-                    Parcela
-                </label>
-                <select
-                    id="plot_id"
-                    className="w-full border rounded px-3 py-2"
-                    value={form.plot_id ?? ""}
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            plot_id: e.target.value ? Number(e.target.value) : undefined,
-                        })
-                    }
-                >
-                    <option value="">Sin parcela asignada</option>
-                    {parcelas.map((p) => (
-                        <option key={p.id} value={p.id}>
-                            {p.name}
-                        </option>
-                    ))}
-                </select>
             </div>
 
             {/* Botón */}

@@ -1,21 +1,34 @@
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
-import type { Cultivo } from "../../cultivos/types";
+import type { CultivoParcela } from "../../cultivos_parcela/types";
 
 interface Props {
     tareas: TareaAgricola[];
     parcelas: Parcela[];
-    cultivos: Cultivo[];
+    cultivosParcela: (CultivoParcela & {
+        cultivo_tipo?: { id: number; nombre: string };
+    })[];
     onEdit: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelete }: Props) {
+export default function TareaTable({
+    tareas,
+    parcelas,
+    cultivosParcela,
+    onEdit,
+    onDelete,
+}: Props) {
     const getParcelaNombre = (id: number | null) =>
         parcelas.find((p) => p.id === id)?.name || "—";
 
-    const getCultivoNombre = (id: number | null) =>
-        cultivos.find((c) => c.id === id)?.nombre || "—";
+    const getCultivoParcelaNombre = (id: number | null) => {
+        const cp = cultivosParcela.find((c) => c.id === id);
+        if (!cp) return "—";
+        return cp.cultivo_tipo?.nombre
+            ? `${cp.cultivo_tipo.nombre} (Parcela ${cp.parcela_id})`
+            : `Cultivo ${cp.id}`;
+    };
 
     return (
         <table className="table table-striped table-hover">
@@ -25,7 +38,7 @@ export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelet
                     <th>Fecha</th>
                     <th>Estado</th>
                     <th>Parcela</th>
-                    <th>Cultivo</th>
+                    <th>Cultivo en parcela</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -37,7 +50,7 @@ export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelet
                         <td>{tarea.fecha}</td>
                         <td>{tarea.estado}</td>
                         <td>{getParcelaNombre(tarea.parcela_id)}</td>
-                        <td>{getCultivoNombre(tarea.cultivo_id)}</td>
+                        <td>{getCultivoParcelaNombre(tarea.cultivo_parcela_id)}</td>
 
                         <td className="d-flex gap-2">
                             <button

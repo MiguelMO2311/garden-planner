@@ -1,16 +1,24 @@
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
-import type { Cultivo } from "../../cultivos/types";
+import type { CultivoParcela } from "../../cultivos_parcela/types";
 
 interface Props {
     form: TareaAgricola;
     setForm: (data: TareaAgricola) => void;
     parcelas: Parcela[];
-    cultivos: Cultivo[];
+    cultivosParcela: (CultivoParcela & {
+        cultivo_tipo?: { id: number; nombre: string };
+    })[];
     onSubmit: (e: React.FormEvent) => void;
 }
 
-export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit }: Props) {
+export default function TareaForm({
+    form,
+    setForm,
+    parcelas,
+    cultivosParcela,
+    onSubmit,
+}: Props) {
     return (
         <form
             onSubmit={onSubmit}
@@ -25,7 +33,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                     id="titulo"
                     type="text"
                     placeholder="Ej: Riego de tomates"
-                    title="Título de la tarea"
                     className="w-full border rounded px-3 py-2"
                     value={form.titulo}
                     onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -41,7 +48,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 <input
                     id="fecha"
                     type="date"
-                    title="Fecha de la tarea"
                     className="w-full border rounded px-3 py-2"
                     value={form.fecha}
                     onChange={(e) => setForm({ ...form, fecha: e.target.value })}
@@ -56,7 +62,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 </label>
                 <select
                     id="estado"
-                    title="Estado de la tarea"
                     className="w-full border rounded px-3 py-2"
                     value={form.estado}
                     onChange={(e) =>
@@ -79,7 +84,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 </label>
                 <select
                     id="parcela"
-                    title="Parcela asociada"
                     className="w-full border rounded px-3 py-2"
                     value={form.parcela_id ?? ""}
                     onChange={(e) =>
@@ -98,27 +102,27 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 </select>
             </div>
 
-            {/* Cultivo */}
+            {/* Cultivo en parcela */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="cultivo">
-                    Cultivo
+                <label className="block text-sm font-medium mb-1" htmlFor="cultivo_parcela">
+                    Cultivo en parcela
                 </label>
                 <select
-                    id="cultivo"
-                    title="Cultivo asociado"
+                    id="cultivo_parcela"
                     className="w-full border rounded px-3 py-2"
-                    value={form.cultivo_id ?? ""}
+                    value={form.cultivo_parcela_id ?? ""}
                     onChange={(e) =>
                         setForm({
                             ...form,
-                            cultivo_id: e.target.value ? Number(e.target.value) : null,
+                            cultivo_parcela_id: e.target.value ? Number(e.target.value) : null,
                         })
                     }
                 >
-                    <option value="">Selecciona un cultivo</option>
-                    {cultivos.map((c) => (
+                    <option value="">Selecciona un cultivo en parcela</option>
+
+                    {cultivosParcela.map((c) => (
                         <option key={c.id} value={c.id}>
-                            {c.nombre}
+                            {c.cultivo_tipo?.nombre ?? "Cultivo"} — Parcela {c.parcela_id}
                         </option>
                     ))}
                 </select>
@@ -132,7 +136,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 <textarea
                     id="descripcion"
                     placeholder="Detalles de la tarea"
-                    title="Descripción de la tarea"
                     className="w-full border rounded px-3 py-2"
                     value={form.descripcion || ""}
                     onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
@@ -155,8 +158,6 @@ export default function TareaForm({ form, setForm, parcelas, cultivos, onSubmit 
                 >
                     Guardar tarea
                 </button>
-
-
             </div>
         </form>
     );

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import TareaTable from "./components/TareaTable";
+
 import { getParcelas } from "../parcelas/api/parcelasApi";
-import { getCultivos } from "../cultivos/api/cultivosApi";
+import { getCultivosParcela } from "../cultivos_parcela/api/cultivosParcelaApi";
+
 import { useNavigate } from "react-router-dom";
 
 import type { Parcela } from "../parcelas/types";
-import type { Cultivo } from "../cultivos/types";
+import type { CultivoParcela } from "../cultivos_parcela/types";
 
 import { useTareasStore } from "../../store/tareasStore";
 
@@ -13,8 +15,10 @@ import "./tareas.css";
 
 export default function TareaListPage() {
     const { tareas, loadTareas, removeTarea } = useTareasStore();
+
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
-    const [cultivos, setCultivos] = useState<Cultivo[]>([]);
+    const [cultivosParcela, setCultivosParcela] = useState<CultivoParcela[]>([]);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,10 +26,10 @@ export default function TareaListPage() {
             await loadTareas();
 
             const resParcelas = await getParcelas();
-            const resCultivos = await getCultivos();
+            const resCultivosParcela = await getCultivosParcela();
 
             setParcelas(resParcelas);
-            setCultivos(resCultivos.data);
+            setCultivosParcela(resCultivosParcela.data);
         };
 
         load();
@@ -55,7 +59,7 @@ export default function TareaListPage() {
                 <TareaTable
                     tareas={tareas}
                     parcelas={parcelas}
-                    cultivos={cultivos}
+                    cultivosParcela={cultivosParcela}
                     onEdit={(id) => navigate(`/tareas/${id}`)}
                     onDelete={handleDelete}
                 />

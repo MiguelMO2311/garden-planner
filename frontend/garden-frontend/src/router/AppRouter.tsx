@@ -9,8 +9,13 @@ import ParcelaListPage from "../features/parcelas/ParcelaListPage";
 import ParcelaFormPage from "../features/parcelas/ParcelaFormPage";
 import ParcelaDetailPage from "../features/parcelas/ParcelaDetailPage";
 
-import CultivoListPage from "../features/cultivos/CultivoListPage";
-import CultivoFormPage from "../features/cultivos/CultivoFormPage";
+// Cultivos Tipo
+import CultivoTipoListPage from "../features/cultivos_tipo/pages/CultivoTipoListPage";
+import CultivoTipoFormPage from "../features/cultivos_tipo/pages/CultivoTipoFormPage";
+
+// Cultivos en Parcela
+import CultivoParcelaListPage from "../features/cultivos_parcela/pages/CultivoParcelaListPage";
+import CultivoParcelaFormPage from "../features/cultivos_parcela/pages/CultivoParcelaFormPage";
 
 import CalendarioPage from "../features/calendario/CalendarioPage";
 
@@ -48,10 +53,15 @@ export const AppRouter = () => (
             <Route path="/parcelas/:id" element={<ParcelaDetailPage />} />
             <Route path="/parcelas/:id/editar" element={<ParcelaFormPage />} />
 
-            {/* Cultivos */}
-            <Route path="/cultivos" element={<CultivoListPage />} />
-            <Route path="/cultivos/nuevo" element={<CultivoFormPage />} />
-            <Route path="/cultivos/:id" element={<CultivoFormPage />} />
+            {/* Cultivos Tipo (catálogo) */}
+            <Route path="/cultivos-tipo" element={<CultivoTipoListPage />} />
+            <Route path="/cultivos-tipo/nuevo" element={<CultivoTipoFormPage />} />
+            <Route path="/cultivos-tipo/:id" element={<CultivoTipoFormPage />} />
+
+            {/* Cultivos en Parcela */}
+            <Route path="/cultivos-parcela" element={<CultivoParcelaListPage />} />
+            <Route path="/cultivos-parcela/nuevo" element={<CultivoParcelaFormPage />} />
+            <Route path="/cultivos-parcela/:id" element={<CultivoParcelaFormPage />} />
 
             {/* Calendario */}
             <Route path="/calendario" element={<CalendarioPage />} />

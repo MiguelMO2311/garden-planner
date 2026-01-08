@@ -3,13 +3,13 @@ import TareaForm from "./components/TareaForm";
 
 import { getTarea } from "./api/tareasApi";
 import { getParcelas } from "../parcelas/api/parcelasApi";
-import { getCultivos } from "../cultivos/api/cultivosApi";
+import { getCultivosParcela } from "../cultivos_parcela/api/cultivosParcelaApi";
 
 import { useNavigate, useParams } from "react-router-dom";
 
 import type { TareaAgricola } from "./types";
 import type { Parcela } from "../parcelas/types";
-import type { Cultivo } from "../cultivos/types";
+import type { CultivoParcela } from "../cultivos_parcela/types";
 
 import { useTareasStore } from "../../store/tareasStore";
 
@@ -25,26 +25,31 @@ export default function TareaFormPage() {
         estado: "pendiente",
         descripcion: "",
         parcela_id: null,
-        cultivo_id: null,
+        cultivo_parcela_id: null,
     });
 
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
-    const [cultivos, setCultivos] = useState<Cultivo[]>([]);
+    const [cultivosParcela, setCultivosParcela] = useState<CultivoParcela[]>([]);
 
     useEffect(() => {
         const load = async () => {
+            // Parcelas
             const resParcelas = await getParcelas();
             setParcelas(resParcelas);
 
-            const resCultivos = await getCultivos();
-            setCultivos(resCultivos.data);
+            // Cultivos en parcela
+            const resCultivosParcela = await getCultivosParcela();
+            setCultivosParcela(resCultivosParcela.data);
 
+            // Si estamos editando, cargar la tarea
             if (id) {
                 const resTarea = await getTarea(Number(id));
+                const t = resTarea.data;
+
                 setForm({
-                    ...resTarea.data,
-                    parcela_id: resTarea.data.parcela_id ?? null,
-                    cultivo_id: resTarea.data.cultivo_id ?? null,
+                    ...t,
+                    parcela_id: t.parcela_id ?? null,
+                    cultivo_parcela_id: t.cultivo_parcela_id ?? null,
                 });
             }
         };
@@ -60,8 +65,8 @@ export default function TareaFormPage() {
             return;
         }
 
-        if (form.cultivo_id === null) {
-            alert("Debes seleccionar un cultivo");
+        if (form.cultivo_parcela_id === null) {
+            alert("Debes seleccionar un cultivo en parcela");
             return;
         }
 
@@ -84,7 +89,7 @@ export default function TareaFormPage() {
                 form={form}
                 setForm={setForm}
                 parcelas={parcelas}
-                cultivos={cultivos}
+                cultivosParcela={cultivosParcela}
                 onSubmit={handleSubmit}
             />
         </div>
