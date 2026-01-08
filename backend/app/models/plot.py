@@ -24,9 +24,9 @@ class Plot(Base):
     # relación con riegos
     irrigations = relationship("Irrigation", back_populates="plot")
 
-    # relación con cultivos
+    # relación con cultivos plantados en esta parcela
     cultivos = relationship(
-        "Cultivo",
+        "CultivoParcela",
         back_populates="plot",
         cascade="all, delete-orphan"
     )
@@ -40,7 +40,7 @@ class Plot(Base):
     # relación con planes de cultivo
     cultivo_plans = relationship("CultivoPlan", back_populates="plot")
     
-    # relación con eventos climáticos (🔥 AQUI EL CAMBIO IMPORTANTE)
+    # relación con eventos climáticos
     climate_events = relationship(
         "ClimateEvent",
         back_populates="plot",

@@ -2,8 +2,8 @@
 
 from sqlalchemy.orm import Session
 
-from backend.app.models.cultivo import TareaAgricola
-from backend.app.schemas.cultivo import TareaCreate, TareaUpdate
+from backend.app.models.cultivo_tipo import TareaAgricola
+from backend.app.schemas.cultivo_tipo import TareaCreate, TareaUpdate
 
 from app.crud.eventos import create_evento, update_evento, delete_evento
 from app.schemas.evento import EventoCreate, EventoUpdate

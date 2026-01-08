@@ -1,6 +1,6 @@
 from .user import User
 from .tarea import Tarea
-from .cultivo import Cultivo
+from .cultivo_tipo import CultivoTipo
 from .plot import Plot
 from .irrigation import Irrigation
 from .pest import Pest

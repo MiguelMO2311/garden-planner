@@ -5,15 +5,11 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.models.plot import Plot
-from app.models.cultivo import Cultivo
+from app.models.cultivo_parcela import CultivoParcela
 from app.services.weather_service import get_real_weather
 
 
 def _nivel_from_tipo(tipo: str) -> str:
-    """
-    Devuelve nivel de alerta según tipo.
-    Solo para dar colores en el frontend: info | warning | danger.
-    """
     if tipo in ("helada", "calor_extremo", "viento_fuerte"):
         return "danger"
     if tipo in ("lluvia", "riego"):
@@ -21,17 +17,12 @@ def _nivel_from_tipo(tipo: str) -> str:
     return "info"
 
 
-def _mensaje_riego(cultivo: Cultivo, lluvia_mm: float) -> str:
-    """
-    Genera mensaje de riego en función de litros_agua_semana y lluvia prevista.
-    Si litros_agua_semana es None, es conservador.
-    """
+def _mensaje_riego(cultivo: CultivoParcela, lluvia_mm: float) -> str:
     if cultivo.litros_agua_semana is None or cultivo.litros_agua_semana <= 0:
         return "Revisar riego manualmente (no hay dato de litros_agua_semana)."
 
     riego_diario = cultivo.litros_agua_semana / 7.0
 
-    # lluvia_mm ≈ litros/m2
     if lluvia_mm >= riego_diario * 0.8:
         return (
             f"No regar: la lluvia prevista ({lluvia_mm:.1f} mm) cubre casi toda la "
@@ -50,23 +41,16 @@ def _mensaje_riego(cultivo: Cultivo, lluvia_mm: float) -> str:
 
 
 async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
-    """
-    Genera alertas agrícolas para los próximos días (según predicción diaria)
-    combinando clima por parcela y cultivos de la parcela.
-    NO guarda nada en BD: devuelve una lista lista para el frontend.
-    """
     alertas: List[Dict[str, Any]] = []
 
     parcelas: List[Plot] = db.query(Plot).all()
 
     for parcela in parcelas:
-        # Sin coordenadas, no podemos calcular clima
         if parcela.lat is None or parcela.lng is None:
             continue
 
-        cultivos: List[Cultivo] = parcela.cultivos or []
+        cultivos: List[CultivoParcela] = parcela.cultivos or []
         if not cultivos:
-            # Sin cultivos, el clima no genera impacto agronómico
             continue
 
         try:
@@ -80,7 +64,6 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
         viento_actual = current.get("wind_speed", 0.0)
 
         for dia in daily:
-            # Fecha del día
             dt_str = dia.get("dt")
             try:
                 fecha = datetime.fromisoformat(dt_str).date() if dt_str else None
@@ -90,11 +73,10 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
             temp = dia.get("temp") or {}
             temp_max = temp.get("max")
             temp_min = temp.get("min")
-            pop = dia.get("pop", 0.0)  # prob lluvia 0–1
+            pop = dia.get("pop", 0.0)
             lluvia_mm = dia.get("precipitation_sum", 0.0) or 0.0
 
             for cultivo in cultivos:
-                # ---- Lluvia / riego ----
                 if pop is not None and pop >= 0.5:
                     alertas.append(
                         {
@@ -112,8 +94,6 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                         }
                     )
 
-                # Recomendación de riego basada en lluvia y litros_agua_semana
-                # (aunque no haya alta prob de lluvia, la cantidad puede ser relevante)
                 mensaje_riego = _mensaje_riego(cultivo, lluvia_mm)
                 alertas.append(
                     {
@@ -128,7 +108,6 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                     }
                 )
 
-                # ---- Helada ----
                 if temp_min is not None and temp_min <= 0:
                     alertas.append(
                         {
@@ -146,7 +125,6 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                         }
                     )
 
-                # ---- Ola de calor ----
                 if temp_max is not None and temp_max >= 32:
                     alertas.append(
                         {
@@ -164,7 +142,6 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                         }
                     )
 
-                # ---- Viento fuerte (usamos viento actual como proxy) ----
                 if viento_actual and viento_actual >= 40:
                     alertas.append(
                         {
@@ -182,6 +159,5 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                         }
                     )
 
-    # Podríamos ordenar por fecha + parcela
     alertas.sort(key=lambda a: (a.get("fecha") or "", a["plot_name"], a["cultivo_name"]))
     return alertas

@@ -23,13 +23,16 @@ class User(Base):
     # Parcelas
     parcelas = relationship("Plot", back_populates="user")
 
-    # Cultivos
-    cultivos = relationship("Cultivo", back_populates="user")
+    # Tipos de cultivo (catálogo del usuario)
+    cultivo_tipo = relationship("CultivoTipo", back_populates="user")
+
+    # Cultivos plantados en parcelas
+    cultivo_parcela = relationship("CultivoParcela", back_populates="user")
 
     # Planes de cultivo
     cultivo_plans = relationship("CultivoPlan", back_populates="user")
 
-    # Plagas
+# Plagas
     pests = relationship("Pest", back_populates="user")
 
     # Eventos manuales del calendario

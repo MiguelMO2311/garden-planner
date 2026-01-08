@@ -11,13 +11,16 @@ class Tarea(Base):
     fecha = Column(Date, nullable=True)
     estado = Column(String, default="pendiente")
 
-    cultivo_id = Column(Integer, ForeignKey("cultivos.id"), nullable=False)
+    # Relación correcta con CultivoParcela
+    cultivo_parcela_id = Column(Integer, ForeignKey("cultivo_parcela.id"), nullable=False)
+
+    # Relación correcta con parcela
     parcela_id = Column(Integer, ForeignKey("plots.id"), nullable=False)
 
-    # 🔥 NUEVO: relación con el usuario
+    # Relación con usuario
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # Relaciones
-    cultivo = relationship("Cultivo", back_populates="tareas")
+    cultivo_parcela = relationship("CultivoParcela", back_populates="tareas")
     parcela = relationship("Plot", back_populates="tareas")
     user = relationship("User", back_populates="tareas")

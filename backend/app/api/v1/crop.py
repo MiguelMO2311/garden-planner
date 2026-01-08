@@ -3,29 +3,29 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.core.database import get_db
-from app.models.cultivo import Cultivo
-from app.schemas.cultivo import CultivoCreate, CultivoRead
+from app.models.cultivo_tipo import CultivoTipo
+from app.schemas.cultivo_tipo import CultivoTipoCreate, CultivoTipoRead
 
 router = APIRouter(prefix="/crops", tags=["Crops"])
 
-@router.post("/", response_model=CultivoRead)
+@router.post("/", response_model=CultivoTipoRead)
 def create_crop(
-    crop: CultivoCreate,
+    crop: CultivoTipoCreate,
     db: Session = Depends(get_db)
 ):
-    db_crop = Cultivo(**crop.dict())
+    db_crop = CultivoTipo(**crop.dict())
     db.add(db_crop)
     db.commit()
     db.refresh(db_crop)
     return db_crop
 
-@router.get("/", response_model=List[CultivoRead])
+@router.get("/", response_model=List[CultivoTipoRead])
 def list_crops(db: Session = Depends(get_db)):
-    return db.query(Cultivo).all()
+    return db.query(CultivoTipo).all()
 
-@router.get("/{crop_id}", response_model=CultivoRead)
+@router.get("/{crop_id}", response_model=CultivoTipoRead)
 def get_crop(crop_id: int, db: Session = Depends(get_db)):
-    crop = db.query(Cultivo).filter(Cultivo.id == crop_id).first()
+    crop = db.query(CultivoTipo).filter(CultivoTipo.id == crop_id).first()
     if not crop:
         raise HTTPException(status_code=404, detail="Crop not found")
     return crop
@@ -35,7 +35,7 @@ def delete_crop(
     crop_id: int,
     db: Session = Depends(get_db)
 ):
-    crop = db.query(Cultivo).filter(Cultivo.id == crop_id).first()
+    crop = db.query(CultivoTipo).filter(CultivoTipo.id == crop_id).first()
     if not crop:
         raise HTTPException(status_code=404, detail="Crop not found")
 

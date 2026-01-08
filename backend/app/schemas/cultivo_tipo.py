@@ -1,27 +1,24 @@
-# app/schemas/cultivo.py
 from pydantic import BaseModel
 from typing import Optional
 
-class CultivoBase(BaseModel):
+class CultivoTipoBase(BaseModel):
     nombre: str
     temporada_optima: Optional[str] = None
     dias_crecimiento: Optional[int] = None
     litros_agua_semana: Optional[float] = None
     notas: Optional[str] = None
-    plot_id: int
 
-class CultivoCreate(CultivoBase):
+class CultivoTipoCreate(CultivoTipoBase):
     pass
 
-class CultivoUpdate(BaseModel):
+class CultivoTipoUpdate(BaseModel):
     nombre: Optional[str] = None
     temporada_optima: Optional[str] = None
     dias_crecimiento: Optional[int] = None
     litros_agua_semana: Optional[float] = None
     notas: Optional[str] = None
-    plot_id: Optional[int] = None
 
-class CultivoRead(CultivoBase):
+class CultivoTipoRead(CultivoTipoBase):
     id: int
     user_id: int
 

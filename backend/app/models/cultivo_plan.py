@@ -8,7 +8,7 @@ class CultivoPlan(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     plot_id = Column(Integer, ForeignKey("plots.id"), nullable=False)
-    cultivo_id = Column(Integer, ForeignKey("cultivos.id"), nullable=False)
+    cultivo_id = Column(Integer, ForeignKey("cultivo_parcela.id"), nullable=False)
 
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=True)
@@ -16,11 +16,11 @@ class CultivoPlan(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    # 🔥 Relación correcta con usuario
+    # Relación con usuario
     user = relationship("User", back_populates="cultivo_plans")
 
-    # 🔥 Relación correcta con parcela
+    # Relación con parcela
     plot = relationship("Plot", back_populates="cultivo_plans")
 
-    # 🔥 Relación correcta con cultivo
-    cultivo = relationship("Cultivo", back_populates="cultivo_plans")
+    # Relación con cultivo plantado
+    cultivo = relationship("CultivoParcela", back_populates="planes")
