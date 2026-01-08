@@ -1,4 +1,3 @@
-import { formatFecha } from "../../../utils/formatFecha";
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
 import type { Cultivo } from "../../cultivos/types";
@@ -12,55 +11,45 @@ interface Props {
 }
 
 export default function TareaTable({ tareas, parcelas, cultivos, onEdit, onDelete }: Props) {
+    const getParcelaNombre = (id: number | null) =>
+        parcelas.find((p) => p.id === id)?.name || "—";
 
-    const getParcelaNombre = (id: number | null | undefined) => {
-        if (!id) return "—";
-        const p = parcelas?.find((x) => x.id === id);
-        return p ? p.name : "—";
-    };
-
-    const getCultivoNombre = (id: number | null | undefined) => {
-        if (!id) return "—";
-        const c = cultivos.find((x) => x.id === id);
-        return c ? c.nombre : "—";
-    };
+    const getCultivoNombre = (id: number | null) =>
+        cultivos.find((c) => c.id === id)?.nombre || "—";
 
     return (
-        <table className="w-full bg-white shadow rounded-lg overflow-hidden">
-            <thead className="bg-gray-100">
+        <table className="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <th className="p-3 text-left">Título</th>
-                    <th className="p-3 text-left">Fecha</th>
-                    <th className="p-3 text-left">Estado</th>
-                    <th className="p-3 text-left">Parcela</th>
-                    <th className="p-3 text-left">Cultivo</th>
-                    <th className="p-3 text-left">Acciones</th>
+                    <th>Título</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Parcela</th>
+                    <th>Cultivo</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
 
             <tbody>
-                {tareas.map((t) => (
-                    <tr key={t.id} className="border-t">
-                        <td className="p-3">{t.titulo}</td>
+                {tareas.map((tarea) => (
+                    <tr key={tarea.id}>
+                        <td>{tarea.titulo}</td>
+                        <td>{tarea.fecha}</td>
+                        <td>{tarea.estado}</td>
+                        <td>{getParcelaNombre(tarea.parcela_id)}</td>
+                        <td>{getCultivoNombre(tarea.cultivo_id)}</td>
 
-                        {/* ← AQUÍ FORMATEAMOS LA FECHA */}
-                        <td className="p-3">{formatFecha(t.fecha)}</td>
-
-                        <td className="p-3 capitalize">{t.estado.replace("_", " ")}</td>
-                        <td className="p-3">{getParcelaNombre(t.parcela_id)}</td>
-                        <td className="p-3">{getCultivoNombre(t.cultivo_id)}</td>
-
-                        <td className="p-3 flex gap-2">
+                        <td className="d-flex gap-2">
                             <button
-                                onClick={() => onEdit(t.id!)}
-                                className="px-3 py-1 bg-blue-600 text-white rounded"
+                                className="btn btn-outline-warning btn-sm"
+                                onClick={() => onEdit(tarea.id!)}
                             >
                                 Editar
                             </button>
 
                             <button
-                                onClick={() => onDelete(t.id!)}
-                                className="px-3 py-1 bg-red-600 text-white rounded"
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() => onDelete(tarea.id!)}
                             >
                                 Eliminar
                             </button>

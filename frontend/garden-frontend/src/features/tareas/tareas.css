@@ -1,8 +1,45 @@
+/* Fondo general */
 .tareas-bg {
-    background-image: url("../../assets/backgrounds/tareas-bg.webp");
+    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
+    height: auto;
+    display: block;
     padding: 2rem;
+}
+
+/* Tarjetas estilo SaaS */
+.tareas-card {
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Título verde consistente */
+.tareas-title {
+    font-weight: 700;
+    color: #198754;
+}
+
+/* Contenedor para tablas */
+.tareas-table-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Botones dentro de la tabla */
+.tareas-table-container .btn {
+    min-width: 80px;
+}
+
+/* Espaciado entre secciones */
+.tareas-section {
+    margin-bottom: 2rem;
 }

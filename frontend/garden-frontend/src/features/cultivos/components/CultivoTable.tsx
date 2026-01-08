@@ -8,38 +8,38 @@ interface Props {
 
 export default function CultivoTable({ cultivos, onEdit, onDelete }: Props) {
     return (
-        <table className="w-full bg-white shadow rounded-lg overflow-hidden text-gray-900">
-            <thead className="bg-gray-100">
+        <table className="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <th className="p-3 text-left">Nombre</th>
-                    <th className="p-3 text-left">Temporada óptima</th>
-                    <th className="p-3 text-left">Días crecimiento</th>
-                    <th className="p-3 text-left">Litros/semana</th>
-                    <th className="p-3 text-left">Notas</th>
-                    <th className="p-3 text-left">Acciones</th>
+                    <th>Nombre</th>
+                    <th>Temporada óptima</th>
+                    <th>Días crecimiento</th>
+                    <th>Litros/semana</th>
+                    <th>Notas</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
 
             <tbody>
-                {cultivos.map((c) => (
-                    <tr key={c.id} className="border-t">
-                        <td className="p-3">{c.nombre}</td>
-                        <td className="p-3">{c.temporada_optima}</td>
-                        <td className="p-3">{c.dias_crecimiento}</td>
-                        <td className="p-3">{c.litros_agua_semana}</td>
-                        <td className="p-3">{c.notas}</td>
+                {cultivos.map((cultivo) => (
+                    <tr key={cultivo.id}>
+                        <td>{cultivo.nombre}</td>
+                        <td>{cultivo.temporada_optima || "—"}</td>
+                        <td>{cultivo.dias_crecimiento ?? "—"}</td>
+                        <td>{cultivo.litros_agua_semana ?? "—"}</td>
+                        <td>{cultivo.notas || "—"}</td>
 
-                        <td className="p-3 flex gap-2">
+                        <td className="d-flex gap-2">
                             <button
-                                onClick={() => onEdit(c.id!)}
-                                className="px-3 py-1 bg-blue-600 text-white rounded"
+                                className="btn btn-outline-warning btn-sm"
+                                onClick={() => onEdit(cultivo.id)}
                             >
                                 Editar
                             </button>
 
                             <button
-                                onClick={() => onDelete(c.id!)}
-                                className="px-3 py-1 bg-red-600 text-white rounded"
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() => onDelete(cultivo.id)}
                             >
                                 Eliminar
                             </button>

@@ -36,27 +36,30 @@ export default function TareaListPage() {
     };
 
     return (
-        <div className="tareas-bg p-4">
+        <div className="tareas-bg">
 
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Tareas agrícolas</h2>
+            {/* CARD SUPERIOR */}
+            <div className="tareas-card mb-4 d-flex justify-content-between align-items-center">
+                <h2 className="tareas-title">Tareas agrícolas</h2>
 
                 <button
                     onClick={() => navigate("/tareas/nueva")}
-                    className="btn-accion"
+                    className="btn btn-success"
                 >
-                    Nueva tarea
+                    + Nueva tarea
                 </button>
-
             </div>
 
-            <TareaTable
-                tareas={tareas}
-                parcelas={parcelas}
-                cultivos={cultivos}
-                onEdit={(id) => navigate(`/tareas/${id}`)}
-                onDelete={handleDelete}
-            />
+            {/* TABLA */}
+            <div className="tareas-table-container">
+                <TareaTable
+                    tareas={tareas}
+                    parcelas={parcelas}
+                    cultivos={cultivos}
+                    onEdit={(id) => navigate(`/tareas/${id}`)}
+                    onDelete={handleDelete}
+                />
+            </div>
 
         </div>
     );

@@ -1,8 +1,50 @@
 .cultivos-bg {
-    background-image: url("../../assets/backgrounds/cultivos-bg.webp");
+    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
     padding: 2rem;
+}
+
+.cultivos-card {
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cultivos-title {
+    font-weight: 700;
+    color: #198754;
+}
+
+.cultivos-table-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cultivos-table-container .btn {
+    min-width: 80px;
+}
+
+/* Botones de acción estilo SaaS */
+.btn-saas-outline {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #198754;
+    font-weight: 500;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-saas-outline:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
 }

@@ -39,26 +39,24 @@ export default function CultivoListPage() {
     };
 
     return (
-        <div className="cultivos-bg p-4 text-gray-900">
-
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Cultivos</h2>
-
+        <div className="cultivos-bg">
+            <div className="cultivos-card mb-4 d-flex justify-content-between align-items-center">
+                <h2 className="cultivos-title">Cultivos</h2>
                 <button
                     onClick={() => navigate("/cultivos/nuevo")}
-                    className="btn-accion"
+                    className="btn btn-success"
                 >
-                    Nuevo cultivo
+                    + Nuevo cultivo
                 </button>
-
             </div>
 
-            <CultivoTable
-                cultivos={cultivos}
-                onEdit={(id) => navigate(`/cultivos/${id}`)}
-                onDelete={handleDelete}
-            />
-
+            <div className="cultivos-table-container">
+                <CultivoTable
+                    cultivos={cultivos}
+                    onEdit={(id) => navigate(`/cultivos/${id}`)}
+                    onDelete={handleDelete}
+                />
+            </div>
         </div>
     );
 }
