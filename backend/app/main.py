@@ -59,11 +59,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 🔥 SOLO ESTO
+# Routers
 app.include_router(api_router, prefix="/api/v1")
+
+# ---------------------------------------------------------
+# 🔥 GENERACIÓN AUTOMÁTICA DE EVENTOS CLIMÁTICOS REALES
+# ---------------------------------------------------------
+from app.services.climate_events import generar_eventos_reales
+import asyncio
+from datetime import date, timedelta
+
+@app.on_event("startup")
+async def generar_clima_inicial():
+    """
+    Genera eventos climáticos reales para los próximos 3 días
+    al arrancar el servidor.
+    """
+    print(">>> Generando eventos climáticos reales (Open‑Meteo)...")
+    db = SessionLocal()
+    try:
+        await generar_eventos_reales(db, days=3)
+        print(">>> Eventos climáticos generados correctamente.")
+    except Exception as e:
+        print(">>> ERROR generando clima real:", e)
+    finally:
+        db.close()
+
+# ---------------------------------------------------------
 
 print(">>> RUTAS REGISTRADAS EN FASTAPI:")
 for route in app.routes:
     methods = getattr(route, "methods", None)
     print(" -", route.path, methods)
-

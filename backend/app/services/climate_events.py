@@ -66,3 +66,84 @@ def generar_descripcion(tipo: str) -> str:
     }
 
     return descripciones.get(tipo, "Evento climático inesperado.")
+
+async def generar_eventos_reales(db: Session, days: int = 3):
+    """
+    Genera eventos climáticos reales basados en Open‑Meteo
+    para cada parcela con lat/lon.
+    """
+    from app.services.weather_service import get_real_weather
+
+    parcelas = db.query(Plot).all()
+    eventos_creados = []
+
+    for parcela in parcelas:
+        if parcela.lat is None or parcela.lng is None:
+            continue  # no se puede obtener clima real
+
+        # Obtener clima real
+        clima = await get_real_weather(parcela.lat, parcela.lng)
+
+        # Procesar clima diario
+        for dia in clima["daily"]:
+            fecha = date.fromisoformat(dia["dt"])
+            temp_max = dia["temp"]["max"]
+            temp_min = dia["temp"]["min"]
+            pop = dia["pop"]  # probabilidad de precipitación (0–1)
+
+            # --- Detectar eventos reales ---
+            # Lluvia
+            if pop > 0.6:
+                eventos_creados.append(
+                    ClimateEvent(
+                        plot_id=parcela.id,
+                        date=fecha,
+                        type="lluvia",
+                        intensity=round(pop, 2),
+                        description="Alta probabilidad de lluvia según Open‑Meteo",
+                    )
+                )
+
+            # Ola de calor
+            if temp_max >= 32:
+                eventos_creados.append(
+                    ClimateEvent(
+                        plot_id=parcela.id,
+                        date=fecha,
+                        type="ola_de_calor",
+                        intensity=min((temp_max - 30) / 10, 1),
+                        description="Temperaturas muy altas detectadas",
+                    )
+                )
+
+            # Helada
+            if temp_min <= 0:
+                eventos_creados.append(
+                    ClimateEvent(
+                        plot_id=parcela.id,
+                        date=fecha,
+                        type="helada",
+                        intensity=min(abs(temp_min) / 10, 1),
+                        description="Temperaturas bajo cero detectadas",
+                    )
+                )
+
+            # Viento fuerte (solo en clima actual)
+            viento = clima["current"]["wind_speed"]
+            if viento >= 40:
+                eventos_creados.append(
+                    ClimateEvent(
+                        plot_id=parcela.id,
+                        date=fecha,
+                        type="viento_fuerte",
+                        intensity=min(viento / 100, 1),
+                        description="Rachas de viento fuertes detectadas",
+                    )
+                )
+
+    # Guardar en BD
+    for ev in eventos_creados:
+        db.add(ev)
+
+    db.commit()
+    return eventos_creados
