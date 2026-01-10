@@ -260,7 +260,7 @@ export default function DashboardPage() {
 
                 <div className="col-6 col-lg-3">
                     {/* 🔥 CAMBIO 2: navegación corregida */}
-                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivo-tipo")}>
+                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivos-parcela")}>
                         <GiPlantRoots className="dashboard-icon text-success small-icon" />
                         <div>
                             <h6 className="fw-bold mb-0">Cultivos</h6>

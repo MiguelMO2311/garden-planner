@@ -1,5 +1,8 @@
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
+import { formatFecha } from "../../../utils/formatFecha";
+
+
 
 interface Props {
     tareas: TareaAgricola[];
@@ -44,7 +47,7 @@ export default function TareaTable({
                 {tareas.map((tarea) => (
                     <tr key={tarea.id}>
                         <td>{tarea.titulo}</td>
-                        <td>{tarea.fecha}</td>
+                        <td>{formatFecha(tarea.fecha)}</td>
                         <td>{tarea.estado}</td>
 
                         {/* Parcela de la tarea */}
