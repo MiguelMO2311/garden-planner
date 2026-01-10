@@ -1,13 +1,9 @@
 import type { TareaAgricola } from "../types";
 import type { Parcela } from "../../parcelas/types";
-import type { CultivoParcela } from "../../cultivos_parcela/types";
 
 interface Props {
     tareas: TareaAgricola[];
     parcelas: Parcela[];
-    cultivosParcela: (CultivoParcela & {
-        cultivo_tipo?: { id: number; nombre: string };
-    })[];
     onEdit: (id: number) => void;
     onDelete: (id: number) => void;
 }
@@ -15,19 +11,20 @@ interface Props {
 export default function TareaTable({
     tareas,
     parcelas,
-    cultivosParcela,
     onEdit,
     onDelete,
 }: Props) {
     const getParcelaNombre = (id: number | null) =>
         parcelas.find((p) => p.id === id)?.name || "—";
 
-    const getCultivoParcelaNombre = (id: number | null) => {
-        const cp = cultivosParcela.find((c) => c.id === id);
+    const getCultivoParcelaNombre = (tarea: TareaAgricola) => {
+        const cp = tarea.cultivo_parcela;
         if (!cp) return "—";
-        return cp.cultivo_tipo?.nombre
-            ? `${cp.cultivo_tipo.nombre} (Parcela ${cp.parcela_id})`
-            : `Cultivo ${cp.id}`;
+
+        const cultivo = cp.cultivo_tipo?.nombre ?? "Cultivo";
+        const parcela = cp.parcela?.name ?? "Sin parcela";
+
+        return `${cultivo} (Parcela ${parcela})`;
     };
 
     return (
@@ -49,8 +46,12 @@ export default function TareaTable({
                         <td>{tarea.titulo}</td>
                         <td>{tarea.fecha}</td>
                         <td>{tarea.estado}</td>
+
+                        {/* Parcela de la tarea */}
                         <td>{getParcelaNombre(tarea.parcela_id)}</td>
-                        <td>{getCultivoParcelaNombre(tarea.cultivo_parcela_id)}</td>
+
+                        {/* Cultivo en parcela con nombre real de la parcela */}
+                        <td>{getCultivoParcelaNombre(tarea)}</td>
 
                         <td className="d-flex gap-2">
                             <button

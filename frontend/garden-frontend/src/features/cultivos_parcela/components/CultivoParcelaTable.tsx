@@ -4,6 +4,12 @@ import type { CultivoParcela } from "../types";
 import type { CultivoTipo } from "../../cultivos_tipo/types";
 import type { Parcela } from "../../parcelas/types";
 
+const formatFecha = (iso: string | null) => {
+    if (!iso) return "—";
+    const [año, mes, dia] = iso.split("-");
+    return `${dia}/${mes}/${año}`;
+};
+
 interface Props {
     cultivos: (CultivoParcela & {
         cultivo_tipo?: CultivoTipo;
@@ -28,25 +34,25 @@ export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Prop
             </thead>
 
             <tbody>
-                {cultivos.map((c) => (
-                    <tr key={c.id}>
-                        <td>{c.cultivo_tipo?.nombre ?? "—"}</td>
-                        <td>{c.parcela?.name ?? "—"}</td>
-                        <td>{c.fecha_siembra ?? "—"}</td>
-                        <td>{c.fecha_cosecha ?? "—"}</td>
-                        <td>{c.estado}</td>
+                {cultivos.map((cultivo) => (
+                    <tr key={cultivo.id}>
+                        <td>{cultivo.cultivo_tipo?.nombre ?? "—"}</td>
+                        <td>{cultivo.parcela?.name ?? "—"}</td>
+                        <td>{formatFecha(cultivo.fecha_siembra)}</td>
+                        <td>{formatFecha(cultivo.fecha_cosecha)}</td>
+                        <td>{cultivo.estado}</td>
 
                         <td className="d-flex gap-2">
                             <button
                                 className="btn btn-outline-warning btn-sm"
-                                onClick={() => onEdit(c.id)}
+                                onClick={() => onEdit(cultivo.id)}
                             >
                                 Editar
                             </button>
 
                             <button
                                 className="btn btn-outline-danger btn-sm"
-                                onClick={() => onDelete(c.id)}
+                                onClick={() => onDelete(cultivo.id)}
                             >
                                 Eliminar
                             </button>

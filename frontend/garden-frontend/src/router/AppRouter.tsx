@@ -9,6 +9,8 @@ import ParcelaListPage from "../features/parcelas/ParcelaListPage";
 import ParcelaFormPage from "../features/parcelas/ParcelaFormPage";
 import ParcelaDetailPage from "../features/parcelas/ParcelaDetailPage";
 
+import CultivosMainPage from "../features/cultivos/CultivosMainPage";
+
 // Cultivos Tipo
 import CultivoTipoListPage from "../features/cultivos_tipo/pages/CultivoTipoListPage";
 import CultivoTipoFormPage from "../features/cultivos_tipo/pages/CultivoTipoFormPage";
@@ -52,6 +54,9 @@ export const AppRouter = () => (
             <Route path="/parcelas/nueva" element={<ParcelaFormPage />} />
             <Route path="/parcelas/:id" element={<ParcelaDetailPage />} />
             <Route path="/parcelas/:id/editar" element={<ParcelaFormPage />} />
+            
+            {/* Cultivos (vista principal) */}
+            <Route path="/cultivos" element={<CultivosMainPage />} />
 
             {/* Cultivos Tipo (catálogo) */}
             <Route path="/cultivos-tipo" element={<CultivoTipoListPage />} />

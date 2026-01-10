@@ -9,6 +9,7 @@ interface Props {
     setForm: (data: CultivoParcelaCreate | CultivoParcela) => void;
     cultivosTipo: CultivoTipo[];
     parcelas: Parcela[];
+    fechaCosecha: string;   // ← AÑADIDO
     onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -17,6 +18,7 @@ export default function CultivoParcelaForm({
     setForm,
     cultivosTipo,
     parcelas,
+    fechaCosecha,   // ← RECIBIDO AQUÍ
     onSubmit,
 }: Props) {
     return (
@@ -37,7 +39,7 @@ export default function CultivoParcelaForm({
                     id="cultivo_tipo_id"
                     className="w-full border rounded px-3 py-2"
                     value={form.cultivo_tipo_id}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    onChange={(e) =>
                         setForm({
                             ...form,
                             cultivo_tipo_id: Number(e.target.value),
@@ -67,7 +69,7 @@ export default function CultivoParcelaForm({
                     id="parcela_id"
                     className="w-full border rounded px-3 py-2"
                     value={form.parcela_id}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    onChange={(e) =>
                         setForm({
                             ...form,
                             parcela_id: Number(e.target.value),
@@ -98,29 +100,28 @@ export default function CultivoParcelaForm({
                     type="date"
                     className="w-full border rounded px-3 py-2"
                     value={form.fecha_siembra ?? ""}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    onChange={(e) =>
                         setForm({ ...form, fecha_siembra: e.target.value })
                     }
                 />
             </div>
 
-            {/* Fecha cosecha */}
+            {/* Fecha de cosecha (solo lectura) */}
             <div>
                 <label
                     htmlFor="fecha_cosecha"
                     className="block text-sm font-medium mb-1"
                 >
-                    Fecha de cosecha
+                    Fecha de cosecha (calculada automáticamente)
                 </label>
 
                 <input
                     id="fecha_cosecha"
                     type="date"
-                    className="w-full border rounded px-3 py-2"
-                    value={form.fecha_cosecha ?? ""}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setForm({ ...form, fecha_cosecha: e.target.value })
-                    }
+                    className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                    value={fechaCosecha || ""}
+                    readOnly
+                    disabled
                 />
             </div>
 
@@ -137,7 +138,7 @@ export default function CultivoParcelaForm({
                     id="estado"
                     className="w-full border rounded px-3 py-2"
                     value={form.estado ?? "activo"}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    onChange={(e) =>
                         setForm({
                             ...form,
                             estado: e.target.value as "activo" | "cosechado" | "muerto",

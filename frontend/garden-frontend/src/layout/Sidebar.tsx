@@ -4,7 +4,6 @@ import "./layout.css";
 
 export default function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
-    const [openCultivos, setOpenCultivos] = useState(true);
 
     return (
         <aside className={`sidebar-modern ${collapsed ? "collapsed" : ""}`}>
@@ -34,39 +33,16 @@ export default function Sidebar() {
                     <span className="label">Parcelas</span>
                 </NavLink>
 
-                {/* SECCIÓN CULTIVOS */}
-                <div className="sidebar-section">
-                    <button
-                        className="sidebar-section-toggle"
-                        onClick={() => setOpenCultivos(!openCultivos)}
-                    >
-                        <span className="icon">🌾</span>
-                        <span className="label">Cultivos</span>
-                        <span className="arrow">{openCultivos ? "▾" : "▸"}</span>
-                    </button>
-
-                    {openCultivos && (
-                        <div className="sidebar-submenu">
-                            <NavLink
-                                to="/cultivos-parcela"
-                                className={({ isActive }) =>
-                                    `sidebar-sublink ${isActive ? "active" : ""}`
-                                }
-                            >
-                                Cultivos en parcela
-                            </NavLink>
-
-                            <NavLink
-                                to="/cultivos-tipo"
-                                className={({ isActive }) =>
-                                    `sidebar-sublink ${isActive ? "active" : ""}`
-                                }
-                            >
-                                Catálogo de cultivos
-                            </NavLink>
-                        </div>
-                    )}
-                </div>
+                {/* CULTIVOS */}
+                <NavLink
+                    to="/cultivos"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">🌾</span>
+                    <span className="label">Cultivos</span>
+                </NavLink>
 
                 {/* TAREAS */}
                 <NavLink

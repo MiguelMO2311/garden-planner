@@ -1,0 +1,63 @@
+/* Fondo general (igual que otras páginas con bg) */
+.cultivos-bg {
+    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* Título */
+.cultivos-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+/* Grid de cards */
+.cultivos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+/* Card */
+.cultivo-card {
+    display: block;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.75);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.25s ease;
+    color: #1a1a1a;
+}
+
+.cultivo-card:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-4px);
+}
+
+/* Títulos dentro de las cards */
+.cultivo-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+/* Texto dentro de las cards */
+.cultivo-card p {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+.cultivos-bg {
+    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 2rem;
+}

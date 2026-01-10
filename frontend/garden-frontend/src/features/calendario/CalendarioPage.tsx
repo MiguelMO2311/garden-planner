@@ -12,7 +12,23 @@ import { useTareasStore } from "../../store/tareasStore";
 
 import "./calendario.css";
 
-// Colores por estado (versión backend: minúsculas)
+// -----------------------------
+// TIPOS
+// -----------------------------
+type AlertaClimatica = {
+    plot_id: number;
+    plot_name: string;
+    cultivo_id: number;
+    cultivo_name: string;
+    fecha: string;
+    tipo: string;
+    mensaje: string;
+    nivel: "danger" | "warning" | "info";
+};
+
+// -----------------------------
+// COLORES POR ESTADO
+// -----------------------------
 const getEstadoColor = (estado?: string) => {
     switch (estado) {
         case "pendiente":
@@ -29,7 +45,9 @@ const getEstadoColor = (estado?: string) => {
 export default function CalendarioPage() {
     const { tareas, loadTareas } = useTareasStore();
 
+    const [alertas, setAlertas] = useState<AlertaClimatica[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
+
     const [form, setForm] = useState<EventoAgricola>({
         titulo: "",
         fecha: "",
@@ -38,16 +56,38 @@ export default function CalendarioPage() {
         estado: "pendiente",
     });
 
+    // -----------------------------
+    // CARGAR TAREAS
+    // -----------------------------
     useEffect(() => {
         loadTareas();
     }, [loadTareas]);
 
-    // Convertimos tareas → eventos para el calendario
-    const eventos: EventoAgricola[] = tareas
+    // -----------------------------
+    // CARGAR ALERTAS CLIMÁTICAS
+    // -----------------------------
+    useEffect(() => {
+        const loadAlertas = async () => {
+            try {
+                const res = await fetch("http://localhost:8000/api/v1/clima/alertas-semana");
+                const data = await res.json();
+                setAlertas(data);
+            } catch (err) {
+                console.error("Error cargando alertas:", err);
+            }
+        };
+
+        loadAlertas();
+    }, []);
+
+    // -----------------------------
+    // TAREAS → EVENTOS
+    // -----------------------------
+    const eventosTareas: EventoAgricola[] = tareas
         .filter((t: TareaAgricola) => t.estado !== "completada")
         .map((t: TareaAgricola) => ({
             id: t.id,
-            titulo: t.titulo,
+            titulo: `${t.titulo} en: "${t.parcela?.name ?? "—"}"`,
             fecha: t.fecha,
             tipo: "tarea",
             descripcion: t.descripcion ?? "",
@@ -55,6 +95,32 @@ export default function CalendarioPage() {
             color: getEstadoColor(t.estado),
         }));
 
+    // -----------------------------
+    // ALERTAS → EVENTOS
+    // -----------------------------
+    const eventosAlertas: EventoAgricola[] = alertas.map((a) => ({
+        id: Number(`${a.plot_id}${a.cultivo_id}${a.fecha.replace(/-/g, "")}`),
+        titulo: `${a.tipo} de ${a.cultivo_name} en parcela ${a.plot_name}`,
+        fecha: a.fecha,
+        tipo: "alerta",
+        descripcion: a.mensaje,
+        estado: "info",
+        color:
+            a.nivel === "danger"
+                ? "#dc3545"
+                : a.nivel === "warning"
+                    ? "#f59e0b"
+                    : "#0ea5e9",
+    }));
+
+    // -----------------------------
+    // UNIR TAREAS + ALERTAS
+    // -----------------------------
+    const eventos = [...eventosTareas, ...eventosAlertas];
+
+    // -----------------------------
+    // HANDLERS
+    // -----------------------------
     const handleSelectDate = (fecha: string) => {
         setForm({
             titulo: "",
@@ -75,6 +141,9 @@ export default function CalendarioPage() {
         setModalOpen(false);
     };
 
+    // -----------------------------
+    // RENDER
+    // -----------------------------
     return (
         <div className="calendario-bg p-4">
 
@@ -102,17 +171,22 @@ export default function CalendarioPage() {
                     </div>
                 </div>
 
-                {eventos.length === 0 && (
+                {eventosTareas.length === 0 && (
                     <p className="text-gray-700">No hay tareas pendientes.</p>
                 )}
 
                 <ul className="list-group">
-                    {eventos.map((ev) => (
+                    {eventosTareas.map((ev) => (
                         <li
                             key={ev.id}
                             className="list-group-item d-flex justify-content-between align-items-center cursor-pointer tarea-item"
                             onClick={() => handleSelectEvent(ev)}
-                            style={{ "--tarea-color": ev.color, "--tarea-bg": ev.color + "33" } as React.CSSProperties}
+                            style={
+                                {
+                                    "--tarea-color": ev.color,
+                                    "--tarea-bg": ev.color + "33",
+                                } as React.CSSProperties
+                            }
                         >
                             <span>{ev.titulo}</span>
                             <span className="badge bg-primary">

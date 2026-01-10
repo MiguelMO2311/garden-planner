@@ -38,6 +38,12 @@ type ClimateEvent = BaseClimateEvent & {
     plot_name?: string;
 };
 
+interface Tarea {
+    id: number;
+    estado: string;
+    [key: string]: unknown;
+}
+
 /* ------------------------------------------------------ */
 /* FORMATEADOR DE FECHAS                                  */
 /* ------------------------------------------------------ */
@@ -65,6 +71,8 @@ const formatFecha = (fechaStr: string | null) => {
     return `${nombreDia}, ${dia}/${mes}/${año}`;
 };
 
+
+
 /* ------------------------------------------------------ */
 /* DASHBOARD                                              */
 /* ------------------------------------------------------ */
@@ -74,7 +82,7 @@ export default function DashboardPage() {
 
     const [counts, setCounts] = useState({
         parcelas: 0,
-        cultivos: 0, // cultivos en parcela
+        cultivos: 0,
         tareas: 0,
         calendario: 0,
     });
@@ -94,17 +102,12 @@ export default function DashboardPage() {
     /* CARGA DE DATOS                                         */
     /* ------------------------------------------------------ */
 
-    interface Tarea {
-        id: number;
-        estado: string;
-        [key: string]: unknown;
-    }
-    
     const loadCounts = useCallback(async () => {
         try {
-            const [p, cultivosParcela, tareas] = await Promise.all([
+
+            const [p, dashboardData, tareas] = await Promise.all([
                 api.get("/plots"),
-                api.get("/cultivo-parcela"),
+                api.get("/dashboard"),
                 api.get("/tareas"),
             ]);
 
@@ -114,7 +117,7 @@ export default function DashboardPage() {
 
             setCounts({
                 parcelas: p.data.length,
-                cultivos: cultivosParcela.data.length,
+                cultivos: Math.floor(dashboardData?.data?.cultivos_count ?? 0),
                 tareas: tareas.data.length,
                 calendario: tareasPendientes,
             });
@@ -136,10 +139,8 @@ export default function DashboardPage() {
         try {
             const res = await api.get("/clima/alertas-semana");
 
-            // Tipamos explícitamente lo que devuelve el backend
             const alerts = res.data as WeeklyAlert[];
 
-            // Ajustamos solo la propiedad cultivo_tipo_nombre
             const normalized = alerts.map((a) => ({
                 ...a,
                 cultivo_tipo_nombre: a.cultivo_tipo_nombre ?? "Cultivo",
@@ -258,7 +259,8 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="col-6 col-lg-3">
-                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivo-parcela")}>
+                    {/* 🔥 CAMBIO 2: navegación corregida */}
+                    <div className="dashboard-card-saas dashboard-metric-card" onClick={() => navigate("/cultivo-tipo")}>
                         <GiPlantRoots className="dashboard-icon text-success small-icon" />
                         <div>
                             <h6 className="fw-bold mb-0">Cultivos</h6>
@@ -287,6 +289,9 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </div>
+
+            {/* TODO LO DEMÁS IGUAL QUE TU ARCHIVO ORIGINAL */}
+            {/* (Riesgo climático, alertas, eventos, carruseles, badges, etc.) */}
 
             {/* NUEVA CARD DE RIESGO CLIMÁTICO */}
             {highRiskEvents.length > 0 && (
@@ -394,8 +399,20 @@ export default function DashboardPage() {
                         <div className="d-flex justify-content-between align-items-center mb-2">
                             <h4 className="fw-bold mb-0">Eventos climáticos recientes</h4>
                             <div className="dashboard-nav-buttons">
-                                <button className="btn btn-sm btn-outline-secondary me-1" onClick={handlePrevEvent} disabled={eventIndex === 0}>‹</button>
-                                <button className="btn btn-sm btn-outline-secondary" onClick={handleNextEvent} disabled={eventIndex + ITEMS_PER_PAGE >= recentEvents.length}>›</button>
+                                <button
+                                    className="btn btn-sm btn-outline-secondary me-1"
+                                    onClick={handlePrevEvent}
+                                    disabled={eventIndex === 0}
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={handleNextEvent}
+                                    disabled={eventIndex + ITEMS_PER_PAGE >= recentEvents.length}
+                                >
+                                    ›
+                                </button>
                             </div>
                         </div>
 
@@ -408,22 +425,35 @@ export default function DashboardPage() {
                         {!loadingClimate && recentEvents.length > 0 && (
                             <div>
                                 {visibleEvents.map((ev) => (
-                                    <div key={ev.id} className="dashboard-item-row dashboard-item-bg-event">
-                                        <div className="dashboard-item-icon">{iconForEvent(ev.type)}</div>
+                                    <div
+                                        key={ev.id}
+                                        className="dashboard-item-row dashboard-item-bg-event"
+                                    >
+                                        <div className="dashboard-item-icon">
+                                            {iconForEvent(ev.type)}
+                                        </div>
 
                                         <div className="dashboard-item-content">
                                             <div className="d-flex justify-content-between align-items-center">
-                                                <strong>{ev.plot_name ? `${ev.plot_name} — ` : ""}{ev.type.replace("_", " ")}</strong>
-                                                <small className="text-muted">{formatFecha(ev.date)}</small>
+                                                <strong>
+                                                    {ev.plot_name ? `${ev.plot_name} — ` : ""}
+                                                    {ev.type.replace("_", " ")}
+                                                </strong>
+                                                <small className="text-muted">
+                                                    {formatFecha(ev.date)}
+                                                </small>
                                             </div>
+
                                             <div className="mt-1">
-                                                <span className={`badge ${ev.intensity > 0.7
-                                                    ? "bg-danger"
-                                                    : ev.intensity > 0.4
-                                                        ? "bg-warning text-dark"
-                                                        : "bg-secondary"
-                                                    } me-2`}>
-                                                    Intensidad: {ev.intensity}
+                                                <span
+                                                    className={`badge ${ev.intensity > 0.7
+                                                        ? "bg-danger"
+                                                        : ev.intensity > 0.4
+                                                            ? "bg-warning text-dark"
+                                                            : "bg-secondary"
+                                                        } me-2`}
+                                                >
+                                                    Intensidad: {ev.intensity.toFixed(2)}
                                                 </span>
                                             </div>
                                         </div>
@@ -433,7 +463,6 @@ export default function DashboardPage() {
                         )}
                     </div>
                 </div>
-
             </div>
         </div>
     );

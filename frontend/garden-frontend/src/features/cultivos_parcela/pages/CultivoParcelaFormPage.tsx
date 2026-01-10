@@ -30,38 +30,44 @@ export default function CultivoParcelaFormPage() {
         cultivo_tipo_id: 0,
         parcela_id: 0,
         fecha_siembra: "",
-        fecha_cosecha: "",
         estado: "activo",
     });
+
+    // Campo calculado por backend (solo lectura)
+    const [fechaCosecha, setFechaCosecha] = useState<string>("");
 
     const [cultivosTipo, setCultivosTipo] = useState<CultivoTipo[]>([]);
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
 
     useEffect(() => {
-        // Cargar catálogo de cultivos tipo
         getCultivosTipo().then((res) => setCultivosTipo(res.data));
-
-        // Cargar parcelas
         getParcelas().then((res) => setParcelas(res));
 
-        // Si estamos editando, cargar el cultivo en parcela
         if (isEditing) {
-            getCultivoParcela(Number(id)).then((res) =>
-                setFormData(res.data)
-            );
+            getCultivoParcela(Number(id)).then((res) => {
+                setFormData({
+                    cultivo_tipo_id: res.data.cultivo_tipo_id,
+                    parcela_id: res.data.parcela_id,
+                    fecha_siembra: res.data.fecha_siembra,
+                    estado: res.data.estado,
+                });
+
+                setFechaCosecha(res.data.fecha_cosecha ?? "");
+            });
         }
     }, [id, isEditing]);
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
             if (isEditing) {
-                await updateCultivoParcela(Number(id), formData);
+                const res = await updateCultivoParcela(Number(id), formData);
+                setFechaCosecha(res.data.fecha_cosecha);
                 showToast("Cultivo actualizado", "success");
             } else {
-                await createCultivoParcela(formData);
+                const res = await createCultivoParcela(formData);
+                setFechaCosecha(res.data.fecha_cosecha);
                 showToast("Cultivo creado", "success");
             }
 
@@ -94,6 +100,7 @@ export default function CultivoParcelaFormPage() {
                 setForm={setFormData}
                 cultivosTipo={cultivosTipo}
                 parcelas={parcelas}
+                fechaCosecha={fechaCosecha}   // ← añadido
                 onSubmit={handleSubmit}
             />
 

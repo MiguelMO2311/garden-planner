@@ -8,18 +8,18 @@ import type {
 } from "../types";
 
 export const getCultivosParcela = (parcelaId?: number) =>
-    api.get<CultivoParcela[]>("/cultivo-parcela", {
+    api.get<CultivoParcela[]>("/cultivo-parcela/", {
         params: parcelaId ? { parcela_id: parcelaId } : {},
     });
 
 export const getCultivoParcela = (id: number) =>
-    api.get<CultivoParcela>(`/cultivo-parcela/${id}`);
+    api.get<CultivoParcela>(`/cultivo-parcela/${id}/`);
 
 export const createCultivoParcela = (data: CultivoParcelaCreate) =>
-    api.post("/cultivo-parcela", data);
+    api.post("/cultivo-parcela/", data);
 
 export const updateCultivoParcela = (id: number, data: CultivoParcelaUpdate) =>
-    api.put(`/cultivo-parcela/${id}`, data);
+    api.put(`/cultivo-parcela/${id}/`, data);
 
 export const deleteCultivoParcela = (id: number) =>
-    api.delete(`/cultivo-parcela/${id}`);
+    api.delete(`/cultivo-parcela/${id}/`);
