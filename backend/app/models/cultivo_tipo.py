@@ -16,3 +16,6 @@ class CultivoTipo(Base):
 
     # Relación correcta con usuario
     user = relationship("User", back_populates="cultivo_tipo")
+
+    # 🔥 ESTA RELACIÓN ES OBLIGATORIA
+    cultivos_parcela = relationship("CultivoParcela", back_populates="cultivo_tipo")

@@ -64,7 +64,7 @@ def clima_reciente(db: Session = Depends(get_db)):
         eventos_serializados.append({
             "id": ev.id,
             "type": ev.type,
-            "intensity": ev.intensity,
+            "intensity": float(ev.intensity),
             "date": ev.date.isoformat(),
             "plot_id": ev.plot_id,
             "plot_name": ev.plot.name if ev.plot else None,

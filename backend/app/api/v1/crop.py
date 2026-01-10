@@ -4,7 +4,7 @@ from typing import List
 
 from app.core.database import get_db
 from app.models.cultivo_tipo import CultivoTipo
-from app.schemas.cultivo_tipo import CultivoTipoCreate, CultivoTipoRead
+from backend.app.schemas.cultivo_tipo_schema import CultivoTipoCreate, CultivoTipoRead
 
 router = APIRouter(prefix="/crops", tags=["Crops"])
 

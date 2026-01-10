@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 from app.schemas.plot import PlotRead
-from app.schemas.cultivo_parcela import CultivoParcelaRead
+from app.schemas.cultivo_parcela_schema import CultivoParcelaRead
 
 class TareaBase(BaseModel):
     titulo: str

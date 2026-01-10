@@ -26,10 +26,10 @@ class Plot(Base):
 
     # relación con cultivos plantados en esta parcela
     cultivos = relationship(
-        "CultivoParcela",
-        back_populates="plot",
-        cascade="all, delete-orphan"
-    )
+    "CultivoParcela",
+    back_populates="parcela",
+    cascade="all, delete-orphan"
+)
 
     # relación con tareas
     tareas = relationship("Tarea", back_populates="parcela", cascade="all, delete-orphan")

@@ -10,12 +10,13 @@ from app.models.plot import Plot
 from app.models.cultivo_plan import CultivoPlan
 from app.models.irrigation import Irrigation
 from app.models.pest import Pest
+from app.models.cultivo_parcela import CultivoParcela   # ← IMPORTANTE
 
-router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
-
+router = APIRouter(tags=["Dashboard"])
 
 class DashboardStats(BaseModel):
     plots_count: int
+    cultivos_count: int
     crop_plans_active: int
     irrigations_last_7_days: int
     pests_last_30_days: int
@@ -36,14 +37,19 @@ def get_dashboard(
         plans_q = db.query(CultivoPlan)
         irrigation_q = db.query(Irrigation)
         pests_q = db.query(Pest)
+        cultivos_parcela_q = db.query(CultivoParcela)   # ← NUEVO
     else:
         plots_q = db.query(Plot).filter(Plot.user_id == user.id)
         plans_q = db.query(CultivoPlan).filter(CultivoPlan.user_id == user.id)
         irrigation_q = db.query(Irrigation).filter(Irrigation.user_id == user.id)
         pests_q = db.query(Pest).filter(Pest.user_id == user.id)
+        cultivos_parcela_q = db.query(CultivoParcela).filter(CultivoParcela.user_id == user.id)  # ← NUEVO
 
     # Número de parcelas
     plots_count = plots_q.count()
+
+    # Número total de cultivos reales en parcela
+    cultivos_count = cultivos_parcela_q.count()   # ← CORREGIDO
 
     # Planes activos (start_date <= hoy <= end_date o sin end_date)
     crop_plans_active = plans_q.filter(
@@ -65,6 +71,7 @@ def get_dashboard(
 
     return DashboardStats(
         plots_count=plots_count,
+        cultivos_count=cultivos_count,
         crop_plans_active=crop_plans_active,
         irrigations_last_7_days=irrigations_last_7_days,
         pests_last_30_days=pests_last_30_days,

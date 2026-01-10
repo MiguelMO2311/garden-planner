@@ -1,6 +1,4 @@
 # app/api/v1/cultivo_tipo.py
-import inspect
-print(">>> CULTIVO_TIPO.PY CARGADO DESDE:", inspect.getfile(inspect.currentframe()))
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -11,7 +9,7 @@ from app.core.auth import get_current_user
 from app.models.user import User
 
 from app.models.cultivo_tipo import CultivoTipo
-from app.schemas.cultivo_tipo import CultivoTipoCreate, CultivoTipoRead, CultivoTipoUpdate
+from app.schemas.cultivo_tipo_schema import CultivoTipoCreate, CultivoTipoRead, CultivoTipoUpdate
 
 router = APIRouter(tags=["Cultivos tipo"])
 

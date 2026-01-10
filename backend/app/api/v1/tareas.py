@@ -14,7 +14,9 @@ from app.schemas.tarea import TareaCreate, TareaUpdate, TareaRead
 router = APIRouter()
 
 
+# ---------------------------------------------------------
 # LISTAR TAREAS
+# ---------------------------------------------------------
 @router.get("/", response_model=List[TareaRead])
 def list_tareas(
     db: Session = Depends(get_db),
@@ -24,14 +26,16 @@ def list_tareas(
         db.query(Tarea)
         .options(
             joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela)
+            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
         )
         .filter(Tarea.user_id == current_user.id)
         .all()
     )
 
 
+# ---------------------------------------------------------
 # OBTENER UNA TAREA
+# ---------------------------------------------------------
 @router.get("/{tarea_id}", response_model=TareaRead)
 def get_tarea(
     tarea_id: int,
@@ -42,7 +46,7 @@ def get_tarea(
         db.query(Tarea)
         .options(
             joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela)
+            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
         )
         .filter(
             Tarea.id == tarea_id,
@@ -57,7 +61,9 @@ def get_tarea(
     return tarea
 
 
+# ---------------------------------------------------------
 # CREAR TAREA
+# ---------------------------------------------------------
 @router.post("/", response_model=TareaRead, status_code=201)
 def create_tarea(
     tarea: TareaCreate,
@@ -80,6 +86,7 @@ def create_tarea(
             detail="Cultivo en parcela no encontrado o no pertenece al usuario"
         )
 
+    # Crear tarea
     db_tarea = Tarea(
         titulo=tarea.titulo,
         descripcion=tarea.descripcion,
@@ -94,10 +101,23 @@ def create_tarea(
     db.commit()
     db.refresh(db_tarea)
 
+    # 🔥 Recargar con relaciones completas
+    db_tarea = (
+        db.query(Tarea)
+        .options(
+            joinedload(Tarea.parcela),
+            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+        )
+        .filter(Tarea.id == db_tarea.id)
+        .first()
+    )
+
     return db_tarea
 
 
+# ---------------------------------------------------------
 # ACTUALIZAR TAREA
+# ---------------------------------------------------------
 @router.put("/{tarea_id}", response_model=TareaRead)
 def update_tarea(
     tarea_id: int,
@@ -142,10 +162,23 @@ def update_tarea(
     db.commit()
     db.refresh(db_tarea)
 
+    # 🔥 Recargar con relaciones completas
+    db_tarea = (
+        db.query(Tarea)
+        .options(
+            joinedload(Tarea.parcela),
+            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+        )
+        .filter(Tarea.id == db_tarea.id)
+        .first()
+    )
+
     return db_tarea
 
 
+# ---------------------------------------------------------
 # ELIMINAR TAREA
+# ---------------------------------------------------------
 @router.delete("/{tarea_id}", status_code=204)
 def delete_tarea(
     tarea_id: int,

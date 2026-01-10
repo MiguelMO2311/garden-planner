@@ -18,6 +18,11 @@ def _nivel_from_tipo(tipo: str) -> str:
 
 
 def _mensaje_riego(cultivo: CultivoParcela, lluvia_mm: float) -> str:
+    """
+    Genera un mensaje de riego basado en litros_agua_semana y lluvia prevista.
+    """
+    nombre_cultivo = cultivo.cultivo_tipo.nombre if cultivo.cultivo_tipo else "cultivo"
+
     if cultivo.litros_agua_semana is None or cultivo.litros_agua_semana <= 0:
         return "Revisar riego manualmente (no hay dato de litros_agua_semana)."
 
@@ -26,21 +31,24 @@ def _mensaje_riego(cultivo: CultivoParcela, lluvia_mm: float) -> str:
     if lluvia_mm >= riego_diario * 0.8:
         return (
             f"No regar: la lluvia prevista ({lluvia_mm:.1f} mm) cubre casi toda la "
-            f"necesidad diaria de {cultivo.nombre}."
+            f"necesidad diaria de {nombre_cultivo}."
         )
     elif lluvia_mm >= riego_diario * 0.4:
         return (
             f"Reducir riego: la lluvia prevista ({lluvia_mm:.1f} mm) cubre parte de la "
-            f"necesidad diaria de {cultivo.nombre}."
+            f"necesidad diaria de {nombre_cultivo}."
         )
     else:
         return (
             f"Regar normalmente: la lluvia prevista ({lluvia_mm:.1f} mm) no cubre la "
-            f"necesidad diaria de {cultivo.nombre}."
+            f"necesidad diaria de {nombre_cultivo}."
         )
 
 
 async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
+    """
+    Genera alertas agrícolas combinando clima real y cultivos por parcela.
+    """
     alertas: List[Dict[str, Any]] = []
 
     parcelas: List[Plot] = db.query(Plot).all()
@@ -77,13 +85,16 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
             lluvia_mm = dia.get("precipitation_sum", 0.0) or 0.0
 
             for cultivo in cultivos:
+                nombre_cultivo = cultivo.cultivo_tipo.nombre if cultivo.cultivo_tipo else "cultivo"
+
+                # --- Lluvia ---
                 if pop is not None and pop >= 0.5:
                     alertas.append(
                         {
                             "plot_id": parcela.id,
                             "plot_name": parcela.name,
                             "cultivo_id": cultivo.id,
-                            "cultivo_name": cultivo.nombre,
+                            "cultivo_name": nombre_cultivo,
                             "fecha": fecha.isoformat() if fecha else dt_str,
                             "tipo": "lluvia",
                             "mensaje": (
@@ -94,13 +105,14 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                         }
                     )
 
+                # --- Riego ---
                 mensaje_riego = _mensaje_riego(cultivo, lluvia_mm)
                 alertas.append(
                     {
                         "plot_id": parcela.id,
                         "plot_name": parcela.name,
                         "cultivo_id": cultivo.id,
-                        "cultivo_name": cultivo.nombre,
+                        "cultivo_name": nombre_cultivo,
                         "fecha": fecha.isoformat() if fecha else dt_str,
                         "tipo": "riego",
                         "mensaje": mensaje_riego,
@@ -108,52 +120,55 @@ async def generar_alertas_semanales(db: Session) -> List[Dict[str, Any]]:
                     }
                 )
 
+                # --- Helada ---
                 if temp_min is not None and temp_min <= 0:
                     alertas.append(
                         {
                             "plot_id": parcela.id,
                             "plot_name": parcela.name,
                             "cultivo_id": cultivo.id,
-                            "cultivo_name": cultivo.nombre,
+                            "cultivo_name": nombre_cultivo,
                             "fecha": fecha.isoformat() if fecha else dt_str,
                             "tipo": "helada",
                             "mensaje": (
                                 f"Helada prevista ({temp_min:.1f}°C) en {parcela.name}. "
-                                f"Riesgo para {cultivo.nombre}."
+                                f"Riesgo para {nombre_cultivo}."
                             ),
                             "nivel": "danger",
                         }
                     )
 
+                # --- Ola de calor ---
                 if temp_max is not None and temp_max >= 32:
                     alertas.append(
                         {
                             "plot_id": parcela.id,
                             "plot_name": parcela.name,
                             "cultivo_id": cultivo.id,
-                            "cultivo_name": cultivo.nombre,
+                            "cultivo_name": nombre_cultivo,
                             "fecha": fecha.isoformat() if fecha else dt_str,
                             "tipo": "calor",
                             "mensaje": (
                                 f"Ola de calor prevista ({temp_max:.1f}°C) en {parcela.name}. "
-                                f"Posible estrés hídrico en {cultivo.nombre}."
+                                f"Posible estrés hídrico en {nombre_cultivo}."
                             ),
                             "nivel": "warning",
                         }
                     )
 
+                # --- Viento fuerte ---
                 if viento_actual and viento_actual >= 40:
                     alertas.append(
                         {
                             "plot_id": parcela.id,
                             "plot_name": parcela.name,
                             "cultivo_id": cultivo.id,
-                            "cultivo_name": cultivo.nombre,
+                            "cultivo_name": nombre_cultivo,
                             "fecha": fecha.isoformat() if fecha else dt_str,
                             "tipo": "viento",
                             "mensaje": (
                                 f"Viento fuerte actual ({viento_actual:.1f} km/h) en {parcela.name}. "
-                                f"Revisar tutores y evitar tratamientos en {cultivo.nombre}."
+                                f"Revisar tutores y evitar tratamientos en {nombre_cultivo}."
                             ),
                             "nivel": "warning",
                         }

@@ -1,9 +1,7 @@
 from .user import User
-from .tarea import Tarea
-from .cultivo_tipo import CultivoTipo
 from .plot import Plot
-from .irrigation import Irrigation
-from .pest import Pest
-from .cultivo_plan import CultivoPlan
-from .calendar_event import CalendarEventManual
-from .evento import EventoAgricola
+from .cultivo_tipo import CultivoTipo
+from .cultivo_parcela import CultivoParcela
+from .tarea import Tarea
+from .climate_event import ClimateEvent
+from .evento import EventoAgricola   # ← FALTABA ESTA
