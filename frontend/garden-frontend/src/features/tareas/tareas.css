@@ -1,32 +1,30 @@
-/* Fondo general */
+/* Fondo general de la página de Tareas */
 .tareas-bg {
-    background-image: url("../../assets/backgrounds/parcelas-bg.webp");
+    background-image: url("../../assets/backgrounds/tareas-bg.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
-    height: auto;
-    display: block;
     padding: 2rem;
 }
 
-/* Tarjetas estilo SaaS */
+/* Tarjetas estilo SaaS (NO usar en el header) */
 .tareas-card {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.75);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
-    border-radius: 12px;
-    padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Título verde consistente */
+/* Título del header */
 .tareas-title {
+    margin: 0;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #198754;
 }
 
-/* Contenedor para tablas */
+/* Contenedor de la tabla */
 .tareas-table-container {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
@@ -34,12 +32,89 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Botones dentro de la tabla */
 .tareas-table-container .btn {
     min-width: 80px;
 }
 
-/* Espaciado entre secciones */
-.tareas-section {
-    margin-bottom: 2rem;
+/* Header pastel amarillo (estructura base) */
+.dashboard-page-header {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-color: white;
+}
+
+/* Fondo pastel específico de Tareas */
+.dashboard-card-tareas {
+    background-image: url("../../assets/backgrounds/tareasDashboard-bg.webp");
+}
+
+/* ------------------------------------------------------ */
+/* NUEVOS ESTILOS PARA FORMULARIOS DE TAREAS */
+/* ------------------------------------------------------ */
+
+/* Labels en verde estilo título */
+.tareas-label {
+    color: #198754;
+    /* mismo verde que tareas-title */
+    font-weight: 600;
+}
+
+/* Inputs con amarillo pastel */
+.tareas-input {
+    background-color: #fffbea;
+    /* amarillo muy suave */
+    border: 1px solid #e6dca8;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.tareas-input:focus {
+    background-color: #fff7d6;
+    border-color: #d4c67a;
+    box-shadow: 0 0 0 3px rgba(255, 240, 150, 0.4);
+}
+
+/* Placeholders verde suave */
+.tareas-input::placeholder {
+    color: #7fbf9f;
+    /* verde claro */
+    opacity: 1;
+}
+
+/* Botón cancelar: rojo tipo alertas del calendario */
+.tareas-btn-cancelar {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tareas-btn-cancelar:hover {
+    background-color: #bb2d3b;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.5);
+}
+
+/* Botón guardar: amarillo warning súper fuerte */
+.tareas-btn-guardar {
+    background-color: #facc15;
+    /* amarillo intenso */
+    color: #4a3f00;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 2px 6px rgba(250, 204, 21, 0.4);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tareas-btn-guardar:hover {
+    background-color: #eab308;
+    box-shadow: 0 3px 8px rgba(250, 204, 21, 0.5);
 }

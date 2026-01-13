@@ -13,6 +13,8 @@ import type { CultivoParcela } from "../cultivos_parcela/types";
 
 import { useTareasStore } from "../../store/tareasStore";
 
+import "./tareas.css";
+
 export default function TareaFormPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -33,15 +35,12 @@ export default function TareaFormPage() {
 
     useEffect(() => {
         const load = async () => {
-            // Parcelas
             const resParcelas = await getParcelas();
             setParcelas(resParcelas);
 
-            // Cultivos en parcela
             const resCultivosParcela = await getCultivosParcela();
             setCultivosParcela(resCultivosParcela.data);
 
-            // Si estamos editando, cargar la tarea
             if (id) {
                 const resTarea = await getTarea(Number(id));
                 const t = resTarea.data;
@@ -80,18 +79,24 @@ export default function TareaFormPage() {
     };
 
     return (
-        <div className="container py-4">
-            <h2 className="fw-bold mb-4">
-                {id ? "Editar tarea" : "Nueva tarea"}
-            </h2>
+        <div className="tareas-bg">
+            <div className="container py-4">
 
-            <TareaForm
-                form={form}
-                setForm={setForm}
-                parcelas={parcelas}
-                cultivosParcela={cultivosParcela}
-                onSubmit={handleSubmit}
-            />
+                {/* HEADER PASTEL AMARILLO */}
+                <div className="mb-4 dashboard-page-header dashboard-card-tareas">
+                    <h2 className="tareas-title fw-bold">
+                        {id ? "Editar tarea" : "Nueva tarea"}
+                    </h2>
+                </div>
+
+                <TareaForm
+                    form={form}
+                    setForm={setForm}
+                    parcelas={parcelas}
+                    cultivosParcela={cultivosParcela}
+                    onSubmit={handleSubmit}
+                />
+            </div>
         </div>
     );
 }

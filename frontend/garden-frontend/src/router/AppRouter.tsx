@@ -8,6 +8,7 @@ import DashboardPage from "../features/dashboard/DashboardPage";
 import ParcelaListPage from "../features/parcelas/ParcelaListPage";
 import ParcelaFormPage from "../features/parcelas/ParcelaFormPage";
 import ParcelaDetailPage from "../features/parcelas/ParcelaDetailPage";
+import ParcelasLayout from "../features/parcelas/ParcelasLayout";
 
 import CultivosMainPage from "../features/cultivos/CultivosMainPage";
 
@@ -49,12 +50,16 @@ export const AppRouter = () => (
             {/* Página de cuenta */}
             <Route path="/account" element={<AccountPage />} />
 
-            {/* Parcelas */}
-            <Route path="/parcelas" element={<ParcelaListPage />} />
-            <Route path="/parcelas/nueva" element={<ParcelaFormPage />} />
-            <Route path="/parcelas/:id" element={<ParcelaDetailPage />} />
-            <Route path="/parcelas/:id/editar" element={<ParcelaFormPage />} />
-            
+            {/* ----------------------------- */}
+            {/*        PARCELAS (LAYOUT)      */}
+            {/* ----------------------------- */}
+            <Route path="/parcelas" element={<ParcelasLayout />}>
+                <Route index element={<ParcelaListPage />} />
+                <Route path="nueva" element={<ParcelaFormPage />} />
+                <Route path=":id" element={<ParcelaDetailPage />} />
+                <Route path=":id/editar" element={<ParcelaFormPage />} />
+            </Route>
+
             {/* Cultivos (vista principal) */}
             <Route path="/cultivos" element={<CultivosMainPage />} />
 

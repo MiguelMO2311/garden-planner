@@ -13,16 +13,15 @@ export default function CultivoTipoListPage() {
     const navigate = useNavigate();
 
     const load = async () => {
-        const res = await getCultivosTipo();
-        setCultivos(res.data);
+        const data = await getCultivosTipo();   // ← ahora devuelve directamente el array
+        setCultivos(data);
     };
 
     useEffect(() => {
-        const loadAsync = async () => {
+        const fetchData = async () => {
             await load();
         };
-
-        loadAsync();
+        fetchData();
     }, []);
 
     const handleDelete = async (id: number) => {
@@ -37,12 +36,12 @@ export default function CultivoTipoListPage() {
 
     return (
         <div className="cultivos-bg">
-            <div className="cultivos-card mb-4 d-flex justify-content-between align-items-center">
+            <div className="cultivos-card mb-4 d-flex justify-content-between align-items-center dashboard-page-header dashboard-card-cultivos">
                 <h2 className="cultivos-title">Cultivos (Catálogo)</h2>
 
                 <button
                     onClick={() => navigate("/cultivos-tipo/nuevo")}
-                    className="btn btn-success"
+                    className="btn btn-success opacity-75"
                 >
                     + Nuevo cultivo
                 </button>

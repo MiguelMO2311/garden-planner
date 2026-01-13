@@ -1,4 +1,7 @@
-/* Fondo general */
+/* ------------------------------------------------------ */
+/* 🌄 FONDO GENERAL DE PARCELAS                           */
+/* ------------------------------------------------------ */
+
 .parcelas-bg {
     background-image: url("../../assets/backgrounds/parcelas-bg.webp");
     background-size: cover;
@@ -10,39 +13,244 @@
     padding: 2rem;
 }
 
-/* Tarjetas estilo SaaS */
+/* ------------------------------------------------------ */
+/* 🧩 TARJETAS ESTILO SAAS                                */
+/* ------------------------------------------------------ */
+
 .parcelas-card {
     background: rgba(255, 255, 255, 0.85);
     min-height: 100px;
-    /* 🔥 Compatibilidad total con Safari */
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
-
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Título verde consistente */
+/* Fondo pastel azul */
+.dashboard-card-parcelas {
+    background-image: url("../../assets/backgrounds/parcelasDashboard-bg.webp");
+    background-size: cover;
+    background-position: center;
+}
+
+/* ------------------------------------------------------ */
+/* 🟦 TÍTULOS                                              */
+/* ------------------------------------------------------ */
+
 .parcelas-title {
+    margin: 0;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #198754;
 }
 
-/* Contenedor para tablas */
+.parcelas-label {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------ */
+/* 📊 TABLAS                                              */
+/* ------------------------------------------------------ */
+
 .parcelas-table-container {
-    background: rgba(255, 255, 255, 0.9);
+    background: transparent;
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Botones dentro de la tabla */
 .parcelas-table-container .btn {
     min-width: 80px;
 }
 
-/* Espaciado entre secciones */
+.parcelas-table-wrapper {
+    padding: 1rem;
+    border-radius: 16px;
+    background-image: url("../../assets/backgrounds/parcelasDashboard-bg.webp");
+    background-size: cover;
+    background-position: center;
+}
+
+.parcelas-table-container td,
+.parcelas-table-container th {
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* ------------------------------------------------------ */
+/* 📦 SECCIONES Y RECOMENDACIONES                         */
+/* ------------------------------------------------------ */
+
 .parcelas-section {
     margin-bottom: 2rem;
+}
+
+.recs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rec-item {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+}
+
+.rec-danger {
+    background: #ffe5e5;
+    border-color: #ff9a9a;
+}
+
+.rec-warning {
+    background: #fff7e0;
+    border-color: #ffd86b;
+}
+
+.rec-info {
+    background: #e9f3ff;
+    border-color: #8ec5ff;
+}
+
+/* ------------------------------------------------------ */
+/* 🎯 CARRUSEL VERTICAL (BLINDADO)                        */
+/* ------------------------------------------------------ */
+
+.alertas-carousel {
+    height: 160px;
+    overflow: hidden !important;
+    position: relative;
+}
+
+.alertas-carousel-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    transition: transform 0.6s ease-in-out !important;
+}
+
+.alertas-carousel-inner>* {
+    min-height: 160px !important;
+    max-height: 160px !important;
+    overflow: hidden;
+}
+
+/* ------------------------------------------------------ */
+/* 🟦 HEADER PASTEL AZUL                                  */
+/* ------------------------------------------------------ */
+
+.dashboard-page-header {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: top;
+    background-color: white;
+}
+
+/* ------------------------------------------------------ */
+/* 🧩 FORMULARIOS (tema azul)                             */
+/* ------------------------------------------------------ */
+
+.parcelas-input {
+    background-color: #eef5ff;
+    border: 1px solid #c9ddff;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.parcelas-input:focus {
+    background-color: #e3efff;
+    border-color: #9fc4ff;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.parcelas-input::placeholder {
+    color: #7aa7e6;
+    opacity: 1;
+}
+
+/* ------------------------------------------------------ */
+/* 🔘 BOTONES                                             */
+/* ------------------------------------------------------ */
+
+.parcelas-btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parcelas-btn-warning:hover {
+    background-color: #e0a800;
+    box-shadow: 0 3px 8px rgba(255, 193, 7, 0.5);
+}
+
+.parcelas-btn-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parcelas-btn-danger:hover {
+    background-color: #bb2d3b;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.5);
+}
+
+.parcelas-btn-guardar {
+    background-color: #0d6efd;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parcelas-btn-guardar:hover {
+    background-color: #0b5ed7;
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.5);
+}
+
+/* ------------------------------------------------------ */
+/* 🟦 GRID 4 CARDS (1/4 PANTALLA CADA UNA)                */
+/* ------------------------------------------------------ */
+
+.grid-cards-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+    align-items: stretch;
+}
+
+/* Altura fija para evitar scroll en la zona superior */
+.grid-cards-4 .parcelas-card {
+    min-height: 280px;
+    max-height: 280px;
+    overflow: hidden;
+}
+
+/* Responsividad */
+@media (max-width: 1400px) {
+    .grid-cards-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-cards-4 {
+        grid-template-columns: 1fr;
+    }
 }

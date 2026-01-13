@@ -33,3 +33,29 @@
 .cultivos-table-container .btn {
     min-width: 80px;
 }
+
+/* ------------------------------------------------------ */
+/* HEADER DE PAGINA: CULTIVOS (FONDO PASTEL VERDE)        */
+/* ------------------------------------------------------ */
+
+.dashboard-page-header {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: top;
+    background-color: white;
+    /* fallback */
+}
+
+/* Fondo pastel verde de Cultivos */
+.dashboard-card-cultivos {
+    background-image: url("../../assets/backgrounds/cultivosDashboard-bg.webp");
+}
+
+/* Título dentro del header */
+.cultivos-title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}

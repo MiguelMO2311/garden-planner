@@ -80,3 +80,16 @@ export interface OpenWeatherResponse {
     daily?: OpenWeatherDaily[];
     hourly?: OpenWeatherHourly[]; // 🔥 NUEVO
 }
+
+// 🌱 Recomendaciones agrícolas generadas por el backend
+export interface AgroRecommendation {
+    plot_id: number;
+    plot_name: string;
+    date: string; // ISO
+    climate_event_type: string;
+    climate_risk: string;
+    recommendation_type: string;
+    message: string;
+    dias_desde_siembra?: number;
+    cultivo: string;
+}

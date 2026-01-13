@@ -22,18 +22,18 @@ export default function TareaForm({
     return (
         <form
             onSubmit={onSubmit}
-            className="bg-white shadow rounded-lg p-6 space-y-4"
+            className="dashboard-page-header dashboard-card-tareas p-6 space-y-4 rounded-lg"
         >
             {/* Título */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="titulo">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="titulo">
                     Título
                 </label>
                 <input
                     id="titulo"
                     type="text"
                     placeholder="Ej: Riego de tomates"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.titulo}
                     onChange={(e) => setForm({ ...form, titulo: e.target.value })}
                     required
@@ -42,13 +42,13 @@ export default function TareaForm({
 
             {/* Fecha */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="fecha">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="fecha">
                     Fecha
                 </label>
                 <input
                     id="fecha"
                     type="date"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.fecha}
                     onChange={(e) => setForm({ ...form, fecha: e.target.value })}
                     required
@@ -57,12 +57,12 @@ export default function TareaForm({
 
             {/* Estado */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="estado">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="estado">
                     Estado
                 </label>
                 <select
                     id="estado"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.estado}
                     onChange={(e) =>
                         setForm({
@@ -79,12 +79,12 @@ export default function TareaForm({
 
             {/* Parcela */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="parcela">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="parcela">
                     Parcela
                 </label>
                 <select
                     id="parcela"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.parcela_id ?? ""}
                     onChange={(e) =>
                         setForm({
@@ -104,12 +104,12 @@ export default function TareaForm({
 
             {/* Cultivo en parcela */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="cultivo_parcela">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="cultivo_parcela">
                     Cultivo en parcela
                 </label>
                 <select
                     id="cultivo_parcela"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.cultivo_parcela_id ?? ""}
                     onChange={(e) =>
                         setForm({
@@ -130,13 +130,13 @@ export default function TareaForm({
 
             {/* Descripción */}
             <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="descripcion">
+                <label className="tareas-label block text-sm font-medium mb-1" htmlFor="descripcion">
                     Descripción
                 </label>
                 <textarea
                     id="descripcion"
                     placeholder="Detalles de la tarea"
-                    className="w-full border rounded px-3 py-2"
+                    className="tareas-input w-full border rounded px-3 py-2"
                     value={form.descripcion || ""}
                     onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                 />
@@ -147,14 +147,14 @@ export default function TareaForm({
                 <button
                     type="button"
                     onClick={() => history.back()}
-                    className="px-4 py-2 rounded-lg bg-gray-300 text-black shadow hover:bg-gray-400 transition-colors"
+                    className="tareas-btn-cancelar"
                 >
                     Cancelar
                 </button>
 
                 <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors"
+                    className="tareas-btn-guardar"
                 >
                     Guardar tarea
                 </button>

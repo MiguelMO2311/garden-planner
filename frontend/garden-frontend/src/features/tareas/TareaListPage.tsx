@@ -41,30 +41,31 @@ export default function TareaListPage() {
 
     return (
         <div className="tareas-bg">
+            <div className="container py-4">
 
-            {/* CARD SUPERIOR */}
-            <div className="tareas-card mb-4 d-flex justify-content-between align-items-center">
-                <h2 className="tareas-title">Tareas agrícolas</h2>
+                {/* HEADER PASTEL AMARILLO */}
+                <div className="mb-4 dashboard-page-header dashboard-card-tareas d-flex justify-content-between align-items-center">
+                    <h2 className="tareas-title">Tareas agrícolas</h2>
 
-                <button
-                    onClick={() => navigate("/tareas/nueva")}
-                    className="btn btn-success"
-                >
-                    + Nueva tarea
-                </button>
+                    <button
+                        onClick={() => navigate("/tareas/nueva")}
+                        className="btn btn-success opacity-75"
+                    >
+                        + Nueva tarea
+                    </button>
+                </div>
+
+                {/* TABLA */}
+                <div className="tareas-table-container">
+                    <TareaTable
+                        tareas={tareas}
+                        parcelas={parcelas}
+                        cultivosParcela={cultivosParcela}
+                        onEdit={(id) => navigate(`/tareas/${id}`)}
+                        onDelete={handleDelete}
+                    />
+                </div>
             </div>
-
-            {/* TABLA */}
-            <div className="tareas-table-container">
-                <TareaTable
-                    tareas={tareas}
-                    parcelas={parcelas}
-                    cultivosParcela={cultivosParcela}
-                    onEdit={(id) => navigate(`/tareas/${id}`)}
-                    onDelete={handleDelete}
-                />
-            </div>
-
         </div>
     );
 }

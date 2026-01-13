@@ -15,19 +15,17 @@ export default function CultivoParcelaListPage() {
     const navigate = useNavigate();
 
     const load = async () => {
-        const res = await getCultivosParcela();
-        setCultivos(res.data);
+        const data = await getCultivosParcela();   // ← YA NO res.data
+        setCultivos(data);
     };
 
     useEffect(() => {
-        const loadAsync = async () => {
-            const res = await getCultivosParcela();
-            setCultivos(res.data); // ✔ setState dentro de async, no síncrono
+        const fetchData = async () => {
+            const data = await getCultivosParcela();
+            setCultivos(data);
         };
-
-        loadAsync();
+        fetchData();
     }, []);
-
 
     const handleDelete = async (id: number) => {
         try {
@@ -41,12 +39,12 @@ export default function CultivoParcelaListPage() {
 
     return (
         <div className="cultivos-bg">
-            <div className="cultivos-card mb-4 d-flex justify-content-between align-items-center">
+            <div className="cultivos-card mb-4 d-flex justify-content-between align-items-center dashboard-page-header dashboard-card-cultivos">
                 <h2 className="cultivos-title">Cultivos en Parcela</h2>
 
                 <button
                     onClick={() => navigate("/cultivos-parcela/nuevo")}
-                    className="btn btn-success"
+                    className="btn btn-success opacity-75"
                 >
                     + Nuevo cultivo en parcela
                 </button>

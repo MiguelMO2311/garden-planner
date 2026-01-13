@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../auth/useAuth";
@@ -12,18 +12,54 @@ export default function LandingPage() {
     const [showLogin, setShowLogin] = useState(false);
     const [form, setForm] = useState({ email: "", password: "" });
 
+    // -----------------------------
+    // CARRUSEL SIN BOOTSTRAP
+    // -----------------------------
+    const carouselItems = [
+        {
+            url: "https://www.youtube.com/embed/KQsoJ7n5DX0",
+            title: "Consejos prácticos para empezar tu huerto"
+        },
+        {
+            url: "https://www.youtube.com/embed/AhW6X5f9L_w",
+            title: "Cómo empezar un huerto desde cero"
+        },
+        {
+            url: "https://www.youtube.com/embed/8wZ2gYdExgA",
+            title: "Últimas noticias del sector agrícola"
+        },
+        {
+            url: "https://www.youtube.com/embed/0qkYyqS-gGk",
+            title: "Cómo afecta el clima a tus cultivos"
+        }
+    ];
+
+    const [carouselIndex, setCarouselIndex] = useState(0);
+
+    const totalSlides = carouselItems.length;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCarouselIndex(prev =>
+                prev + 1 < totalSlides ? prev + 1 : 0
+            );
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [totalSlides]);
+
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            // OAuth2PasswordRequestForm requiere x-www-form-urlencoded
             const data = new URLSearchParams();
             data.append("username", form.email);
             data.append("password", form.password);
 
             const res = await api.post("/auth/login", data, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
             });
 
             const token = res.data.access_token;
@@ -69,86 +105,37 @@ export default function LandingPage() {
                 </p>
             </header>
 
-            {/* CARRUSEL */}
-            <div
-                id="carouselExample"
-                className="carousel slide mx-auto mt-4"
-                style={{ width: "40%" }}
-            >
-                <div className="carousel-inner">
+            {/* CARRUSEL SIN BOOTSTRAP */}
+            <div className="landing-carousel-container mx-auto mt-4">
+                <div
+                    className="landing-carousel-inner"
+                    style={{
+                        transform: `translateX(-${carouselIndex * 100}%)`
+                    }}
+                >
+                    {carouselItems.map((item, index) => (
+                        <div key={index} className="landing-carousel-item">
+                            <div className="ratio ratio-16x9">
+                                <iframe
+                                    src={item.url}
+                                    title={item.title}
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
 
-                    {/* ITEM 1 */}
-                    <div className="carousel-item active text-center">
-                        <div className="ratio ratio-16x9">
-                            <iframe
-                                src="https://www.youtube.com/embed/KQsoJ7n5DX0"
-                                title="Consejos de cultivo"
-                                allowFullScreen
-                            ></iframe>
+                            <p className="mt-2">{item.title}</p>
+
+                            <small className="text-light">
+                                {new Date().toLocaleDateString("es-ES", {
+                                    weekday: "long",
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric"
+                                })}
+                            </small>
                         </div>
-                        <p className="mt-2">Consejos prácticos para empezar tu huerto</p>
-                    </div>
-
-                    {/* ITEM 2 */}
-                    <div className="carousel-item text-center">
-                        <div className="ratio ratio-16x9">
-                            <iframe
-                                src="https://www.youtube.com/embed/AhW6X5f9L_w"
-                                title="Cómo empezar un huerto desde cero"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                        <p className="mt-2">Cómo empezar un huerto desde cero</p>
-                    </div>
-
-                    {/* ITEM 3 */}
-                    <div className="carousel-item text-center">
-                        <div className="ratio ratio-16x9">
-                            <iframe
-                                src="https://www.youtube.com/embed/8wZ2gYdExgA"
-                                title="Noticias agrícolas"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                        <p className="mt-2">Últimas noticias del sector agrícola</p>
-                    </div>
-
-                    {/* ITEM 4 */}
-                    <div className="carousel-item text-center">
-                        <div className="ratio ratio-16x9">
-                            <iframe
-                                src="https://www.youtube.com/embed/0qkYyqS-gGk"
-                                title="Meteorología"
-                                allowFullScreen
-                            ></iframe>
-                        </div>
-                        <p className="mt-2">Cómo afecta el clima a tus cultivos</p>
-                    </div>
-
+                    ))}
                 </div>
-
-                {/* CONTROLES ACCESIBLES */}
-                <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#carouselExample"
-                    data-bs-slide="prev"
-                    aria-label="Anterior"
-                    title="Anterior"
-                >
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                </button>
-
-                <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#carouselExample"
-                    data-bs-slide="next"
-                    aria-label="Siguiente"
-                    title="Siguiente"
-                >
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                </button>
             </div>
 
             {/* MODAL LOGIN */}

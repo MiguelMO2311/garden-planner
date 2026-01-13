@@ -9,8 +9,8 @@ interface Props {
 
 export default function ParcelaTable({ parcelas, onDelete }: Props) {
     return (
-        <div className="card shadow-sm border-0">
-            <table className="table table-hover align-middle mb-0">
+        <div className="parcelas-table-wrapper rounded-lg p-3">
+            <table className="table table-hover align-middle mb-0 parcelas-table-container">
                 <thead className="table-light">
                     <tr>
                         <th>Nombre</th>
@@ -24,10 +24,8 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
                 <tbody>
                     {parcelas.map((p) => (
                         <tr key={p.id}>
-                            {/* Nombre */}
                             <td className="fw-semibold">{p.name}</td>
 
-                            {/* Tamaño con badge */}
                             <td className="text-center">
                                 <span
                                     className={`badge rounded-pill bg-${p.size_m2 && p.size_m2 > 50
@@ -41,10 +39,8 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
                                 </span>
                             </td>
 
-                            {/* Ubicación */}
                             <td>{p.location || "-"}</td>
 
-                            {/* Tipo de suelo con badge */}
                             <td>
                                 {p.soil_type ? (
                                     <span className="badge bg-info text-dark">
@@ -55,10 +51,7 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
                                 )}
                             </td>
 
-                            {/* Acciones */}
                             <td className="text-end">
-
-                                {/* Ver detalle */}
                                 <Link
                                     to={`/parcelas/${p.id}`}
                                     className="btn btn-sm btn-outline-info me-2"
@@ -67,7 +60,6 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
                                     <FaEye />
                                 </Link>
 
-                                {/* Editar */}
                                 <Link
                                     to={`/parcelas/${p.id}/editar`}
                                     className="btn btn-sm btn-outline-primary me-2"
@@ -76,7 +68,6 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
                                     <FaEdit />
                                 </Link>
 
-                                {/* Borrar */}
                                 <button
                                     className="btn btn-sm btn-outline-danger"
                                     onClick={() => onDelete(p.id)}
@@ -92,4 +83,3 @@ export default function ParcelaTable({ parcelas, onDelete }: Props) {
         </div>
     );
 }
-

@@ -1,20 +1,23 @@
+/* Fondo general de la landing */
 .landing-container {
     min-height: 100vh;
     background: linear-gradient(135deg, #2e7d32, #1b5e20);
 }
 
+/* Navbar translúcido */
 .landing-navbar {
     background: rgba(0, 0, 0, 0.25);
     -webkit-backdrop-filter: blur(6px);
-    /* Safari */
     backdrop-filter: blur(6px);
-    /* Resto de navegadores */
 }
 
 .landing-hero {
     margin-top: 40px;
 }
 
+/* ----------------------------- */
+/* MODAL LOGIN */
+/* ----------------------------- */
 .login-modal {
     position: fixed;
     top: 0;
@@ -31,14 +34,16 @@
     width: 350px;
 }
 
+/* Footer translúcido */
 .landing-footer {
     background: rgba(0, 0, 0, 0.25);
     -webkit-backdrop-filter: blur(6px);
-    /* Safari */
     backdrop-filter: blur(6px);
-    /* Resto de navegadores */
 }
 
+/* ----------------------------- */
+/* REGISTRO */
+/* ----------------------------- */
 .register-bg {
     background-size: cover;
     background-position: center;
@@ -46,7 +51,6 @@
     min-height: 100vh;
 }
 
-/* Esta clase se actualizará dinámicamente desde React */
 .register-bg.dynamic-bg {
     background-image: var(--register-bg);
 }
@@ -55,3 +59,32 @@
     width: 380px;
 }
 
+/* ----------------------------- */
+/* CARRUSEL HORIZONTAL SIN BOOTSTRAP */
+/* ----------------------------- */
+
+.landing-carousel-container {
+    width: 40%;
+    overflow: hidden;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.landing-carousel-inner {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.landing-carousel-item {
+    min-width: 100%;
+    padding: 10px;
+    text-align: center;
+}
+
+.landing-carousel-item iframe {
+    border-radius: 8px;
+    overflow: hidden;
+}

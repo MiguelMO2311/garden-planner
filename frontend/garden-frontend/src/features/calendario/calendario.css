@@ -1,3 +1,4 @@
+/* Fondo general del calendario */
 .calendario-bg {
     background-image: url("../../assets/backgrounds/calendario-bg.webp");
     background-size: cover;
@@ -37,4 +38,45 @@
 .color-en-progreso {
     background-color: #3b82f6;
     /* azul */
+}
+
+/* ------------------------------ */
+/* HEADER PASTEL AMARILLO         */
+/* ------------------------------ */
+
+/* Base del header (igual en todo el sistema) */
+.dashboard-page-header {
+    padding: 1.5rem;
+    border-radius: 16px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: top;
+    background-color: white;
+}
+
+/* Fondo pastel específico del calendario */
+.dashboard-card-calendario {
+    background-image: url("../../assets/backgrounds/calendarioDashboard-bg.webp");
+}
+
+
+
+/* Card con blur (igual que tareas, parcelas, cultivos) */
+.calendario-card {
+    background: rgba(255, 255, 255, 0.75);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    background-blend-mode: lighten;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Título del calendario */
+.calendario-title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #198754;
+    /* verde consistente */
 }

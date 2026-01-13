@@ -21,13 +21,16 @@ interface Props {
 
 export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Props) {
     return (
-        <table className="table table-striped table-hover">
+        <table className="table table-striped table-hover align-middle">
             <thead>
                 <tr>
                     <th>Cultivo</th>
                     <th>Parcela</th>
                     <th>Siembra</th>
                     <th>Cosecha</th>
+                    <th>Plagas</th>
+                    <th>Enfermedades</th>
+                    <th>Riego (L/sem)</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -36,12 +39,65 @@ export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Prop
             <tbody>
                 {cultivos.map((cultivo) => (
                     <tr key={cultivo.id}>
+                        {/* Cultivo */}
                         <td>{cultivo.cultivo_tipo?.nombre ?? "—"}</td>
+
+                        {/* Parcela */}
                         <td>{cultivo.parcela?.name ?? "—"}</td>
+
+                        {/* Fechas */}
                         <td>{formatFecha(cultivo.fecha_siembra)}</td>
                         <td>{formatFecha(cultivo.fecha_cosecha)}</td>
-                        <td>{cultivo.estado}</td>
 
+                        {/* Plagas detectadas */}
+                        <td>
+                            {cultivo.plagas_detectadas?.length ? (
+                                cultivo.plagas_detectadas.map((p, i) => (
+                                    <span
+                                        key={i}
+                                        className="badge bg-warning text-dark me-1"
+                                    >
+                                        {p}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-muted">—</span>
+                            )}
+                        </td>
+
+                        {/* Enfermedades detectadas */}
+                        <td>
+                            {cultivo.enfermedades_detectadas?.length ? (
+                                cultivo.enfermedades_detectadas.map((e, i) => (
+                                    <span
+                                        key={i}
+                                        className="badge bg-danger text-light me-1"
+                                    >
+                                        {e}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-muted">—</span>
+                            )}
+                        </td>
+
+                        {/* Riego aplicado */}
+                        <td>{cultivo.riego_aplicado_semana ?? "—"}</td>
+
+                        {/* Estado */}
+                        <td>
+                            {cultivo.estado === "activo" && (
+                                <span className="badge bg-success">Activo</span>
+                            )}
+                            {cultivo.estado === "cosechado" && (
+                                <span className="badge bg-primary">Cosechado</span>
+                            )}
+                            {cultivo.estado === "muerto" && (
+                                <span className="badge bg-secondary">Muerto</span>
+                            )}
+                        </td>
+
+                        {/* Acciones */}
                         <td className="d-flex gap-2">
                             <button
                                 className="btn btn-outline-warning btn-sm"

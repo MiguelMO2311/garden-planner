@@ -145,74 +145,79 @@ export default function CalendarioPage() {
     // RENDER
     // -----------------------------
     return (
-        <div className="calendario-bg p-4">
+        <div className="calendario-bg">
+            <div className="container py-4">
 
-            <h2 className="fw-bold mb-4 text-white">
-                Calendario agrícola
-            </h2>
-
-            {/* LISTA DE TAREAS PENDIENTES */}
-            <div className="bg-white bg-opacity-60 p-4 rounded shadow mb-4">
-
-                {/* Encabezado con leyenda */}
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h4 className="fw-bold">Tareas pendientes</h4>
-
-                    <div className="leyenda-estados">
-                        <div className="leyenda-item">
-                            <span className="leyenda-color color-en-progreso"></span>
-                            En Progreso
-                        </div>
-
-                        <div className="leyenda-item">
-                            <span className="leyenda-color color-pendiente"></span>
-                            Pendiente
-                        </div>
-                    </div>
+                {/* HEADER PASTEL AMARILLO */}
+                <div className="mb-4 dashboard-page-header dashboard-card-calendario">
+                    <h2 className="calendario-title fw-bold">
+                        Calendario agrícola
+                    </h2>
                 </div>
 
-                {eventosTareas.length === 0 && (
-                    <p className="text-gray-700">No hay tareas pendientes.</p>
-                )}
+                {/* LISTA DE TAREAS PENDIENTES */}
+                <div className="bg-white bg-opacity-60 p-4 rounded shadow mb-4">
 
-                <ul className="list-group">
-                    {eventosTareas.map((ev) => (
-                        <li
-                            key={ev.id}
-                            className="list-group-item d-flex justify-content-between align-items-center cursor-pointer tarea-item"
-                            onClick={() => handleSelectEvent(ev)}
-                            style={
-                                {
-                                    "--tarea-color": ev.color,
-                                    "--tarea-bg": ev.color + "33",
-                                } as React.CSSProperties
-                            }
-                        >
-                            <span>{ev.titulo}</span>
-                            <span className="badge bg-primary">
-                                {formatFecha(ev.fecha)}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                    {/* Encabezado con leyenda */}
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h4 className="fw-bold">Tareas pendientes</h4>
 
-            {/* CALENDARIO */}
-            <Calendar
-                eventos={eventos}
-                onSelectDate={handleSelectDate}
-                onSelectEvent={handleSelectEvent}
-            />
+                        <div className="leyenda-estados">
+                            <div className="leyenda-item">
+                                <span className="leyenda-color color-en-progreso"></span>
+                                En Progreso
+                            </div>
 
-            {/* MODAL */}
-            {modalOpen && (
-                <EventModal
-                    form={form}
-                    setForm={setForm}
-                    onSubmit={handleSubmit}
-                    onClose={() => setModalOpen(false)}
+                            <div className="leyenda-item">
+                                <span className="leyenda-color color-pendiente"></span>
+                                Pendiente
+                            </div>
+                        </div>
+                    </div>
+
+                    {eventosTareas.length === 0 && (
+                        <p className="text-gray-700">No hay tareas pendientes.</p>
+                    )}
+
+                    <ul className="list-group">
+                        {eventosTareas.map((ev) => (
+                            <li
+                                key={ev.id}
+                                className="list-group-item d-flex justify-content-between align-items-center cursor-pointer tarea-item"
+                                onClick={() => handleSelectEvent(ev)}
+                                style={
+                                    {
+                                        "--tarea-color": ev.color,
+                                        "--tarea-bg": ev.color + "33",
+                                    } as React.CSSProperties
+                                }
+                            >
+                                <span>{ev.titulo}</span>
+                                <span className="badge bg-primary">
+                                    {formatFecha(ev.fecha)}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* CALENDARIO */}
+                <Calendar
+                    eventos={eventos}
+                    onSelectDate={handleSelectDate}
+                    onSelectEvent={handleSelectEvent}
                 />
-            )}
+
+                {/* MODAL */}
+                {modalOpen && (
+                    <EventModal
+                        form={form}
+                        setForm={setForm}
+                        onSubmit={handleSubmit}
+                        onClose={() => setModalOpen(false)}
+                    />
+                )}
+            </div>
         </div>
     );
 }

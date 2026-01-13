@@ -15,7 +15,7 @@ import { getParcelas } from "../../parcelas/api/parcelasApi";
 
 import CultivoParcelaForm from "../components/CultivoParcelaForm";
 
-import type { CultivoParcelaCreate } from "../types";
+import type { CultivoParcelaCreate, CultivoParcela } from "../types";
 import type { CultivoTipo } from "../../cultivos_tipo/types";
 import type { Parcela } from "../../parcelas/types";
 
@@ -31,6 +31,10 @@ export default function CultivoParcelaFormPage() {
         parcela_id: 0,
         fecha_siembra: "",
         estado: "activo",
+        plagas_detectadas: [],
+        enfermedades_detectadas: [],
+        riego_aplicado_semana: null,
+        notas: "",
     });
 
     // Campo calculado por backend (solo lectura)
@@ -40,21 +44,35 @@ export default function CultivoParcelaFormPage() {
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
 
     useEffect(() => {
-        getCultivosTipo().then((res) => setCultivosTipo(res.data));
-        getParcelas().then((res) => setParcelas(res));
+        async function loadData() {
+            const [cultivosTipoRes, parcelasRes] = await Promise.all([
+                getCultivosTipo(),   // devuelve CultivoTipo[]
+                getParcelas(),       // devuelve Parcela[]
+            ]);
 
-        if (isEditing) {
-            getCultivoParcela(Number(id)).then((res) => {
+            setCultivosTipo(cultivosTipoRes);
+            setParcelas(parcelasRes);
+
+            if (isEditing) {
+                const cultivo: CultivoParcela = await getCultivoParcela(Number(id));
+
                 setFormData({
-                    cultivo_tipo_id: res.data.cultivo_tipo_id,
-                    parcela_id: res.data.parcela_id,
-                    fecha_siembra: res.data.fecha_siembra,
-                    estado: res.data.estado,
+                    cultivo_tipo_id: cultivo.cultivo_tipo_id,
+                    parcela_id: cultivo.parcela_id,
+                    fecha_siembra: cultivo.fecha_siembra ?? "",
+                    fecha_muerte: cultivo.fecha_muerte ?? "",
+                    estado: cultivo.estado,
+                    plagas_detectadas: cultivo.plagas_detectadas ?? [],
+                    enfermedades_detectadas: cultivo.enfermedades_detectadas ?? [],
+                    riego_aplicado_semana: cultivo.riego_aplicado_semana ?? null,
+                    notas: cultivo.notas ?? "",
                 });
 
-                setFechaCosecha(res.data.fecha_cosecha ?? "");
-            });
+                setFechaCosecha(cultivo.fecha_cosecha ?? "");
+            }
         }
+
+        loadData();
     }, [id, isEditing]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -62,12 +80,12 @@ export default function CultivoParcelaFormPage() {
 
         try {
             if (isEditing) {
-                const res = await updateCultivoParcela(Number(id), formData);
-                setFechaCosecha(res.data.fecha_cosecha);
+                const updated = await updateCultivoParcela(Number(id), formData);
+                setFechaCosecha(updated.fecha_cosecha ?? "");
                 showToast("Cultivo actualizado", "success");
             } else {
-                const res = await createCultivoParcela(formData);
-                setFechaCosecha(res.data.fecha_cosecha);
+                const created = await createCultivoParcela(formData);
+                setFechaCosecha(created.fecha_cosecha ?? "");
                 showToast("Cultivo creado", "success");
             }
 
@@ -100,7 +118,7 @@ export default function CultivoParcelaFormPage() {
                 setForm={setFormData}
                 cultivosTipo={cultivosTipo}
                 parcelas={parcelas}
-                fechaCosecha={fechaCosecha}   // ← añadido
+                fechaCosecha={fechaCosecha}
                 onSubmit={handleSubmit}
             />
 

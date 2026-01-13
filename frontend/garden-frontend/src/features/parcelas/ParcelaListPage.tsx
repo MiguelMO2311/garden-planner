@@ -43,11 +43,11 @@ export default function ParcelaListPage() {
     return (
         <div className="parcelas-bg">
 
-            <div className="parcelas-card mb-4 d-flex justify-content-between align-items-center">
+            <div className="parcelas-card mb-4 d-flex justify-content-between align-items-center dashboard-page-header dashboard-card-parcelas">
                 <h2 className="parcelas-title">Parcelas</h2>
 
                 <button
-                    className="btn btn-success"
+                    className="btn btn-primary opacity-75"
                     onClick={() => navigate("/parcelas/nueva")}
                 >
                     + Nueva parcela

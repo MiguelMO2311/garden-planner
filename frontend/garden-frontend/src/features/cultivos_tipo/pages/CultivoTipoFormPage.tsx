@@ -1,3 +1,5 @@
+// src/features/cultivos_tipo/pages/CultivoTipoFormPage.tsx
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -10,55 +12,64 @@ import {
 
 import { showToast } from "../../../utils/toast";
 import type { CultivoTipoCreate, CultivoTipo } from "../types";
+import CultivoTipoForm from "../components/CultivoTipoForm";
 
 export default function CultivoTipoFormPage() {
     const { id } = useParams();
     const isEditing = Boolean(id);
     const navigate = useNavigate();
 
+    // Estado inicial completo según el modelo
     const [formData, setFormData] = useState<CultivoTipoCreate>({
         nombre: "",
+        nombre_latin: "",
+        variedad: "",
+        tipo: "",
         temporada_optima: "",
         dias_crecimiento: null,
         litros_agua_semana: null,
+        fase_lunar: "",
+        plagas: [],
+        enfermedades: [],
+        plazo_seguridad: null,
+        frecuencia_tratamiento: null,
+        temperatura_minima: null,
+        temperatura_optima: null,
+        exigencia_hidrica: "",
+        exigencia_nutrientes: "",
         notas: "",
     });
 
     // Cargar datos si estamos editando
     useEffect(() => {
-        if (isEditing) {
-            const fetch = async () => {
-                const res = await getCultivoTipo(Number(id));
-                const c: CultivoTipo = res.data;
+        if (!isEditing) return;
 
-                setFormData({
-                    nombre: c.nombre ?? "",
-                    temporada_optima: c.temporada_optima ?? "",
-                    dias_crecimiento: c.dias_crecimiento ?? null,
-                    litros_agua_semana: c.litros_agua_semana ?? null,
-                    notas: c.notas ?? "",
-                });
-            };
+        const fetch = async () => {
+            const cultivo: CultivoTipo = await getCultivoTipo(Number(id));
 
-            fetch();
-        }
+            setFormData({
+                nombre: cultivo.nombre ?? "",
+                nombre_latin: cultivo.nombre_latin ?? "",
+                variedad: cultivo.variedad ?? "",
+                tipo: cultivo.tipo ?? "",
+                temporada_optima: cultivo.temporada_optima ?? "",
+                dias_crecimiento: cultivo.dias_crecimiento ?? null,
+                litros_agua_semana: cultivo.litros_agua_semana ?? null,
+                fase_lunar: cultivo.fase_lunar ?? "",
+                plagas: cultivo.plagas ?? [],
+                enfermedades: cultivo.enfermedades ?? [],
+                plazo_seguridad: cultivo.plazo_seguridad ?? null,
+                frecuencia_tratamiento: cultivo.frecuencia_tratamiento ?? null,
+                temperatura_minima: cultivo.temperatura_minima ?? null,
+                temperatura_optima: cultivo.temperatura_optima ?? null,
+                exigencia_hidrica: cultivo.exigencia_hidrica ?? "",
+                exigencia_nutrientes: cultivo.exigencia_nutrientes ?? "",
+                notas: cultivo.notas ?? "",
+            });
+        };
+
+        fetch();
     }, [id, isEditing]);
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
-
-        setFormData({
-            ...formData,
-            [name]:
-                name === "dias_crecimiento" || name === "litros_agua_semana"
-                    ? value
-                        ? Number(value)
-                        : null
-                    : value,
-        });
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -92,76 +103,27 @@ export default function CultivoTipoFormPage() {
 
     return (
         <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">
-                {isEditing ? "Editar cultivo" : "Nuevo cultivo"}
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">
+                    {isEditing ? "Editar cultivo" : "Nuevo cultivo"}
+                </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-                <input
-                    type="text"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    placeholder="Nombre"
-                    className="border p-2 w-full rounded"
-                    required
-                />
-
-                <input
-                    type="text"
-                    name="temporada_optima"
-                    value={formData.temporada_optima ?? ""}
-                    onChange={handleChange}
-                    placeholder="Temporada óptima"
-                    className="border p-2 w-full rounded"
-                />
-
-                <input
-                    type="number"
-                    name="dias_crecimiento"
-                    value={formData.dias_crecimiento ?? ""}
-                    onChange={handleChange}
-                    placeholder="Días de crecimiento"
-                    className="border p-2 w-full rounded"
-                />
-
-                <input
-                    type="number"
-                    name="litros_agua_semana"
-                    value={formData.litros_agua_semana ?? ""}
-                    onChange={handleChange}
-                    placeholder="Litros de agua por semana"
-                    className="border p-2 w-full rounded"
-                />
-
-                <textarea
-                    name="notas"
-                    value={formData.notas ?? ""}
-                    onChange={handleChange}
-                    placeholder="Notas"
-                    className="border p-2 w-full rounded"
-                />
-
-                <div className="flex gap-3 mt-4">
+                {isEditing && (
                     <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                        type="button"
+                        onClick={handleDelete}
+                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
                     >
-                        {isEditing ? "Actualizar" : "Crear"}
+                        Eliminar
                     </button>
+                )}
+            </div>
 
-                    {isEditing && (
-                        <button
-                            type="button"
-                            onClick={handleDelete}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
-                        >
-                            Eliminar
-                        </button>
-                    )}
-                </div>
-            </form>
+            <CultivoTipoForm
+                form={formData}
+                setForm={setFormData}
+                onSubmit={handleSubmit}
+            />
         </div>
     );
 }

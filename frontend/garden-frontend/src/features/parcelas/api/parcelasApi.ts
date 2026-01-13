@@ -3,7 +3,8 @@ import type {
     Parcela,
     ParcelaCreateDTO,
     ClimateEvent,
-    OpenWeatherResponse
+    OpenWeatherResponse,
+    AgroRecommendation
 } from "../types";
 
 // Obtener todas las parcelas
@@ -44,5 +45,11 @@ export async function getClimateByPlot(plotId: number) {
 // 🌤️🔥 Clima real desde OpenWeather
 export async function getRealWeather(plotId: number) {
     const res = await api.get<OpenWeatherResponse>(`/clima/real/${plotId}`);
+    return res.data;
+}
+
+// 🌱 Recomendaciones agrícolas por parcela
+export async function getRecommendationsByPlot(plotId: number) {
+    const res = await api.get<AgroRecommendation[]>(`/recomendaciones/parcelas/${plotId}`);
     return res.data;
 }

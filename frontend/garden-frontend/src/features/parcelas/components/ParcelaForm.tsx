@@ -10,40 +10,81 @@ export default function ParcelaForm({ form, setForm, onSubmit }: Props) {
     return (
         <form
             onSubmit={onSubmit}
-            className="bg-white shadow rounded-lg p-6 space-y-4"
+            className="dashboard-page-header dashboard-card-parcelas p-6 space-y-4 rounded-lg"
         >
+            {/* Nombre */}
             <div>
-                <label className="block text-sm font-medium mb-1">Nombre</label>
+                <label className="parcelas-label block text-sm font-medium mb-1">
+                    Nombre
+                </label>
                 <input
                     type="text"
                     placeholder="Nombre de la parcela"
-                    className="w-full border rounded px-3 py-2"
-                    value={form.nombre}
-                    onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                    className="parcelas-input w-full border rounded px-3 py-2"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     required
                 />
             </div>
 
+            {/* Tamaño */}
             <div>
-                <label className="block text-sm font-medium mb-1">Tamaño (m²)</label>
+                <label className="parcelas-label block text-sm font-medium mb-1">
+                    Tamaño (m²)
+                </label>
                 <input
                     type="number"
                     placeholder="Tamaño en metros cuadrados"
-                    className="w-full border rounded px-3 py-2"
-                    value={form.tamano}
+                    className="parcelas-input w-full border rounded px-3 py-2"
+                    value={form.size_m2 ?? ""}
                     onChange={(e) =>
-                        setForm({ ...form, tamano: Number(e.target.value) })
+                        setForm({ ...form, size_m2: Number(e.target.value) })
                     }
                     required
                 />
             </div>
 
-            <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-            >
-                Guardar
-            </button>
+            {/* Ubicación */}
+            <div>
+                <label className="parcelas-label block text-sm font-medium mb-1">
+                    Ubicación
+                </label>
+                <input
+                    type="text"
+                    placeholder="Ej: Sector Norte"
+                    className="parcelas-input w-full border rounded px-3 py-2"
+                    value={form.location ?? ""}
+                    onChange={(e) =>
+                        setForm({ ...form, location: e.target.value })
+                    }
+                />
+            </div>
+
+            {/* Tipo de suelo */}
+            <div>
+                <label className="parcelas-label block text-sm font-medium mb-1">
+                    Tipo de suelo
+                </label>
+                <input
+                    type="text"
+                    placeholder="Ej: Arcilloso, arenoso..."
+                    className="parcelas-input w-full border rounded px-3 py-2"
+                    value={form.soil_type ?? ""}
+                    onChange={(e) =>
+                        setForm({ ...form, soil_type: e.target.value })
+                    }
+                />
+            </div>
+
+            {/* BOTÓN GUARDAR */}
+            <div className="flex justify-end pt-4">
+                <button
+                    type="submit"
+                    className="parcelas-btn-guardar"
+                >
+                    Guardar parcela
+                </button>
+            </div>
         </form>
     );
 }

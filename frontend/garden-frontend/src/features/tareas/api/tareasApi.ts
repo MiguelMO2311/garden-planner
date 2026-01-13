@@ -19,3 +19,11 @@ export const updateTarea = (id: number, data: TareaAgricolaUpdate) =>
 
 export const deleteTarea = (id: number) =>
     api.delete(`/tareas/${id}`);
+
+export const createTaskFromRecommendation = (data: {
+    plot_id: number;
+    recommendation_type: string;
+    message: string;
+    fecha?: string;
+}) =>
+    api.post("/tareas/from-recommendation", data);

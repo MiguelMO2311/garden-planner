@@ -42,7 +42,6 @@ export default function ParcelaFormPage() {
     lng: "",
   });
 
-  // Carga de datos solo en modo edición
   useEffect(() => {
     if (!isEditing || !id) return;
 
@@ -96,8 +95,6 @@ export default function ParcelaFormPage() {
       lng: form.lng !== "" ? Number(form.lng) : null,
     };
 
-    console.log("Payload enviado:", payload);
-
     try {
       if (isEditing && id) {
         const res = await api.put<PlotRead>(`/plots/${id}`, payload);
@@ -142,13 +139,16 @@ export default function ParcelaFormPage() {
           {isEditing ? "Editar parcela" : "Nueva parcela"}
         </h3>
 
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+          className="dashboard-page-header dashboard-card-parcelas p-4 rounded-lg"
+        >
           {/* Nombre */}
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">Nombre</label>
+            <label htmlFor="name" className="parcelas-label">Nombre</label>
             <input
               id="name"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Nombre de la parcela"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -158,10 +158,10 @@ export default function ParcelaFormPage() {
 
           {/* Ubicación */}
           <div className="mb-3">
-            <label htmlFor="location" className="form-label">Ubicación</label>
+            <label htmlFor="location" className="parcelas-label">Ubicación</label>
             <input
               id="location"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Ej: Finca norte"
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
@@ -170,10 +170,10 @@ export default function ParcelaFormPage() {
 
           {/* Tipo de suelo */}
           <div className="mb-3">
-            <label htmlFor="soil_type" className="form-label">Tipo de suelo</label>
+            <label htmlFor="soil_type" className="parcelas-label">Tipo de suelo</label>
             <input
               id="soil_type"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Arcilloso, arenoso..."
               value={form.soil_type}
               onChange={(e) => setForm({ ...form, soil_type: e.target.value })}
@@ -182,11 +182,11 @@ export default function ParcelaFormPage() {
 
           {/* Tamaño */}
           <div className="mb-3">
-            <label htmlFor="size_m2" className="form-label">Tamaño (m²)</label>
+            <label htmlFor="size_m2" className="parcelas-label">Tamaño (m²)</label>
             <input
               id="size_m2"
               type="number"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Ej: 1100"
               value={form.size_m2}
               onChange={(e) => setForm({ ...form, size_m2: e.target.value })}
@@ -195,12 +195,12 @@ export default function ParcelaFormPage() {
 
           {/* Latitud */}
           <div className="mb-3">
-            <label htmlFor="lat" className="form-label">Latitud</label>
+            <label htmlFor="lat" className="parcelas-label">Latitud</label>
             <input
               id="lat"
               type="number"
               step="0.000001"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Ej: 40.4678"
               value={form.lat}
               onChange={(e) => setForm({ ...form, lat: e.target.value })}
@@ -209,12 +209,12 @@ export default function ParcelaFormPage() {
 
           {/* Longitud */}
           <div className="mb-3">
-            <label htmlFor="lng" className="form-label">Longitud</label>
+            <label htmlFor="lng" className="parcelas-label">Longitud</label>
             <input
               id="lng"
               type="number"
               step="0.000001"
-              className="form-control"
+              className="parcelas-input w-full border rounded px-3 py-2"
               placeholder="Ej: -3.7"
               value={form.lng}
               onChange={(e) => setForm({ ...form, lng: e.target.value })}
@@ -222,9 +222,9 @@ export default function ParcelaFormPage() {
           </div>
 
           {/* Mapa */}
-          <h5 className="mt-4 mb-2">Seleccionar ubicación en el mapa</h5>
+          <h5 className="mt-4 mb-2 parcelas-label">Seleccionar ubicación en el mapa</h5>
 
-          <div style={{ width: "100%", minHeight: "400px", border: "3px solid blue" }}>
+          <div style={{ width: "100%", minHeight: "400px", border: "3px solid #0d6efd" }}>
             <MapaSelector
               lat={form.lat !== "" ? Number(form.lat) : null}
               lng={form.lng !== "" ? Number(form.lng) : null}
@@ -236,13 +236,13 @@ export default function ParcelaFormPage() {
 
           {/* Botones */}
           <div className="d-flex gap-3 mt-4">
-            <button className="btn btn-success" type="submit">
+            <button className="parcelas-btn-guardar" type="submit">
               {isEditing ? "Actualizar" : "Crear"}
             </button>
 
             <button
               type="button"
-              className="btn btn-secondary"
+              className="parcelas-btn-warning"
               onClick={() => navigate("/parcelas")}
             >
               Cancelar
@@ -251,7 +251,7 @@ export default function ParcelaFormPage() {
             {isEditing && (
               <button
                 type="button"
-                className="btn btn-danger ms-auto"
+                className="parcelas-btn-danger ms-auto"
                 onClick={handleDelete}
               >
                 Eliminar
