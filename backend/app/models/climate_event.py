@@ -13,4 +13,8 @@ class ClimateEvent(Base):
     intensity = Column(Float, nullable=False)
     description = Column(String, nullable=False)
 
+    # 🔥 Nuevo campo: nivel de riesgo agrícola
+    # Valores posibles: none | medium | high
+    risk_level = Column(String, default="none", nullable=False)
+
     plot = relationship("Plot", back_populates="climate_events")

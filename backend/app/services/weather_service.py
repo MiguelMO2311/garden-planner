@@ -13,7 +13,7 @@ async def get_real_weather(lat: float, lon: float):
         f"?latitude={lat}&longitude={lon}"
         "&current_weather=true"
         "&hourly=temperature_2m,relativehumidity_2m,windspeed_10m"
-        "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+        "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum"
         "&timezone=auto"
     )
 
@@ -21,7 +21,7 @@ async def get_real_weather(lat: float, lon: float):
         response = await client.get(url)
         data = response.json()
 
-    # Transformación al formato que espera tu frontend
+    # Transformación al formato que espera tu backend y frontend
     return {
         "current": {
             "temp": data["current_weather"]["temperature"],
@@ -30,12 +30,9 @@ async def get_real_weather(lat: float, lon: float):
             "weather": [{"description": data["current_weather"]["weathercode"]}],
         },
 
-        # -------------------------
-        # HORARIO (sin cambios)
-        # -------------------------
         "hourly": [
             {
-                "dt": data["hourly"]["time"][i],  # ← FECHA REAL
+                "dt": data["hourly"]["time"][i],
                 "temp": t,
                 "humidity": h,
                 "wind_speed": w,
@@ -49,20 +46,15 @@ async def get_real_weather(lat: float, lon: float):
             )
         ],
 
-        # -------------------------
-        # DIARIO (CORREGIDO)
-        # -------------------------
         "daily": [
             {
-                "dt": data["daily"]["time"][i],  # ← FECHA REAL (antes era i)
+                "dt": data["daily"]["time"][i],
                 "temp": {
                     "min": data["daily"]["temperature_2m_min"][i],
                     "max": data["daily"]["temperature_2m_max"][i],
                 },
-                "humidity": None,
-                "wind_speed": None,
+                "precipitation_sum": data["daily"]["precipitation_sum"][i],  # ✔ REAL
                 "weather": [{"description": "forecast"}],
-                "pop": data["daily"]["precipitation_probability_max"][i] / 100,
             }
             for i in range(len(data["daily"]["temperature_2m_max"]))
         ],

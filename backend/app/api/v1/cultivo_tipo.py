@@ -3,15 +3,48 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import json
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
 
 from app.models.cultivo_tipo import CultivoTipo
-from app.schemas.cultivo_tipo_schema import CultivoTipoCreate, CultivoTipoRead, CultivoTipoUpdate
+from app.schemas.cultivo_tipo_schema import (
+    CultivoTipoCreate,
+    CultivoTipoRead,
+    CultivoTipoUpdate
+)
 
 router = APIRouter(tags=["Cultivos tipo"])
+
+
+# ---------------------------------------------------------
+# Helpers JSON <-> List
+# ---------------------------------------------------------
+def serialize_lists(data: dict):
+    """Convierte listas Python a JSON string para SQLite."""
+    if "plagas" in data and data["plagas"] is not None:
+        data["plagas"] = json.dumps(data["plagas"])
+    if "enfermedades" in data and data["enfermedades"] is not None:
+        data["enfermedades"] = json.dumps(data["enfermedades"])
+    return data
+
+
+def deserialize_lists(cultivo: CultivoTipo):
+    """Convierte JSON string a listas Python para la respuesta."""
+    if cultivo.plagas:
+        cultivo.plagas = json.loads(cultivo.plagas)
+    else:
+        cultivo.plagas = []
+
+    if cultivo.enfermedades:
+        cultivo.enfermedades = json.loads(cultivo.enfermedades)
+    else:
+        cultivo.enfermedades = []
+
+    return cultivo
+
 
 # ---------------------------------------------------------
 # Crear cultivo tipo (CATÁLOGO)
@@ -22,14 +55,19 @@ def create_cultivo_tipo(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    data = cultivo_in.model_dump()
+    data = serialize_lists(data)
+
     cultivo = CultivoTipo(
-        **cultivo_in.model_dump(),
+        **data,
         user_id=current_user.id
     )
 
     db.add(cultivo)
     db.commit()
     db.refresh(cultivo)
+
+    cultivo = deserialize_lists(cultivo)
     return cultivo
 
 
@@ -41,12 +79,14 @@ def list_cultivos_tipo(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return (
+    cultivos = (
         db.query(CultivoTipo)
         .filter(CultivoTipo.user_id == current_user.id)
         .order_by(CultivoTipo.nombre)
         .all()
     )
+
+    return [deserialize_lists(c) for c in cultivos]
 
 
 # ---------------------------------------------------------
@@ -73,7 +113,7 @@ def get_cultivo_tipo(
             detail="Cultivo tipo no encontrado"
         )
 
-    return cultivo
+    return deserialize_lists(cultivo)
 
 
 # ---------------------------------------------------------
@@ -130,9 +170,14 @@ def update_cultivo_tipo(
             detail="Cultivo tipo no encontrado"
         )
 
-    for field, value in cultivo_in.model_dump(exclude_unset=True).items():
+    data = cultivo_in.model_dump(exclude_unset=True)
+    data = serialize_lists(data)
+
+    for field, value in data.items():
         setattr(cultivo, field, value)
 
     db.commit()
     db.refresh(cultivo)
+
+    cultivo = deserialize_lists(cultivo)
     return cultivo

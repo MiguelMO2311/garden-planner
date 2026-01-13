@@ -5,13 +5,14 @@ from typing import List
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
+
 from app.models.cultivo_plan import CultivoPlan
 from app.models.irrigation import Irrigation
 from app.models.pest import Pest
-from app.models.calendar_event import CalendarEventManual
+from app.models.calendar_event import CalendarEvent  # Modelo SQLAlchemy
 
 from app.schemas.calendar_event import (
-    CalendarEvent,
+    CalendarEvent as CalendarEventSchema,  # Esquema Pydantic
     CalendarEventCreate,
     CalendarEventUpdate,
     CalendarEventRead
@@ -23,7 +24,7 @@ router = APIRouter(tags=["Calendar"])
 # ---------------------------------------------------------
 # GET - Obtener SOLO los eventos del usuario (automáticos + manuales)
 # ---------------------------------------------------------
-@router.get("/", response_model=List[CalendarEvent])
+@router.get("/", response_model=List[CalendarEventSchema])
 def get_calendar(
     start_date: datetime.date | None = None,
     end_date: datetime.date | None = None,
@@ -36,7 +37,7 @@ def get_calendar(
     if end_date is None:
         end_date = today.replace(year=today.year + 1)
 
-    events: list[CalendarEvent] = []
+    events: list[CalendarEventSchema] = []
 
     # --- Planes de cultivo (CultivoPlan) ---
     q_plans = db.query(CultivoPlan).filter(
@@ -45,7 +46,7 @@ def get_calendar(
 
     for plan in q_plans.all():
         if start_date <= plan.start_date <= end_date:
-            events.append(CalendarEvent(
+            events.append(CalendarEventSchema(
                 date=plan.start_date,
                 type="crop_plan",
                 title=f"Inicio plan cultivo #{plan.id}",
@@ -54,7 +55,7 @@ def get_calendar(
             ))
 
         if plan.end_date and start_date <= plan.end_date <= end_date:
-            events.append(CalendarEvent(
+            events.append(CalendarEventSchema(
                 date=plan.end_date,
                 type="crop_plan",
                 title=f"Fin plan cultivo #{plan.id}",
@@ -70,7 +71,7 @@ def get_calendar(
     )
 
     for log in q_irrigation.all():
-        events.append(CalendarEvent(
+        events.append(CalendarEventSchema(
             date=log.date,
             type="irrigation",
             title=f"Riego parcela #{log.plot_id}",
@@ -86,7 +87,7 @@ def get_calendar(
     )
 
     for pest in q_pests.all():
-        events.append(CalendarEvent(
+        events.append(CalendarEventSchema(
             date=pest.date_detected,
             type="pest",
             title=f"Plaga: {pest.name}",
@@ -95,14 +96,14 @@ def get_calendar(
         ))
 
     # --- Eventos manuales (CalendarEventManual) ---
-    manual_events = db.query(CalendarEventManual).filter(
-        CalendarEventManual.date >= start_date,
-        CalendarEventManual.date <= end_date,
-        CalendarEventManual.user_id == user.id
+    manual_events = db.query(CalendarEvent).filter(
+        CalendarEvent.date >= start_date,
+        CalendarEvent.date <= end_date,
+        CalendarEvent.user_id == user.id
     ).all()
 
     for ev in manual_events:
-        events.append(CalendarEvent(
+        events.append(CalendarEventSchema(
             date=ev.date,
             type=ev.type,
             title=ev.title,
@@ -123,7 +124,7 @@ def create_event(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    event = CalendarEventManual(
+    event = CalendarEvent(
         user_id=user.id,
         **event_in.model_dump()
     )
@@ -143,9 +144,9 @@ def update_event(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    event = db.query(CalendarEventManual).filter(
-        CalendarEventManual.id == event_id,
-        CalendarEventManual.user_id == user.id
+    event = db.query(CalendarEvent).filter(
+        CalendarEvent.id == event_id,
+        CalendarEvent.user_id == user.id
     ).first()
 
     if not event:
@@ -168,9 +169,9 @@ def delete_event(
     db: Session = Depends(get_db),
     user = Depends(get_current_user)
 ):
-    event = db.query(CalendarEventManual).filter(
-        CalendarEventManual.id == event_id,
-        CalendarEventManual.user_id == user.id
+    event = db.query(CalendarEvent).filter(
+        CalendarEvent.id == event_id,
+        CalendarEvent.user_id == user.id
     ).first()
 
     if not event:

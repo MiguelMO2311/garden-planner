@@ -7,10 +7,22 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.security import hash_password
 from app.models.user import User
 
+# ---------------------------------------------------------
 # IMPORTA TODOS LOS MODELOS ANTES DE create_all
-from app.models import tarea
-from app.models import plot
-from app.models.climate_event import ClimateEvent
+# ---------------------------------------------------------
+from app.models import (
+    user,
+    irrigation,
+    tarea,
+    plot,
+    cultivo_tipo,
+    cultivo_parcela,
+    cultivo_plan,
+    pest,
+    calendar_event,
+    evento,
+    climate_event,
+)
 
 # Crear tablas
 Base.metadata.create_all(bind=engine)
@@ -61,31 +73,6 @@ app.add_middleware(
 
 # Routers
 app.include_router(api_router, prefix="/api/v1")
-
-# ---------------------------------------------------------
-# 🔥 GENERACIÓN AUTOMÁTICA DE EVENTOS CLIMÁTICOS REALES
-# ---------------------------------------------------------
-from app.services.climate_events import generar_eventos_reales
-import asyncio
-from datetime import date, timedelta
-
-@app.on_event("startup")
-async def generar_clima_inicial():
-    """
-    Genera eventos climáticos reales para los próximos 3 días
-    al arrancar el servidor.
-    """
-    print(">>> Generando eventos climáticos reales (Open‑Meteo)...")
-    db = SessionLocal()
-    try:
-        await generar_eventos_reales(db, days=3)
-        print(">>> Eventos climáticos generados correctamente.")
-    except Exception as e:
-        print(">>> ERROR generando clima real:", e)
-    finally:
-        db.close()
-
-# ---------------------------------------------------------
 
 print(">>> RUTAS REGISTRADAS EN FASTAPI:")
 for route in app.routes:

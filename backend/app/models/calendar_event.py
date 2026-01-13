@@ -2,8 +2,8 @@ from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-class CalendarEventManual(Base):
-    __tablename__ = "calendar_events_manual"
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -12,5 +12,4 @@ class CalendarEventManual(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
-    # 🔥 Relación correcta con usuario
     user = relationship("User", back_populates="calendar_events")

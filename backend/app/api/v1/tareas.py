@@ -10,6 +10,8 @@ from app.models.cultivo_parcela import CultivoParcela
 from app.models.plot import Plot
 
 from app.schemas.tarea import TareaCreate, TareaUpdate, TareaRead
+from app.schemas.tarea_from_recommendation import TareaFromRecommendation
+from datetime import date
 
 router = APIRouter()
 
@@ -201,3 +203,73 @@ def delete_tarea(
     db.commit()
 
     return None
+
+# ---------------------------------------------------------
+#  TAREA DESDE RECOMENDACION
+# ---------------------------------------------------------
+
+@router.post("/from-recommendation", response_model=TareaRead, status_code=201)
+def create_tarea_from_recommendation(
+    data: TareaFromRecommendation,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # 1) Verificar que la parcela pertenece al usuario
+    parcela = (
+        db.query(Plot)
+        .filter(
+            Plot.id == data.plot_id,
+            Plot.user_id == current_user.id
+        )
+        .first()
+    )
+    if not parcela:
+        raise HTTPException(status_code=404, detail="Parcela no encontrada o no pertenece al usuario")
+
+    # 2) Obtener cultivo activo
+    cultivo_activo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.parcela_id == data.plot_id,
+            CultivoParcela.estado == "activo",
+            CultivoParcela.fecha_cosecha.is_(None)
+        )
+        .first()
+    )
+
+    if not cultivo_activo:
+        raise HTTPException(status_code=400, detail="No hay cultivo activo en esta parcela")
+
+    # 3) Crear título legible
+    titulo = data.recommendation_type.replace("_", " ").capitalize()
+
+    # 4) Fecha sugerida
+    fecha_tarea = data.date or date.today()
+
+    # 5) Crear tarea
+    db_tarea = Tarea(
+        titulo=titulo,
+        descripcion=data.message,
+        fecha=fecha_tarea,
+        estado="pendiente",
+        cultivo_parcela_id=cultivo_activo.id,
+        parcela_id=data.plot_id,
+        user_id=current_user.id
+    )
+
+    db.add(db_tarea)
+    db.commit()
+    db.refresh(db_tarea)
+
+    # 6) Recargar con relaciones completas
+    db_tarea = (
+        db.query(Tarea)
+        .options(
+            joinedload(Tarea.parcela),
+            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+        )
+        .filter(Tarea.id == db_tarea.id)
+        .first()
+    )
+
+    return db_tarea

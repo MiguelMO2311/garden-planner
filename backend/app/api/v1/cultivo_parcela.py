@@ -43,6 +43,34 @@ def list_cultivo_parcela(
 
     return query.all()
 
+# ---------------------------------------------------------
+# OBTENER CULTIVO EN PARCELA POR ID
+# ---------------------------------------------------------
+@router.get("/{cultivo_parcela_id}", response_model=CultivoParcelaRead)
+def get_cultivo_parcela(
+    cultivo_parcela_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    cultivo = (
+        db.query(CultivoParcela)
+        .options(
+            joinedload(CultivoParcela.cultivo_tipo),
+            joinedload(CultivoParcela.parcela)
+        )
+        .join(Plot)
+        .filter(
+            CultivoParcela.id == cultivo_parcela_id,
+            Plot.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not cultivo:
+        raise HTTPException(status_code=404, detail="Cultivo no encontrado")
+
+    return cultivo
+
 
 # ---------------------------------------------------------
 # CREAR CULTIVO EN PARCELA

@@ -1,7 +1,13 @@
-from .user import User
+from .irrigation import Irrigation
+from .tarea import Tarea
 from .plot import Plot
 from .cultivo_tipo import CultivoTipo
 from .cultivo_parcela import CultivoParcela
-from .tarea import Tarea
+from .cultivo_plan import CultivoPlan
+from .pest import Pest
+from .calendar_event import CalendarEvent
+from .evento import EventoAgricola
 from .climate_event import ClimateEvent
-from .evento import EventoAgricola   # ← FALTABA ESTA
+
+# ⚠️ User SIEMPRE al final
+from .user import User

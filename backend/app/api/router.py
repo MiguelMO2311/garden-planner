@@ -13,6 +13,7 @@ from app.api.v1 import (
     seasonal,
     plots,
     tareas,
+    recomendaciones
 )
 
 api_router = APIRouter()
@@ -29,3 +30,4 @@ api_router.include_router(cultivo_tipo.router, prefix="/cultivo-tipo", tags=["Cu
 api_router.include_router(cultivo_parcela.router, prefix="/cultivo-parcela", tags=["Cultivos en parcela"])
 api_router.include_router(plots.router, prefix="/plots", tags=["plots"])
 api_router.include_router(tareas.router, prefix="/tareas", tags=["tareas"])
+api_router.include_router(recomendaciones.router, prefix="/recomendaciones", tags=["recomendaciones"])
