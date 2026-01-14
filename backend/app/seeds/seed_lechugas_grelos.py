@@ -1,0 +1,295 @@
+# app/seeds/seed_lechugas_grelos.py
+
+from app.core.database import SessionLocal
+from app.models.cultivo_tipo import CultivoTipo
+
+def run(user_id: int = 2):
+    db = SessionLocal()
+
+    variedades = [
+
+        # ============================================================
+        # LECHUGAS ESPAÑOLAS — VARIEDADES REALES
+        # ============================================================
+
+        {
+            "nombre": "Lechuga Maravilla de Verano",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Maravilla de Verano",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 55,
+            "litros_agua_semana": 7,
+            "fase_lunar": "Nueva",
+            "plagas": ["Babosas", "Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy típica en España; resistente al espigado."
+        },
+        {
+            "nombre": "Lechuga Romana Española",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Romana Nacional",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 60,
+            "litros_agua_semana": 7,
+            "fase_lunar": "Nueva",
+            "plagas": ["Caracoles", "Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 12,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy crujiente; ideal para cultivo continuo."
+        },
+        {
+            "nombre": "Lechuga Hoja de Roble Roja",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Hoja de Roble Roja",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 50,
+            "litros_agua_semana": 6,
+            "fase_lunar": "Nueva",
+            "plagas": ["Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 6,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy usada en ensaladas gourmet."
+        },
+        {
+            "nombre": "Lechuga Hoja de Roble Verde",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Hoja de Roble Verde",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 50,
+            "litros_agua_semana": 6,
+            "fase_lunar": "Nueva",
+            "plagas": ["Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 6,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy tierna; ideal para mezclum."
+        },
+        {
+            "nombre": "Lechuga Iceberg Española",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Iceberg Nacional",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 70,
+            "litros_agua_semana": 8,
+            "fase_lunar": "Nueva",
+            "plagas": ["Caracoles", "Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 12,
+            "temperatura_minima": 6,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Alta",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy crujiente; típica de Murcia y Navarra."
+        },
+        {
+            "nombre": "Lechuga Batavia Española",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Batavia Nacional",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 60,
+            "litros_agua_semana": 7,
+            "fase_lunar": "Nueva",
+            "plagas": ["Babosas"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy resistente y productiva."
+        },
+        {
+            "nombre": "Lechuga Trocadero Española",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Trocadero Nacional",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 55,
+            "litros_agua_semana": 7,
+            "fase_lunar": "Nueva",
+            "plagas": ["Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy tierna; típica de mercados españoles."
+        },
+        {
+            "nombre": "Lechuga Romana Larga",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Romana Larga",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 65,
+            "litros_agua_semana": 7,
+            "fase_lunar": "Nueva",
+            "plagas": ["Caracoles"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 12,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy crujiente; ideal para Caesar."
+        },
+        {
+            "nombre": "Lechuga Romana Mini",
+            "nombre_latin": "Lactuca sativa",
+            "variedad": "Mini Romana",
+            "tipo": "Hoja",
+            "temporada_optima": "Primavera",
+            "dias_crecimiento": 50,
+            "litros_agua_semana": 6,
+            "fase_lunar": "Nueva",
+            "plagas": ["Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 10,
+            "temperatura_minima": 5,
+            "temperatura_optima": 18,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Media",
+            "notas": "Muy usada en hostelería."
+        },
+
+        # ============================================================
+        # GRELOS (Brassica rapa) — VARIEDADES GALLEGAS REALES
+        # ============================================================
+
+        {
+            "nombre": "Grelos de Santiago",
+            "nombre_latin": "Brassica rapa",
+            "variedad": "Santiago",
+            "tipo": "Hoja",
+            "temporada_optima": "Invierno",
+            "dias_crecimiento": 70,
+            "litros_agua_semana": 8,
+            "fase_lunar": "Nueva",
+            "plagas": ["Orugas", "Pulgón"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 14,
+            "temperatura_minima": -3,
+            "temperatura_optima": 12,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Alta",
+            "notas": "Muy típico de Galicia; sabor intenso."
+        },
+        {
+            "nombre": "Grelos de Lugo",
+            "nombre_latin": "Brassica rapa",
+            "variedad": "Lugo",
+            "tipo": "Hoja",
+            "temporada_optima": "Invierno",
+            "dias_crecimiento": 75,
+            "litros_agua_semana": 8,
+            "fase_lunar": "Nueva",
+            "plagas": ["Orugas"],
+            "enfermedades": ["Alternaria"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 14,
+            "temperatura_minima": -4,
+            "temperatura_optima": 10,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Alta",
+            "notas": "Muy apreciados para caldo gallego."
+        },
+        {
+            "nombre": "Grelos de Orense",
+            "nombre_latin": "Brassica rapa",
+            "variedad": "Ourense",
+            "tipo": "Hoja",
+            "temporada_optima": "Invierno",
+            "dias_crecimiento": 80,
+            "litros_agua_semana": 9,
+            "fase_lunar": "Nueva",
+            "plagas": ["Orugas", "Altica"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 14,
+            "temperatura_minima": -3,
+            "temperatura_optima": 12,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Alta",
+            "notas": "Sabor muy marcado; brotes gruesos."
+        },
+        {
+            "nombre": "Grelos de Betanzos",
+            "nombre_latin": "Brassica rapa",
+            "variedad": "Betanzos",
+            "tipo": "Hoja",
+            "temporada_optima": "Invierno",
+            "dias_crecimiento": 75,
+            "litros_agua_semana": 8,
+            "fase_lunar": "Nueva",
+            "plagas": ["Orugas"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 14,
+            "temperatura_minima": -2,
+            "temperatura_optima": 12,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Alta",
+            "notas": "Muy tiernos; típicos de A Coruña."
+        },
+        {
+            "nombre": "Grelos de Monfero",
+            "nombre_latin": "Brassica rapa",
+            "variedad": "Monfero",
+            "tipo": "Hoja",
+            "temporada_optima": "Invierno",
+            "dias_crecimiento": 85,
+            "litros_agua_semana": 9,
+            "fase_lunar": "Nueva",
+            "plagas": ["Altica"],
+            "enfermedades": ["Mildiu"],
+            "plazo_seguridad": 0,
+            "frecuencia_tratamiento": 14,
+            "temperatura_minima": -3,
+            "temperatura_optima": 10,
+            "exigencia_hidrica": "Media",
+            "exigencia_nutrientes": "Alta",
+            "notas": "Brotes gruesos y muy sabrosos."
+        }
+    ]
+
+    for c in variedades:
+        cultivo = CultivoTipo(**c, user_id=user_id)
+        db.add(cultivo)
+
+    db.commit()
+    db.close()
+
+    print(">>> Seed de lechugas y grelos insertado correctamente.")

@@ -12,12 +12,16 @@ class TipoCultivo(str, Enum):
     leguminosa = "Leguminosa"
     tuberculo = "Tubérculo"
     aromatica = "Aromática"
+    arbol = "Árbol"
+    fruto_seco = "Fruto seco"
+    frutal = "Frutal"
 
 class FaseLunar(str, Enum):
     creciente = "Creciente"
     llena = "Llena"
     nueva = "Nueva"
     menguante = "Menguante"
+
 
 class CultivoTipoBase(BaseModel):
     nombre: str
@@ -32,9 +36,9 @@ class CultivoTipoBase(BaseModel):
 
     fase_lunar: Optional[FaseLunar] = None
 
-    # En SQLite se guardan como JSON string, pero aquí siguen siendo listas
-    plagas: Optional[List[str]] = None
-    enfermedades: Optional[List[str]] = None
+    # En SQLite se guardan como JSON
+    plagas: list[str] | None = None
+    enfermedades: list[str] | None = None
 
     plazo_seguridad: Optional[int] = None
     frecuencia_tratamiento: Optional[int] = None
@@ -45,8 +49,10 @@ class CultivoTipoBase(BaseModel):
 
     notas: Optional[str] = None
 
+
 class CultivoTipoCreate(CultivoTipoBase):
     pass
+
 
 class CultivoTipoUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -70,6 +76,7 @@ class CultivoTipoUpdate(BaseModel):
     exigencia_nutrientes: Optional[str] = None
 
     notas: Optional[str] = None
+
 
 class CultivoTipoRead(CultivoTipoBase):
     id: int

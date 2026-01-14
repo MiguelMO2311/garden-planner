@@ -1,10 +1,19 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 
 class CultivoTipoNested(BaseModel):
     id: int
     nombre: str
+    tipo: str  # ← obligatorio
+    fase_lunar: Optional[str] = None
+    plagas: List[str] = []  # ← opcional
+    enfermedades: List[str] = []  # ← opcional
+    litros_agua_semana: Optional[float] = None
+    notas: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
     class Config:
         from_attributes = True
