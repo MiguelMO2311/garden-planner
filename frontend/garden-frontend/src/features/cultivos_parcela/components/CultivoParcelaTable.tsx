@@ -49,10 +49,10 @@ export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Prop
                         <td>{formatFecha(cultivo.fecha_siembra)}</td>
                         <td>{formatFecha(cultivo.fecha_cosecha)}</td>
 
-                        {/* Plagas detectadas */}
+                        {/* Plagas del cultivo tipo */}
                         <td>
-                            {cultivo.plagas_detectadas?.length ? (
-                                cultivo.plagas_detectadas.map((p, i) => (
+                            {cultivo.cultivo_tipo?.plagas?.length ? (
+                                cultivo.cultivo_tipo.plagas.map((p, i) => (
                                     <span
                                         key={i}
                                         className="badge bg-warning text-dark me-1"
@@ -65,10 +65,10 @@ export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Prop
                             )}
                         </td>
 
-                        {/* Enfermedades detectadas */}
+                        {/* Enfermedades del cultivo tipo */}
                         <td>
-                            {cultivo.enfermedades_detectadas?.length ? (
-                                cultivo.enfermedades_detectadas.map((e, i) => (
+                            {cultivo.cultivo_tipo?.enfermedades?.length ? (
+                                cultivo.cultivo_tipo.enfermedades.map((e, i) => (
                                     <span
                                         key={i}
                                         className="badge bg-danger text-light me-1"
@@ -81,8 +81,11 @@ export default function CultivoParcelaTable({ cultivos, onEdit, onDelete }: Prop
                             )}
                         </td>
 
-                        {/* Riego aplicado */}
-                        <td>{cultivo.riego_aplicado_semana ?? "—"}</td>
+                        {/* Riego recomendado del cultivo tipo */}
+                        <td>
+                            {cultivo.cultivo_tipo?.litros_agua_semana ??
+                                "—"}
+                        </td>
 
                         {/* Estado */}
                         <td>

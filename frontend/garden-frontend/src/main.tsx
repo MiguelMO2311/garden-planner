@@ -20,3 +20,10 @@ createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </StrictMode>
 );
+
+// Script para capturar la posición del ratón y almacenarla en variables CSS
+
+document.addEventListener("mousemove", (e) => {
+    document.documentElement.style.setProperty("--mouse-x", `${e.clientX}px`);
+    document.documentElement.style.setProperty("--mouse-y", `${e.clientY}px`);
+});

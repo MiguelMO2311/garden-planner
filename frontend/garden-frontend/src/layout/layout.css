@@ -5,9 +5,8 @@
 .sidebar-modern {
     position: fixed;
     top: 64px;
-    /* debajo del navbar moderno */
     left: 0;
-    width: 240px;
+    width: 160px; /* antes 240px → reducido 33% */
     height: calc(100vh - 64px);
     background: #ffffff;
     border-right: 1px solid #ddd;
@@ -17,7 +16,7 @@
 }
 
 .sidebar-modern.collapsed {
-    width: 70px;
+    width: 55px; /* antes 70px */
 }
 
 /* HEADER DEL SIDEBAR */
@@ -199,13 +198,13 @@
 /* ----------------------------- */
 
 .main-content {
-    margin-left: 240px;
+    margin-left: 160px; /* antes 240px */
     padding: 20px;
     transition: margin-left 0.25s ease;
 }
 
-.sidebar-modern.collapsed~.main-content {
-    margin-left: 70px;
+.sidebar-modern.collapsed ~ .main-content {
+    margin-left: 55px; /* antes 70px */
 }
 
 /* ----------------------------- */
@@ -324,4 +323,51 @@
     background: #d1f3e0;
     color: #198754;
     font-weight: 600;
+}
+
+/* -------------------------------------------------- */
+/* TOOLTIP POST-IT PARA NOTAS (FUNCIONA SIEMPRE)      */
+/* -------------------------------------------------- */
+
+.notas-tooltip {
+    position: relative;
+    max-width: 100px;
+    font-size: 0.70rem;
+    color: #555;
+    cursor: help;
+}
+
+/* Tooltip global */
+.notas-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: fixed; /* clave para evitar overflow hidden */
+    background: #fff7a8; /* amarillo post-it */
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    font-size: 0.75rem;
+    line-height: 1.25;
+    max-width: 260px;
+    z-index: 99999;
+    white-space: normal;
+    animation: tooltipFade 0.15s ease-out;
+}
+
+/* Posición dinámica del tooltip */
+.notas-tooltip:hover::after {
+    top: calc(var(--mouse-y) - 10px);
+    left: calc(var(--mouse-x) + 10px);
+}
+
+/* Animación suave */
+@keyframes tooltipFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
