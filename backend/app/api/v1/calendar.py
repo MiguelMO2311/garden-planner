@@ -8,7 +8,6 @@ from app.core.auth import get_current_user
 
 from app.models.cultivo_plan import CultivoPlan
 from app.models.irrigation import Irrigation
-from app.models.pest import Pest
 from app.models.calendar_event import CalendarEvent  # Modelo SQLAlchemy
 
 from app.schemas.calendar_event import (
@@ -79,21 +78,7 @@ def get_calendar(
             related_id=log.id
         ))
 
-    # --- Plagas (Pest) ---
-    q_pests = db.query(Pest).filter(
-        Pest.date_detected >= start_date,
-        Pest.date_detected <= end_date,
-        Pest.user_id == user.id
-    )
-
-    for pest in q_pests.all():
-        events.append(CalendarEventSchema(
-            date=pest.date_detected,
-            type="pest",
-            title=f"Plaga: {pest.name}",
-            description=pest.notes,
-            related_id=pest.id
-        ))
+    # ❌ BLOQUE DE PLAGAS ELIMINADO (Pest ya no existe)
 
     # --- Eventos manuales (CalendarEventManual) ---
     manual_events = db.query(CalendarEvent).filter(

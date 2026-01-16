@@ -11,8 +11,12 @@ class Tarea(Base):
     fecha = Column(Date, nullable=True)
     estado = Column(String, default="pendiente")
 
-    # Relación correcta con CultivoParcela
-    cultivo_parcela_id = Column(Integer, ForeignKey("cultivo_parcela.id"), nullable=False)
+    # 🔥 Relación correcta con CultivoParcela (tabla plural)
+    cultivo_parcela_id = Column(
+        Integer,
+        ForeignKey("cultivos_parcela.id", ondelete="CASCADE"),
+        nullable=False
+    )
 
     # Relación correcta con parcela
     parcela_id = Column(Integer, ForeignKey("plots.id"), nullable=False)

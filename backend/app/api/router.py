@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
-    auth,      # ← este es el router de CultivoTipo
-    pest,
+    auth,
     irrigation,
     calendar,
     clima,
@@ -13,13 +12,13 @@ from app.api.v1 import (
     seasonal,
     plots,
     tareas,
-    recomendaciones
+    recomendaciones, 
+    panel_sanitario_router,
 )
 
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
-api_router.include_router(pest.router, prefix="/pest", tags=["pest"])
 api_router.include_router(irrigation.router, prefix="/irrigation", tags=["irrigation"])
 api_router.include_router(calendar.router, prefix="/calendar", tags=["calendar"])
 api_router.include_router(clima.router, prefix="/clima", tags=["clima"])
@@ -31,3 +30,4 @@ api_router.include_router(cultivo_parcela.router, prefix="/cultivo-parcela", tag
 api_router.include_router(plots.router, prefix="/plots", tags=["plots"])
 api_router.include_router(tareas.router, prefix="/tareas", tags=["tareas"])
 api_router.include_router(recomendaciones.router, prefix="/recomendaciones", tags=["recomendaciones"])
+api_router.include_router(panel_sanitario_router, prefix="/sanitario", tags=["Sanitario"])

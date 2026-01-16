@@ -7,6 +7,7 @@ from app.core.database import Base, engine, SessionLocal
 from app.core.security import hash_password
 from app.models.user import User
 
+
 # ---------------------------------------------------------
 # IMPORTA TODOS LOS MODELOS ANTES DE create_all
 # ---------------------------------------------------------
@@ -18,10 +19,14 @@ from app.models import (
     cultivo_tipo,
     cultivo_parcela,
     cultivo_plan,
-    pest,
     calendar_event,
     evento,
     climate_event,
+    plaga,
+    enfermedad,
+    cultivo_tipo_plaga,
+    cultivo_tipo_enfermedad,
+    evento_sanitario
 )
 
 # Crear tablas
@@ -71,10 +76,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
+# Routers principales
 app.include_router(api_router, prefix="/api/v1")
+
+# ---------------------------------------------------------
+# NUEVOS ROUTERS (plagas y enfermedades)
+# ---------------------------------------------------------
+from app.api.v1 import plagas, enfermedades
+
+app.include_router(plagas.router, prefix="/api/v1/plagas")
+app.include_router(enfermedades.router, prefix="/api/v1/enfermedades")
 
 print(">>> RUTAS REGISTRADAS EN FASTAPI:")
 for route in app.routes:
     methods = getattr(route, "methods", None)
     print(" -", route.path, methods)
+
+# ---------------------------------------------------------
+# NUEVO ROUTER (eventos sanitarios)
+# ---------------------------------------------------------
+from app.api.v1 import eventos_sanitarios
+app.include_router(eventos_sanitarios.router, prefix="/api/v1/eventos-sanitarios")
+
+# ---------------------------------------------------------
+# NUEVO ROUTER (alertas sanitarias)
+# ---------------------------------------------------------
+from app.api.v1 import alertas_sanitarias
+app.include_router(alertas_sanitarias.router, prefix="/api/v1/alertas-sanitarias")

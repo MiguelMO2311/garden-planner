@@ -12,35 +12,25 @@ class Plot(Base):
     soil_type = Column(String, nullable=True)
     size_m2 = Column(Float, nullable=True)
 
-    # 🔥 NUEVO: coordenadas geográficas para integrar clima real
     lat = Column(Float, nullable=True)
     lng = Column(Float, nullable=True)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    # 🔥 Relación correcta con User
     user = relationship("User", back_populates="parcelas")
 
-    # relación con riegos
     irrigations = relationship("Irrigation", back_populates="plot")
 
-    # relación con cultivos plantados en esta parcela
     cultivos = relationship(
-    "CultivoParcela",
-    back_populates="parcela",
-    cascade="all, delete-orphan"
-)
+        "CultivoParcela",
+        back_populates="parcela",
+        cascade="all, delete-orphan"
+    )
 
-    # relación con tareas
     tareas = relationship("Tarea", back_populates="parcela", cascade="all, delete-orphan")
-    
-    # relación con plagas
-    pests = relationship("Pest", back_populates="plot")
 
-    # relación con planes de cultivo
     cultivo_plans = relationship("CultivoPlan", back_populates="plot")
-    
-    # relación con eventos climáticos
+
     climate_events = relationship(
         "ClimateEvent",
         back_populates="plot",

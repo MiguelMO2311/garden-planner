@@ -8,7 +8,6 @@ from app.models.plot import Plot
 from app.models.cultivo_tipo import CultivoTipo
 from app.models.cultivo_parcela import CultivoParcela
 from app.models.cultivo_plan import CultivoPlan
-from app.models.pest import Pest
 from app.models.calendar_event import CalendarEvent
 from app.models.evento import EventoAgricola
 
@@ -27,9 +26,8 @@ class User(Base):
     tareas = relationship("Tarea", back_populates="user")
     parcelas = relationship("Plot", back_populates="user")
     cultivo_tipo = relationship("CultivoTipo", back_populates="user")
-    cultivo_parcela = relationship("CultivoParcela", back_populates="user")
+    cultivos_parcela = relationship("CultivoParcela", back_populates="user")
     cultivo_plans = relationship("CultivoPlan", back_populates="user")
-    pests = relationship("Pest", back_populates="user")
     calendar_events = relationship("CalendarEvent", back_populates="user")
 
     # 🔥 Corrección importante

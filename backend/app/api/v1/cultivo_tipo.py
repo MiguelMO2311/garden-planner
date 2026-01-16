@@ -15,6 +15,9 @@ from app.schemas.cultivo_tipo_schema import (
     CultivoTipoUpdate
 )
 
+# 🔥 Import correcto del servicio de sincronización
+from app.services.cultivo_tipo_sync import sync_plagas, sync_enfermedades
+
 router = APIRouter(tags=["Cultivos tipo"])
 
 
@@ -35,6 +38,13 @@ def create_cultivo_tipo(
     )
 
     db.add(cultivo)
+    db.commit()
+    db.refresh(cultivo)
+
+    # 🔥 Sincronizar plagas y enfermedades
+    sync_plagas(db, cultivo.id, cultivo_in.plagas or [])
+    sync_enfermedades(db, cultivo.id, cultivo_in.enfermedades or [])
+
     db.commit()
     db.refresh(cultivo)
 
@@ -148,4 +158,96 @@ def update_cultivo_tipo(
     db.commit()
     db.refresh(cultivo)
 
+    # 🔥 Sincronizar relaciones
+    sync_plagas(db, cultivo.id, cultivo_in.plagas or [])
+    sync_enfermedades(db, cultivo.id, cultivo_in.enfermedades or [])
+
+    db.commit()
+    db.refresh(cultivo)
+
     return cultivo
+
+# ---------------------------------------------------------
+# ENDPOINT: Obtener plagas reales asociadas a un cultivo tipo
+# ---------------------------------------------------------
+# Este endpoint devuelve las plagas REALES asociadas al cultivo tipo,
+# usando la tabla intermedia cultivo_tipo_plaga.
+# No rompe nada del sistema actual porque sigue existiendo el array JSON,
+# pero ahora permite lógica avanzada (riesgos, alertas, tratamientos).
+# ---------------------------------------------------------
+
+@router.get("/{cultivo_id}/plagas", tags=["Cultivos tipo"])
+def get_cultivo_plagas(
+    cultivo_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verificar que el cultivo pertenece al usuario
+    cultivo = (
+        db.query(CultivoTipo)
+        .filter(
+            CultivoTipo.id == cultivo_id,
+            CultivoTipo.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not cultivo:
+        raise HTTPException(status_code=404, detail="Cultivo tipo no encontrado")
+
+    from app.models.cultivo_tipo_plaga import CultivoTipoPlaga
+    from app.models.plaga import Plaga
+
+    # Obtener plagas reales asociadas
+    plagas = (
+        db.query(Plaga)
+        .join(CultivoTipoPlaga, Plaga.id == CultivoTipoPlaga.plaga_id)
+        .filter(CultivoTipoPlaga.cultivo_tipo_id == cultivo_id)
+        .order_by(Plaga.nombre)
+        .all()
+    )
+
+    return plagas
+
+
+
+# ---------------------------------------------------------
+# ENDPOINT: Obtener enfermedades reales asociadas a un cultivo tipo
+# ---------------------------------------------------------
+# Este endpoint devuelve las enfermedades REALES asociadas al cultivo tipo,
+# usando la tabla intermedia cultivo_tipo_enfermedad.
+# Igual que el anterior, no rompe nada del sistema actual.
+# ---------------------------------------------------------
+
+@router.get("/{cultivo_id}/enfermedades", tags=["Cultivos tipo"])
+def get_cultivo_enfermedades(
+    cultivo_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # Verificar que el cultivo pertenece al usuario
+    cultivo = (
+        db.query(CultivoTipo)
+        .filter(
+            CultivoTipo.id == cultivo_id,
+            CultivoTipo.user_id == current_user.id
+        )
+        .first()
+    )
+
+    if not cultivo:
+        raise HTTPException(status_code=404, detail="Cultivo tipo no encontrado")
+
+    from app.models.cultivo_tipo_enfermedad import CultivoTipoEnfermedad
+    from app.models.enfermedad import Enfermedad
+
+    # Obtener enfermedades reales asociadas
+    enfermedades = (
+        db.query(Enfermedad)
+        .join(CultivoTipoEnfermedad, Enfermedad.id == CultivoTipoEnfermedad.enfermedad_id)
+        .filter(CultivoTipoEnfermedad.cultivo_tipo_id == cultivo_id)
+        .order_by(Enfermedad.nombre)
+        .all()
+    )
+
+    return enfermedades

@@ -8,7 +8,13 @@ class CultivoPlan(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     plot_id = Column(Integer, ForeignKey("plots.id"), nullable=False)
-    cultivo_id = Column(Integer, ForeignKey("cultivo_parcela.id"), nullable=False)
+
+    # 🔥 ForeignKey corregido: tabla correcta = "cultivos_parcela"
+    cultivo_id = Column(
+        Integer,
+        ForeignKey("cultivos_parcela.id", ondelete="CASCADE"),
+        nullable=False
+    )
 
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=True)
