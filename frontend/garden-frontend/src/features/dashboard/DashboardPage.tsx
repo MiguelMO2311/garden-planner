@@ -4,7 +4,11 @@ import api from "../../api/axios";
 import { useCounter } from "./../hooks/useCounter";
 import type { ClimateEvent as BaseClimateEvent } from "../parcelas/types";
 
-import { FaMapMarkedAlt, FaTasks, FaCalendarAlt } from "react-icons/fa";
+import {
+    FaMapMarkedAlt,
+    FaTasks,
+    FaCalendarAlt
+} from "react-icons/fa";
 import { GiPlantRoots } from "react-icons/gi";
 
 import {
@@ -69,6 +73,43 @@ const formatFecha = (fechaStr: string | null) => {
     const año = fecha.getFullYear();
 
     return `${nombreDia}, ${dia}/${mes}/${año}`;
+};
+
+/* ------------------------------------------------------ */
+/* ICONOS                                                 */
+/* ------------------------------------------------------ */
+
+const iconForEvent = (type: string) => {
+    switch (type) {
+        case "lluvia":
+            return <WiRain size={32} color="#0d6efd" />;
+        case "tormenta":
+            return <WiStormShowers size={32} color="#6f42c1" />;
+        case "granizo":
+            return <WiSnow size={32} color="#20c997" />;
+        case "ola_de_calor":
+        case "calor":
+            return <WiThermometer size={32} color="#dc3545" />;
+        case "helada":
+            return <WiSnow size={32} color="#0dcaf0" />;
+        case "viento_fuerte":
+        case "viento":
+            return <WiStrongWind size={32} color="#198754" />;
+        default:
+            return <WiDaySunny size={32} />;
+    }
+};
+
+const badgeClassForLevel = (nivel: string) => {
+    switch (nivel) {
+        case "danger":
+            return "bg-danger";
+        case "warning":
+            return "bg-warning text-dark";
+        case "info":
+        default:
+            return "bg-info text-dark";
+    }
 };
 
 /* ------------------------------------------------------ */
@@ -154,7 +195,6 @@ export default function DashboardPage() {
         fetchAll();
     }, [loadCounts, loadClimate, loadWeeklyAlerts]);
 
-
     /* ------------------------------------------------------ */
     /* CONTADORES                                             */
     /* ------------------------------------------------------ */
@@ -165,44 +205,7 @@ export default function DashboardPage() {
     const calendarioCount = useCounter(counts.calendario);
 
     /* ------------------------------------------------------ */
-    /* ICONOS                                                 */
-    /* ------------------------------------------------------ */
-
-    const iconForEvent = (type: string) => {
-        switch (type) {
-            case "lluvia":
-                return <WiRain size={32} color="#0d6efd" />;
-            case "tormenta":
-                return <WiStormShowers size={32} color="#6f42c1" />;
-            case "granizo":
-                return <WiSnow size={32} color="#20c997" />;
-            case "ola_de_calor":
-            case "calor":
-                return <WiThermometer size={32} color="#dc3545" />;
-            case "helada":
-                return <WiSnow size={32} color="#0dcaf0" />;
-            case "viento_fuerte":
-            case "viento":
-                return <WiStrongWind size={32} color="#198754" />;
-            default:
-                return <WiDaySunny size={32} />;
-        }
-    };
-
-    const badgeClassForLevel = (nivel: string) => {
-        switch (nivel) {
-            case "danger":
-                return "bg-danger";
-            case "warning":
-                return "bg-warning text-dark";
-            case "info":
-            default:
-                return "bg-info text-dark";
-        }
-    };
-
-    /* ------------------------------------------------------ */
-    /* CARRUSEL AUTOMÁTICO (2 ITEMS VISIBLES, LOOP INFINITO)  */
+    /* CARRUSEL AUTOMÁTICO                                    */
     /* ------------------------------------------------------ */
 
     useEffect(() => {
@@ -217,6 +220,7 @@ export default function DashboardPage() {
 
         return () => clearInterval(interval);
     }, [weeklyAlerts.length, recentEvents.length]);
+
     /* ------------------------------------------------------ */
     /* RENDER                                                 */
     /* ------------------------------------------------------ */
@@ -273,7 +277,7 @@ export default function DashboardPage() {
 
             </div>
 
-            {/* ALERTAS + EVENTOS (CARDS PARALELAS) */}
+            {/* ALERTAS + EVENTOS */}
             <div className="row g-4 dashboard-cards-row">
 
                 {/* ALERTAS AGRÍCOLAS */}

@@ -1,0 +1,27 @@
+.sanitario-container {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.sanitario-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #1a3d5d;
+    border-left: 6px solid #4dabf7;
+    padding-left: 12px;
+}
+
+.sanitario-content {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

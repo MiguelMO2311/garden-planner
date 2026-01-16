@@ -66,6 +66,61 @@ export default function Sidebar() {
                     <span className="label">Calendario</span>
                 </NavLink>
 
+                {/* SANITARIO */}
+                <div className="sidebar-section-title">
+                    Sanitario
+                </div>
+
+                <NavLink
+                    to="/sanitario"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">🧪</span>
+                    <span className="label">Panel sanitario</span>
+                </NavLink>
+
+                <NavLink
+                    to="/sanitario/riesgos"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">⚠️</span>
+                    <span className="label">Riesgos</span>
+                </NavLink>
+
+                <NavLink
+                    to="/sanitario/alertas"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">🚨</span>
+                    <span className="label">Alertas</span>
+                </NavLink>
+
+                <NavLink
+                    to="/sanitario/sugerencias"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">💡</span>
+                    <span className="label">Sugerencias</span>
+                </NavLink>
+
+                <NavLink
+                    to="/sanitario/tratamientos"
+                    className={({ isActive }) =>
+                        `sidebar-link ${isActive ? "active" : ""}`
+                    }
+                >
+                    <span className="icon">💊</span>
+                    <span className="label">Tratamientos</span>
+                </NavLink>
+
             </nav>
         </aside>
     );

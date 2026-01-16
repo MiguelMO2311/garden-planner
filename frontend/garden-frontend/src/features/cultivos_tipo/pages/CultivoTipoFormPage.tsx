@@ -19,7 +19,7 @@ export default function CultivoTipoFormPage() {
     const isEditing = Boolean(id);
     const navigate = useNavigate();
 
-    // Estado inicial completo según el modelo
+    // Estado principal del formulario
     const [formData, setFormData] = useState<CultivoTipoCreate>({
         nombre: "",
         nombre_latin: "",

@@ -8,7 +8,6 @@ import type {
 } from "../types";
 
 // Tipo seguro para datos crudos del backend
-// Ahora coincide con lo que devuelve FastAPI
 type RawCultivo = {
     id: number;
     nombre: string;
@@ -70,7 +69,6 @@ export const getCultivoTipo = async (id: number): Promise<CultivoTipo> => {
 export const createCultivoTipo = async (
     data: CultivoTipoCreate
 ): Promise<CultivoTipo> => {
-    // ❌ NO JSON.stringify
     const payload = {
         ...data,
         plagas: data.plagas || [],
@@ -88,7 +86,6 @@ export const updateCultivoTipo = async (
     id: number,
     data: CultivoTipoUpdate
 ): Promise<CultivoTipo> => {
-    // ❌ NO JSON.stringify
     const payload = {
         ...data,
         plagas: data.plagas || [],
@@ -104,3 +101,29 @@ export const updateCultivoTipo = async (
 // ---------------------------------------------------------
 export const deleteCultivoTipo = (id: number) =>
     api.delete(`/cultivo-tipo/${id}`);
+
+
+// ---------------------------------------------------------
+// NUEVO: GET PLAGAS
+// ---------------------------------------------------------
+export const getPlagas = async (): Promise<{ id: number; nombre: string }[]> => {
+    const res = await api.get("/plagas");
+
+    // Normalizamos por si el backend devuelve strings o arrays
+    return res.data.map((p: any, index: number) => ({
+        id: p.id ?? index,
+        nombre: typeof p === "string" ? p : p.nombre
+    }));
+};
+
+// ---------------------------------------------------------
+// NUEVO: GET ENFERMEDADES
+// ---------------------------------------------------------
+export const getEnfermedades = async (): Promise<{ id: number; nombre: string }[]> => {
+    const res = await api.get("/enfermedades");
+
+    return res.data.map((e: any, index: number) => ({
+        id: e.id ?? index,
+        nombre: typeof e === "string" ? e : e.nombre
+    }));
+};

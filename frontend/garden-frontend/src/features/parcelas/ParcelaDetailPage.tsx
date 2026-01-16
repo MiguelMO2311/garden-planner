@@ -381,7 +381,7 @@ export default function ParcelaDetailPage() {
                     <p className="text-muted mb-0">Esta parcela no tiene coordenadas asignadas.</p>
                 )}
             </div>
-
+            
             {/* ------------------------------------------------------ */}
             {/* GRID 4 CARDS (1/4 PANTALLA CADA UNA) */}
             {/* ------------------------------------------------------ */}

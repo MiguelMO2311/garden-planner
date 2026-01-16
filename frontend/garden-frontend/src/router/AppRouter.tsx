@@ -28,12 +28,19 @@ import TareaFormPage from "../features/tareas/TareaFormPage";
 import AppLayout from "../layout/AppLayout";
 import AccountPage from "../features/account/AccountPage";
 
+/* ----------------------------- */
+/*       SANITARIO (NUEVO)       */
+/* ----------------------------- */
+import SanitarioPanelPage from "../features/sanitario/pages/SanitarioPanelPage";
+import SanitarioDetallePage from "../features/sanitario/pages/SanitarioDetallePage";
+import TratamientoPage from "../features/sanitario/pages/TratamientoPage";
+
 export const AppRouter = () => (
     <Routes>
         {/* Landing pública */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Register público */}
+        {/* Registro */}
         <Route path="/register" element={<RegisterPage />} />
 
         {/* Rutas protegidas */}
@@ -47,7 +54,7 @@ export const AppRouter = () => (
             {/* Dashboard */}
             <Route path="/dashboard" element={<DashboardPage />} />
 
-            {/* Página de cuenta */}
+            {/* Cuenta */}
             <Route path="/account" element={<AccountPage />} />
 
             {/* ----------------------------- */}
@@ -60,10 +67,10 @@ export const AppRouter = () => (
                 <Route path=":id/editar" element={<ParcelaFormPage />} />
             </Route>
 
-            {/* Cultivos (vista principal) */}
+            {/* Cultivos */}
             <Route path="/cultivos" element={<CultivosMainPage />} />
 
-            {/* Cultivos Tipo (catálogo) */}
+            {/* Cultivos Tipo */}
             <Route path="/cultivos-tipo" element={<CultivoTipoListPage />} />
             <Route path="/cultivos-tipo/nuevo" element={<CultivoTipoFormPage />} />
             <Route path="/cultivos-tipo/:id" element={<CultivoTipoFormPage />} />
@@ -80,6 +87,19 @@ export const AppRouter = () => (
             <Route path="/tareas" element={<TareaListPage />} />
             <Route path="/tareas/nueva" element={<TareaFormPage />} />
             <Route path="/tareas/:id" element={<TareaFormPage />} />
+
+            {/* ----------------------------- */}
+            {/*         SANITARIO NUEVO       */}
+            {/* ----------------------------- */}
+
+            {/* Panel sanitario general */}
+            <Route path="/sanitario" element={<SanitarioPanelPage />} />
+
+            {/* Detalle sanitario de una parcela */}
+            <Route path="/sanitario/:parcelaId" element={<SanitarioDetallePage />} />
+
+            {/* Iniciar tratamiento */}
+            <Route path="/sanitario/:parcelaId/tratamiento/iniciar" element={<TratamientoPage />} />
         </Route>
     </Routes>
 );
