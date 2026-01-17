@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -20,10 +20,14 @@ class TratamientoAplicado(Base):
     )
 
     fecha_inicio = Column(Date, nullable=False)
+    fecha_fin_prevista = Column(Date, nullable=True)
     fecha_fin = Column(Date, nullable=True)
 
-    activo = Column(Boolean, default=True)
+    estado = Column(String, default="en_progreso")
     observaciones = Column(String, nullable=True)
 
+    # 🔥 RELACIÓN CORRECTA Y NECESARIA
     tratamiento = relationship("Tratamiento", back_populates="aplicaciones")
+
+    # 🔥 RELACIÓN SANITARIA CORRECTA
     cultivo_parcela = relationship("CultivoParcela", back_populates="tratamientos_aplicados")

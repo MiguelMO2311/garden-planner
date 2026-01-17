@@ -7,7 +7,6 @@ class AlertaSanitaria(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # 🔥 ForeignKey corregido: tabla en plural
     cultivo_parcela_id = Column(
         Integer,
         ForeignKey("cultivos_parcela.id", ondelete="CASCADE"),
@@ -15,15 +14,12 @@ class AlertaSanitaria(Base):
     )
 
     fecha = Column(Date, nullable=False)
-
-    riesgo = Column(String, nullable=False)      # "mildiu", "araña roja", etc.
+    riesgo = Column(String, nullable=False)
     probabilidad = Column(Float, nullable=False)
 
-    prioridad = Column(String, nullable=False)   # "alta", "media", "baja"
+    prioridad = Column(String, nullable=False)
     mensaje = Column(String, nullable=False)
 
-    # 🔥 Relación inversa correcta
-    cultivo_parcela = relationship(
-        "CultivoParcela",
-        back_populates="alertas_sanitarias"
-    )
+    estado = Column(String, default="pendiente")  # pendiente / confirmada / descartada
+
+    cultivo_parcela = relationship("CultivoParcela", back_populates="alertas_sanitarias")

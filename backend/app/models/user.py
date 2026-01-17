@@ -22,6 +22,7 @@ class User(Base):
     name = Column(String, nullable=True)
     avatar = Column(String, default="/static/avatars/default.jpg", nullable=True)
 
+    # Relaciones correctas
     irrigations = relationship("Irrigation", back_populates="user")
     tareas = relationship("Tarea", back_populates="user")
     parcelas = relationship("Plot", back_populates="user")
@@ -30,5 +31,8 @@ class User(Base):
     cultivo_plans = relationship("CultivoPlan", back_populates="user")
     calendar_events = relationship("CalendarEvent", back_populates="user")
 
-    # 🔥 Corrección importante
+    # Eventos agrícolas (correcto)
     eventos_agricolas = relationship("EventoAgricola", back_populates="user")
+
+    # ❌ NO incluir eventos sanitarios aquí
+    # Los eventos sanitarios cuelgan de CultivoParcela, no de User
