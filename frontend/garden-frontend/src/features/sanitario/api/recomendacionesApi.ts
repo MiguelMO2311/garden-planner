@@ -1,10 +1,22 @@
-// src/features/sanitario/api/recomendacionesApi.ts
 import api from "../../../api/axios";
-import type { Recomendacion } from "../types";
 
-export const getRecomendaciones = async (
-  parcelaId: number
-): Promise<Recomendacion[]> => {
-  const res = await api.get(`/recomendaciones/parcela/${parcelaId}`);
+
+export const getRecomendaciones = async (parcelaId: number) => {
+  const res = await api.get(`/recomendaciones?cultivo_parcela_id=${parcelaId}`);
+  return res.data;
+};
+
+export const activarRecomendacion = async (id: number) => {
+  const res = await api.post(`/recomendaciones/${id}/activar`);
+  return res.data;
+};
+
+export const realizarRecomendacion = async (id: number) => {
+  const res = await api.post(`/recomendaciones/${id}/realizar`);
+  return res.data;
+};
+
+export const descartarRecomendacion = async (id: number) => {
+  const res = await api.post(`/recomendaciones/${id}/descartar`);
   return res.data;
 };

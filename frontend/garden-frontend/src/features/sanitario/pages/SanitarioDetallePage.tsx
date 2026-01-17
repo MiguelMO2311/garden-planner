@@ -1,100 +1,143 @@
-// src/features/sanitario/pages/SanitarioDetallePage.tsx
+import { useState } from "react";
 
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+interface Props {
+  onSubmit: (data: {
+    nombre: string;
+    descripcion: string;
+    ciclo: string;
+    tipo_siembra: string;
+    tipo_riego: string;
+    tipo_suelo: string;
+    observaciones: string;
+  }) => void;
+}
 
-import { getAlertasSanitarias } from "../api/alertasSanitariasApi";
-import { getPlagas } from "../api/plagasApi";
-import { getEnfermedades } from "../api/enfermedadesApi";
-import { getTratamientos } from "../api/tratamientosApi";
-import { getRecomendaciones } from "../api/recomendacionesApi";
+export default function CultivoTipoForm({ onSubmit }: Props) {
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [ciclo, setCiclo] = useState("");
+  const [tipoSiembra, setTipoSiembra] = useState("");
+  const [tipoRiego, setTipoRiego] = useState("");
+  const [tipoSuelo, setTipoSuelo] = useState("");
+  const [observaciones, setObservaciones] = useState("");
 
-import type {
-  AlertaSanitaria,
-  Plaga,
-  Enfermedad,
-  Tratamiento,
-  Recomendacion,
-} from "../types";
-
-import AlertaList from "../components/AlertaList";
-import PlagaList from "../components/PlagaList";
-import EnfermedadList from "../components/EnfermedadList";
-import TratamientoList from "../components/TratamientoList";
-import RecomendacionList from "../components/RecomendacionList";
-
-export default function SanitarioDetallePage() {
-  const { parcelaId } = useParams();
-  const id = Number(parcelaId);
-
-  const [alertas, setAlertas] = useState<AlertaSanitaria[]>([]);
-  const [plagas, setPlagas] = useState<Plaga[]>([]);
-  const [enfermedades, setEnfermedades] = useState<Enfermedad[]>([]);
-  const [tratamientos, setTratamientos] = useState<Tratamiento[]>([]);
-  const [recomendaciones, setRecomendaciones] = useState<Recomendacion[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.all([
-      getAlertasSanitarias(id),
-      getPlagas(id),
-      getEnfermedades(id),
-      getTratamientos(id),
-      getRecomendaciones(id),
-    ]).then(([a, p, e, t, r]) => {
-      setAlertas(a);
-      setPlagas(p);
-      setEnfermedades(e);
-      setTratamientos(t);
-      setRecomendaciones(r);
-      setLoading(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      nombre,
+      descripcion,
+      ciclo,
+      tipo_siembra: tipoSiembra,
+      tipo_riego: tipoRiego,
+      tipo_suelo: tipoSuelo,
+      observaciones,
     });
-  }, [id]);
-
-  if (loading) {
-    return <div className="san-loading">Cargando información sanitaria...</div>;
-  }
+  };
 
   return (
-    <div className="san-page">
-      <h2 className="san-page-title">Información Sanitaria</h2>
-
-      {/* ALERTAS */}
-      <div className="san-section">
-        <h3>Alertas sanitarias</h3>
-        <AlertaList alertas={alertas} />
+    <form className="san-form" onSubmit={handleSubmit}>
+      {/* NOMBRE */}
+      <div className="san-form-group">
+        <label htmlFor="nombre" className="san-label">Nombre</label>
+        <input
+          id="nombre"
+          className="san-input"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder="Nombre del cultivo"
+          required
+        />
       </div>
 
-      {/* PLAGAS */}
-      <div className="san-section">
-        <h3>Plagas detectadas</h3>
-        <PlagaList plagas={plagas} />
+      {/* DESCRIPCIÓN */}
+      <div className="san-form-group">
+        <label htmlFor="descripcion" className="san-label">Descripción</label>
+        <textarea
+          id="descripcion"
+          className="san-textarea"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Descripción del cultivo"
+        />
       </div>
 
-      {/* ENFERMEDADES */}
-      <div className="san-section">
-        <h3>Enfermedades detectadas</h3>
-        <EnfermedadList enfermedades={enfermedades} />
+      {/* CICLO */}
+      <div className="san-form-group">
+        <label htmlFor="ciclo" className="san-label">Ciclo</label>
+        <input
+          id="ciclo"
+          className="san-input"
+          value={ciclo}
+          onChange={(e) => setCiclo(e.target.value)}
+          placeholder="Ej: anual, perenne..."
+        />
       </div>
 
-      {/* TRATAMIENTOS */}
-      <div className="san-section">
-        <h3>Tratamientos activos</h3>
-        <TratamientoList tratamientos={tratamientos} />
+      {/* TIPO SIEMBRA */}
+      <div className="san-form-group">
+        <label htmlFor="tipoSiembra" className="san-label">Tipo de siembra</label>
+        <select
+          id="tipoSiembra"
+          className="san-input"
+          value={tipoSiembra}
+          onChange={(e) => setTipoSiembra(e.target.value)}
+          required
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="directa">Siembra directa</option>
+          <option value="trasplante">Trasplante</option>
+        </select>
       </div>
 
-      {/* RECOMENDACIONES */}
-      <div className="san-section">
-        <h3>Recomendaciones sanitarias</h3>
-        <RecomendacionList recomendaciones={recomendaciones} />
+      {/* TIPO RIEGO */}
+      <div className="san-form-group">
+        <label htmlFor="tipoRiego" className="san-label">Tipo de riego</label>
+        <select
+          id="tipoRiego"
+          className="san-input"
+          value={tipoRiego}
+          onChange={(e) => setTipoRiego(e.target.value)}
+          required
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="goteo">Goteo</option>
+          <option value="aspersión">Aspersión</option>
+          <option value="inundación">Inundación</option>
+        </select>
       </div>
 
-      <Link
-        to={`/sanitario/${id}/tratamiento/iniciar`}
-        className="san-btn san-btn-full san-btn-primary"
-      >
-        Iniciar tratamiento
-      </Link>
-    </div>
+      {/* TIPO SUELO */}
+      <div className="san-form-group">
+        <label htmlFor="tipoSuelo" className="san-label">Tipo de suelo</label>
+        <select
+          id="tipoSuelo"
+          className="san-input"
+          value={tipoSuelo}
+          onChange={(e) => setTipoSuelo(e.target.value)}
+          required
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="arenoso">Arenoso</option>
+          <option value="arcilloso">Arcilloso</option>
+          <option value="franco">Franco</option>
+        </select>
+      </div>
+
+      {/* OBSERVACIONES */}
+      <div className="san-form-group">
+        <label htmlFor="observaciones" className="san-label">Observaciones</label>
+        <textarea
+          id="observaciones"
+          className="san-textarea"
+          value={observaciones}
+          onChange={(e) => setObservaciones(e.target.value)}
+          placeholder="Notas adicionales"
+        />
+      </div>
+
+      <button className="san-btn san-btn-primary san-btn-full">
+        Guardar cultivo
+      </button>
+    </form>
   );
 }

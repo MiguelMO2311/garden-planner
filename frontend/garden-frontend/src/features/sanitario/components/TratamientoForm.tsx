@@ -1,57 +1,78 @@
-// src/features/sanitario/components/TratamientoForm.tsx
 import { useState } from "react";
-import type { CrearTratamientoPayload } from "../types";
 
 interface Props {
   parcelaId: number;
-  tipo: string;
-  onSubmit: (data: CrearTratamientoPayload) => void;
+  tratamientosCatalogo: { id: number; nombre: string }[];
+  onSubmit: (data: {
+    tratamiento_id: number;
+    cultivo_parcela_id: number;
+    fecha_inicio?: string;
+    observaciones?: string;
+  }) => void;
 }
 
-export default function TratamientoForm({ parcelaId, tipo, onSubmit }: Props) {
-  const [producto, setProducto] = useState("");
+export default function TratamientoForm({
+  parcelaId,
+  tratamientosCatalogo,
+  onSubmit,
+}: Props) {
+  const [tratamientoId, setTratamientoId] = useState<number>(0);
   const [fechaInicio, setFechaInicio] = useState("");
+  const [observaciones, setObservaciones] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     onSubmit({
-      parcela_id: parcelaId,
-      tipo,
-      producto,
+      tratamiento_id: tratamientoId,
+      cultivo_parcela_id: parcelaId,
       fecha_inicio: fechaInicio,
+      observaciones,
     });
-
-    setProducto("");
-    setFechaInicio("");
   };
 
   return (
     <form className="san-form" onSubmit={handleSubmit}>
+      {/* TRATAMIENTO */}
       <div className="san-form-group">
-        <label className="san-label" htmlFor="producto">Producto</label>
-        <input
-          id="producto"
-          className="san-input"
-          value={producto}
-          onChange={(e) => setProducto(e.target.value)}
-          placeholder="Nombre del producto"
-          required
-        />
-      </div>
+  <label className="san-label" htmlFor="tratamiento">Tratamiento</label>
+  <select
+    id="tratamiento"
+    className="san-input"
+    value={tratamientoId}
+    onChange={(e) => setTratamientoId(Number(e.target.value))}
+    required
+  >
+    <option value="">Selecciona un tratamiento</option>
+    {tratamientosCatalogo.map((t) => (
+      <option key={t.id} value={t.id}>
+        {t.nombre}
+      </option>
+    ))}
+  </select>
+</div>
 
-      <div className="san-form-group">
-        <label className="san-label" htmlFor="fechaInicio">Fecha de inicio</label>
-        <input
-          id="fechaInicio"
-          className="san-input"
-          type="date"
-          title="Selecciona la fecha de inicio"
-          value={fechaInicio}
-          onChange={(e) => setFechaInicio(e.target.value)}
-          required
-        />
-      </div>
+<div className="san-form-group">
+  <label className="san-label" htmlFor="fechaInicio">Fecha de inicio</label>
+  <input
+    id="fechaInicio"
+    type="date"
+    className="san-input"
+    value={fechaInicio}
+    onChange={(e) => setFechaInicio(e.target.value)}
+  />
+</div>
+
+<div className="san-form-group">
+  <label className="san-label" htmlFor="observaciones">Observaciones</label>
+  <textarea
+    id="observaciones"
+    className="san-textarea"
+    value={observaciones}
+    onChange={(e) => setObservaciones(e.target.value)}
+    placeholder="Añade notas opcionales"
+  />
+</div>
 
       <button className="san-btn san-btn-full san-btn-primary">
         Aplicar tratamiento

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getAlertasSanitarias } from "../api/alertasSanitariasApi";
 import { getPlagas } from "../api/plagasApi";
 import { getEnfermedades } from "../api/enfermedadesApi";
-import { getTratamientos } from "../api/tratamientosApi";
+import { getTratamientos } from "../api/tratamientosAplicadosApi";
 import type { AlertaSanitaria, Plaga, Enfermedad, Tratamiento } from "../types";
 import { Link } from "react-router-dom";
 

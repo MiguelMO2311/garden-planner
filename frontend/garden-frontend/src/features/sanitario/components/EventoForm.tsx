@@ -1,6 +1,12 @@
-// src/features/sanitario/components/EventoForm.tsx
 import { useState } from "react";
-import type { CrearEventoSanitarioPayload } from "../types";
+
+interface CrearEventoSanitarioPayload {
+  cultivo_parcela_id: number;
+  riesgo: string;
+  probabilidad: number;
+  objetivo: string;
+  notas?: string;
+}
 
 interface Props {
   parcelaId: number;
@@ -8,45 +14,83 @@ interface Props {
 }
 
 export default function EventoForm({ parcelaId, onSubmit }: Props) {
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [riesgo, setRiesgo] = useState("");
+  const [probabilidad, setProbabilidad] = useState(0.5);
+  const [objetivo, setObjetivo] = useState("");
+  const [notas, setNotas] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     onSubmit({
-      parcela_id: parcelaId,
-      titulo,
-      descripcion,
+      cultivo_parcela_id: parcelaId,
+      riesgo,
+      probabilidad,
+      objetivo,
+      notas,
     });
 
-    setTitulo("");
-    setDescripcion("");
+    setRiesgo("");
+    setProbabilidad(0.5);
+    setObjetivo("");
+    setNotas("");
   };
 
   return (
     <form className="san-form" onSubmit={handleSubmit}>
+      {/* RIESGO */}
       <div className="san-form-group">
-        <label className="san-label" htmlFor="titulo">Título del evento</label>
+        <label className="san-label" htmlFor="riesgo">Riesgo detectado</label>
         <input
-          id="titulo"
+          id="riesgo"
           className="san-input"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          placeholder="Ej: Observación de síntomas"
+          value={riesgo}
+          onChange={(e) => setRiesgo(e.target.value)}
+          placeholder="Ej: Mildiu, Roya, Helada..."
           required
         />
       </div>
 
+      {/* PROBABILIDAD */}
       <div className="san-form-group">
-        <label className="san-label" htmlFor="descripcion">Descripción</label>
-        <textarea
-          id="descripcion"
-          className="san-textarea"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Describe lo observado en la parcela"
+        <label className="san-label" htmlFor="probabilidad">
+          Probabilidad (0 a 1)
+        </label>
+        <input
+          id="probabilidad"
+          type="number"
+          min={0}
+          max={1}
+          step={0.01}
+          className="san-input"
+          value={probabilidad}
+          onChange={(e) => setProbabilidad(Number(e.target.value))}
           required
+        />
+      </div>
+
+      {/* OBJETIVO */}
+      <div className="san-form-group">
+        <label className="san-label" htmlFor="objetivo">Objetivo del evento</label>
+        <input
+          id="objetivo"
+          className="san-input"
+          value={objetivo}
+          onChange={(e) => setObjetivo(e.target.value)}
+          placeholder="Ej: Control de mildiu"
+          required
+        />
+      </div>
+
+      {/* NOTAS */}
+      <div className="san-form-group">
+        <label className="san-label" htmlFor="notas">Notas adicionales</label>
+        <textarea
+          id="notas"
+          className="san-textarea"
+          value={notas}
+          onChange={(e) => setNotas(e.target.value)}
+          placeholder="Observaciones opcionales"
         />
       </div>
 
