@@ -29,52 +29,63 @@ export default function TratamientoForm({
       fecha_inicio: fechaInicio,
       observaciones,
     });
+
+    setTratamientoId(0);
+    setFechaInicio("");
+    setObservaciones("");
   };
 
   return (
-    <form className="san-form" onSubmit={handleSubmit}>
+    <form className="san-form" onSubmit={(e) => handleSubmit(e)}>
+      <h3 className="san-form-title">Aplicar tratamiento</h3>
+      <p className="san-form-subtitle">
+        Selecciona un tratamiento y registra su inicio
+      </p>
+
       {/* TRATAMIENTO */}
       <div className="san-form-group">
-  <label className="san-label" htmlFor="tratamiento">Tratamiento</label>
-  <select
-    id="tratamiento"
-    className="san-input"
-    value={tratamientoId}
-    onChange={(e) => setTratamientoId(Number(e.target.value))}
-    required
-  >
-    <option value="">Selecciona un tratamiento</option>
-    {tratamientosCatalogo.map((t) => (
-      <option key={t.id} value={t.id}>
-        {t.nombre}
-      </option>
-    ))}
-  </select>
-</div>
+        <label className="san-label" htmlFor="tratamiento">Tratamiento</label>
+        <select
+          id="tratamiento"
+          className="san-input"
+          value={tratamientoId}
+          onChange={(e) => setTratamientoId(Number(e.target.value))}
+          required
+        >
+          <option value="">Selecciona un tratamiento</option>
+          {tratamientosCatalogo.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
 
-<div className="san-form-group">
-  <label className="san-label" htmlFor="fechaInicio">Fecha de inicio</label>
-  <input
-    id="fechaInicio"
-    type="date"
-    className="san-input"
-    value={fechaInicio}
-    onChange={(e) => setFechaInicio(e.target.value)}
-  />
-</div>
+      {/* FECHA INICIO */}
+      <div className="san-form-group">
+        <label className="san-label" htmlFor="fechaInicio">Fecha de inicio</label>
+        <input
+          id="fechaInicio"
+          type="date"
+          className="san-input"
+          value={fechaInicio}
+          onChange={(e) => setFechaInicio(e.target.value)}
+        />
+      </div>
 
-<div className="san-form-group">
-  <label className="san-label" htmlFor="observaciones">Observaciones</label>
-  <textarea
-    id="observaciones"
-    className="san-textarea"
-    value={observaciones}
-    onChange={(e) => setObservaciones(e.target.value)}
-    placeholder="Añade notas opcionales"
-  />
-</div>
+      {/* OBSERVACIONES */}
+      <div className="san-form-group">
+        <label className="san-label" htmlFor="observaciones">Observaciones</label>
+        <textarea
+          id="observaciones"
+          className="san-textarea"
+          value={observaciones}
+          onChange={(e) => setObservaciones(e.target.value)}
+          placeholder="Añade notas opcionales"
+        />
+      </div>
 
-      <button className="san-btn san-btn-full san-btn-primary">
+      <button className="san-btn san-btn-primary san-btn-full">
         Aplicar tratamiento
       </button>
     </form>

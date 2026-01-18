@@ -3,125 +3,69 @@ import { useState } from "react";
 import "./layout.css";
 
 export default function Sidebar() {
-    const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
-    return (
-        <aside className={`sidebar-modern ${collapsed ? "collapsed" : ""}`}>
-            {/* HEADER */}
-            <div className="sidebar-header">
-                <h4 className="sidebar-title">🌱 Garden</h4>
+  return (
+    <aside className={`san-sidebar ${collapsed ? "collapsed" : ""}`}>
+      <div className="san-sidebar-header">
+        <h4 className="san-sidebar-title">🌱 Garden</h4>
 
-                <button
-                    className="sidebar-toggle"
-                    onClick={() => setCollapsed(!collapsed)}
-                >
-                    {collapsed ? "›" : "‹"}
-                </button>
-            </div>
+        <button
+          className="san-sidebar-toggle"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? "›" : "‹"}
+        </button>
+      </div>
 
-            {/* NAV */}
-            <nav className="sidebar-nav">
+      <nav className="san-sidebar-nav">
+        <NavLink to="/parcelas" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">🌱</span>
+          <span className="label">Parcelas</span>
+        </NavLink>
 
-                {/* PARCELAS */}
-                <NavLink
-                    to="/parcelas"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">🌱</span>
-                    <span className="label">Parcelas</span>
-                </NavLink>
+        <NavLink to="/cultivos" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">🌾</span>
+          <span className="label">Cultivos</span>
+        </NavLink>
 
-                {/* CULTIVOS */}
-                <NavLink
-                    to="/cultivos"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">🌾</span>
-                    <span className="label">Cultivos</span>
-                </NavLink>
+        <NavLink to="/tareas" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">📝</span>
+          <span className="label">Tareas</span>
+        </NavLink>
 
-                {/* TAREAS */}
-                <NavLink
-                    to="/tareas"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">📝</span>
-                    <span className="label">Tareas</span>
-                </NavLink>
+        <NavLink to="/calendario" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">📅</span>
+          <span className="label">Calendario</span>
+        </NavLink>
 
-                {/* CALENDARIO */}
-                <NavLink
-                    to="/calendario"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">📅</span>
-                    <span className="label">Calendario</span>
-                </NavLink>
+        <div className="san-sidebar-section-title">Sanitario</div>
 
-                {/* SANITARIO */}
-                <div className="sidebar-section-title">
-                    Sanitario
-                </div>
+        <NavLink to="/sanitario" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">🧪</span>
+          <span className="label">Panel sanitario</span>
+        </NavLink>
 
-                <NavLink
-                    to="/sanitario"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">🧪</span>
-                    <span className="label">Panel sanitario</span>
-                </NavLink>
+        <NavLink to="/sanitario/riesgos" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">⚠️</span>
+          <span className="label">Riesgos</span>
+        </NavLink>
 
-                <NavLink
-                    to="/sanitario/riesgos"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">⚠️</span>
-                    <span className="label">Riesgos</span>
-                </NavLink>
+        <NavLink to="/sanitario/alertas" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">🚨</span>
+          <span className="label">Alertas</span>
+        </NavLink>
 
-                <NavLink
-                    to="/sanitario/alertas"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">🚨</span>
-                    <span className="label">Alertas</span>
-                </NavLink>
+        <NavLink to="/sanitario/sugerencias" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">💡</span>
+          <span className="label">Sugerencias</span>
+        </NavLink>
 
-                <NavLink
-                    to="/sanitario/sugerencias"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">💡</span>
-                    <span className="label">Sugerencias</span>
-                </NavLink>
-
-                <NavLink
-                    to="/sanitario/tratamientos"
-                    className={({ isActive }) =>
-                        `sidebar-link ${isActive ? "active" : ""}`
-                    }
-                >
-                    <span className="icon">💊</span>
-                    <span className="label">Tratamientos</span>
-                </NavLink>
-
-            </nav>
-        </aside>
-    );
+        <NavLink to="/sanitario/tratamientos" className={({ isActive }) => `san-sidebar-link ${isActive ? "active" : ""}`}>
+          <span className="icon">💊</span>
+          <span className="label">Tratamientos</span>
+        </NavLink>
+      </nav>
+    </aside>
+  );
 }

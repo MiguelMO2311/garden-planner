@@ -1,6 +1,7 @@
 //
+// ===============================
 // PANEL SANITARIO
-//
+// ===============================
 export interface ParcelaSanitariaPanelItem {
   cultivo_parcela_id: number;
   parcela_id: number;
@@ -39,11 +40,22 @@ export interface ParcelaSanitariaPanelItem {
     pendientes: number;
     completadas: number;
   };
+
+  plagas: {
+    activas: number;
+    historial: number;
+  };
+
+  enfermedades: {
+    activas: number;
+    historial: number;
+  };
 }
 
 //
+// ===============================
 // RIESGOS CLIMÁTICOS
-//
+// ===============================
 export interface RiesgoClimatico {
   id: number;
   cultivo_parcela_id: number;
@@ -57,8 +69,9 @@ export interface RiesgoClimatico {
 }
 
 //
+// ===============================
 // ALERTAS SANITARIAS
-//
+// ===============================
 export interface AlertaSanitaria {
   id: number;
   cultivo_parcela_id: number;
@@ -71,8 +84,9 @@ export interface AlertaSanitaria {
 }
 
 //
+// ===============================
 // EVENTOS SANITARIOS
-//
+// ===============================
 export interface EventoSanitario {
   id: number;
   cultivo_parcela_id: number;
@@ -86,8 +100,9 @@ export interface EventoSanitario {
 }
 
 //
+// ===============================
 // RECOMENDACIONES
-//
+// ===============================
 export interface Recomendacion {
   id: number;
   cultivo_parcela_id: number;
@@ -97,8 +112,9 @@ export interface Recomendacion {
 }
 
 //
+// ===============================
 // TRATAMIENTOS APLICADOS
-//
+// ===============================
 export interface TratamientoAplicado {
   id: number;
   tratamiento_id: number;
@@ -110,9 +126,16 @@ export interface TratamientoAplicado {
   observaciones: string | null;
 }
 
+export interface TratamientoCatalogo {
+  id: number;
+  nombre: string;
+  descripcion: string;
+}
+
 //
+// ===============================
 // TAREAS SANITARIAS
-//
+// ===============================
 export interface TareaSanitaria {
   id: number;
   cultivo_parcela_id: number;
@@ -127,11 +150,9 @@ export interface TareaSanitaria {
 }
 
 //
-// ------------------------------
-// TIPOS PARA CULTIVOS TIPO
-// ------------------------------
-//
-
+// ===============================
+// CATÁLOGO (para formularios)
+// ===============================
 export interface Plaga {
   id: number;
   nombre: string;
@@ -142,6 +163,10 @@ export interface Enfermedad {
   nombre: string;
 }
 
+//
+// ===============================
+// CULTIVO TIPO
+// ===============================
 export interface CultivoTipoCreate {
   nombre: string;
   descripcion: string;
@@ -150,32 +175,26 @@ export interface CultivoTipoCreate {
   tipo_riego: string;
   tipo_suelo: string;
   observaciones: string;
-  plagas: string[];        // IDs como strings
-  enfermedades: string[];  // IDs como strings
+  plagas: string[];
+  enfermedades: string[];
 }
 
 //
-// TIPOS PARA CULTIVOS TIPO
-//
-
-export interface Plaga {
+// ===============================
+// DETECTADAS EN PARCELA
+// ===============================
+export interface PlagaDetectada {
   id: number;
   nombre: string;
+  descripcion: string;
+  severidad: "baja" | "media" | "alta" | "critica";
+  fecha_detectada: string;
 }
 
-export interface Enfermedad {
+export interface EnfermedadDetectada {
   id: number;
   nombre: string;
-}
-
-export interface CultivoTipoCreate {
-  nombre: string;
-  descripcion: string;   // ← NECESARIO
-  ciclo: string;
-  tipo_siembra: string;
-  tipo_riego: string;
-  tipo_suelo: string;
-  observaciones: string;
-  plagas: string[];        // IDs como strings
-  enfermedades: string[];  // IDs como strings
+  descripcion: string;
+  severidad: "baja" | "media" | "alta" | "critica";
+  fecha_detectada: string;
 }

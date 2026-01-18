@@ -1,27 +1,308 @@
+/* =========================================================
+   CONTENEDOR GENERAL DE PÁGINAS SANITARIAS
+   ========================================================= */
+.san-page,
 .sanitario-container {
     padding: 2rem;
     max-width: 1100px;
     margin: 0 auto;
 }
 
+/* =========================================================
+   TITULARES DE PÁGINA
+   ========================================================= */
+.san-page-title,
 .sanitario-title {
-    font-size: 1.9rem;
+    font-size: 2.2rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #1a3d5d;
     border-left: 6px solid #4dabf7;
     padding-left: 12px;
 }
 
+.san-page-subtitle {
+    font-size: 1.1rem;
+    color: #5f6c7b;
+    margin-bottom: 2rem;
+}
+
+/* =========================================================
+   SECCIONES
+   ========================================================= */
+.san-section {
+    margin-bottom: 3rem;
+}
+
+.san-section-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    color: #1a3d5d;
+}
+
+/* =========================================================
+   TARJETAS / CARDS
+   ========================================================= */
+.san-card,
 .sanitario-content {
     background: #ffffff;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     animation: fadeIn 0.3s ease-out;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.san-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* =========================================================
+   GRID GENERAL
+   ========================================================= */
+.san-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* =========================================================
+   INFO BOX (resumen sanitario)
+   ========================================================= */
+.san-info-box {
+    padding: 1.8rem;
+}
+
+.san-info-header {
+    margin-bottom: 1rem;
+}
+
+.san-info-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a3d5d;
+}
+
+.san-info-subtitle {
+    font-size: 0.95rem;
+    color: #6c7a89;
+}
+
+.san-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.san-info-item {
+    text-align: center;
+    padding: 0.8rem;
+    border-radius: 10px;
+    background: #f7fbff;
+    border: 1px solid #e3f1ff;
+}
+
+.san-info-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a3d5d;
+}
+
+.san-info-label {
+    font-size: 0.9rem;
+    color: #5f6c7b;
+}
+
+/* =========================================================
+   FORMULARIOS SANITARIOS
+   ========================================================= */
+.san-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.san-form-panel {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.san-form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #1a3d5d;
+}
+
+.san-form-subtitle {
+    font-size: 1rem;
+    color: #6c7a89;
+    margin-bottom: 1.5rem;
+}
+
+.san-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.san-label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #1a3d5d;
+}
+
+.san-input,
+.san-textarea,
+.san-select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #d6e4f2;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.san-input:focus,
+.san-textarea:focus,
+.san-select:focus {
+    border-color: #4dabf7;
+    outline: none;
+}
+
+.san-textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+.san-btn {
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+.san-btn-primary {
+    background: #4dabf7;
+    color: #fff;
+}
+
+.san-btn-primary:hover {
+    background: #3a8fe0;
+}
+
+.san-btn-full {
+    width: 100%;
+}
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   BADGES SANITARIOS
+   ========================================================= */
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Plagas detectadas */
+.badge-plaga-baja { background: #82c91e; }
+.badge-plaga-media { background: #fab005; }
+.badge-plaga-alta { background: #f76707; }
+.badge-plaga-critica { background: #e03131; }
+
+/* Enfermedades detectadas */
+.badge-severidad-baja { background: #82c91e; }
+.badge-severidad-media { background: #fab005; }
+.badge-severidad-alta { background: #f76707; }
+.badge-severidad-critica { background: #e03131; }
+
+/* Alertas */
+.badge-alerta-pendiente { background: #fab005; }
+.badge-alerta-confirmada { background: #4dabf7; }
+.badge-alerta-descartada { background: #868e96; }
+
+/* Eventos sanitarios */
+.badge-evento-activa { background: #f76707; }
+.badge-evento-resuelta { background: #4dabf7; }
+
+/* Recomendaciones */
+.badge-reco-pendiente { background: #fab005; }
+.badge-reco-realizada { background: #37b24d; }
+.badge-reco-descartada { background: #868e96; }
+
+/* Tratamientos */
+.badge-trat-en_progreso { background: #4dabf7; }
+.badge-trat-finalizado { background: #37b24d; }
+
+/* =========================================================
+   ACCIONES EN TARJETAS
+   ========================================================= */
+.san-card-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.6rem;
+}
+
+/* Botones pequeños */
+.san-btn-small {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+/* Colores adicionales */
+.san-btn-danger {
+    background: #e03131;
+    color: #fff;
+}
+.san-btn-danger:hover {
+    background: #c92a2a;
+}
+
+.san-btn-success {
+    background: #37b24d;
+    color: #fff;
+}
+.san-btn-success:hover {
+    background: #2f9e44;
+}
+
+.san-btn-info {
+    background: #4dabf7;
+    color: #fff;
+}
+.san-btn-info:hover {
+    background: #3a8fe0;
+}
+
+/* Notas dentro de tarjetas */
+.san-card-notes {
+    background: #f1f5f9;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 0.8rem;
 }

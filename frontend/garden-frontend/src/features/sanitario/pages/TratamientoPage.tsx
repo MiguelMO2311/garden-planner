@@ -4,15 +4,17 @@ import TratamientoForm from "../components/TratamientoForm";
 import { getTratamientos } from "../api/tratamientosApi";
 import { useEffect, useState } from "react";
 
+import type { TratamientoCatalogo } from "../types";
+
 export default function TratamientoPage() {
   const { parcelaId } = useParams();
   const navigate = useNavigate();
   const id = Number(parcelaId);
 
-  const [catalogo, setCatalogo] = useState([]);
+  const [catalogo, setCatalogo] = useState<TratamientoCatalogo[]>([]);
 
   useEffect(() => {
-    getTratamientos().then(setCatalogo);
+    getTratamientos().then((data) => setCatalogo(data));
   }, []);
 
   const handleSubmit = async (data: {

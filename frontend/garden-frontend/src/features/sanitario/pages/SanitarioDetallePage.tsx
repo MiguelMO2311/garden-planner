@@ -1,143 +1,105 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 
-interface Props {
-  onSubmit: (data: {
-    nombre: string;
-    descripcion: string;
-    ciclo: string;
-    tipo_siembra: string;
-    tipo_riego: string;
-    tipo_suelo: string;
-    observaciones: string;
-  }) => void;
-}
+import SanitarioInfoBox from "../components/SanitarioInfoBox";
+import PlagaList from "../components/PlagaList";
+import EnfermedadList from "../components/EnfermedadList";
+import TratamientoAplicadoList from "../components/TratamientoAplicadoList";
+import EventoList from "../components/EventoList";
+import RecomendacionList from "../components/RecomendacionList";
+import AlertaList from "../components/AlertaList";
 
-export default function CultivoTipoForm({ onSubmit }: Props) {
-  const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [ciclo, setCiclo] = useState("");
-  const [tipoSiembra, setTipoSiembra] = useState("");
-  const [tipoRiego, setTipoRiego] = useState("");
-  const [tipoSuelo, setTipoSuelo] = useState("");
-  const [observaciones, setObservaciones] = useState("");
+import { getPlagasDetectadas } from "../api/plagasApi";
+import { getEnfermedadesDetectadas } from "../api/enfermedadesApi";
+import { getTratamientosAplicados } from "../api/tratamientosAplicadosApi";
+import { getEventosSanitarios } from "../api/eventosSanitariosApi";
+import { getRecomendaciones } from "../api/recomendacionesApi";
+import { getAlertasSanitarias } from "../api/alertasSanitariasApi";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      nombre,
-      descripcion,
-      ciclo,
-      tipo_siembra: tipoSiembra,
-      tipo_riego: tipoRiego,
-      tipo_suelo: tipoSuelo,
-      observaciones,
-    });
-  };
+import type {
+  PlagaDetectada,
+  EnfermedadDetectada,
+  TratamientoAplicado,
+  EventoSanitario,
+  Recomendacion,
+  AlertaSanitaria
+} from "../types";
+
+import "../sanitario.css";
+
+export default function SanitarioDetallePage() {
+  const { parcelaId } = useParams();
+  const id = Number(parcelaId);
+
+  const [plagas, setPlagas] = useState<PlagaDetectada[]>([]);
+  const [enfermedades, setEnfermedades] = useState<EnfermedadDetectada[]>([]);
+  const [tratamientos, setTratamientos] = useState<TratamientoAplicado[]>([]);
+  const [eventos, setEventos] = useState<EventoSanitario[]>([]);
+  const [recomendaciones, setRecomendaciones] = useState<Recomendacion[]>([]);
+  const [alertas, setAlertas] = useState<AlertaSanitaria[]>([]);
+
+  const refresh = useCallback(() => {
+    getPlagasDetectadas(id).then(setPlagas);
+    getEnfermedadesDetectadas(id).then(setEnfermedades);
+    getTratamientosAplicados(id).then(setTratamientos);
+    getEventosSanitarios(id).then(setEventos);
+    getRecomendaciones(id).then(setRecomendaciones);
+    getAlertasSanitarias(id).then(setAlertas);
+  }, [id]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
-    <form className="san-form" onSubmit={handleSubmit}>
-      {/* NOMBRE */}
-      <div className="san-form-group">
-        <label htmlFor="nombre" className="san-label">Nombre</label>
-        <input
-          id="nombre"
-          className="san-input"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Nombre del cultivo"
-          required
-        />
-      </div>
+    <div className="san-page">
+      <header className="san-page-header">
+        <h1 className="san-page-title">Detalle sanitario</h1>
+        <p className="san-page-subtitle">
+          Estado completo de la parcela #{id}
+        </p>
+      </header>
 
-      {/* DESCRIPCIÓN */}
-      <div className="san-form-group">
-        <label htmlFor="descripcion" className="san-label">Descripción</label>
-        <textarea
-          id="descripcion"
-          className="san-textarea"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Descripción del cultivo"
-        />
-      </div>
+      {/* RESUMEN */}
+      <section className="san-section">
+        <SanitarioInfoBox parcelaId={id} />
+      </section>
 
-      {/* CICLO */}
-      <div className="san-form-group">
-        <label htmlFor="ciclo" className="san-label">Ciclo</label>
-        <input
-          id="ciclo"
-          className="san-input"
-          value={ciclo}
-          onChange={(e) => setCiclo(e.target.value)}
-          placeholder="Ej: anual, perenne..."
-        />
-      </div>
+      {/* PLAGAS */}
+      <section className="san-section">
+        <h2 className="san-section-title">Plagas detectadas</h2>
+        <PlagaList plagas={plagas} />
+      </section>
 
-      {/* TIPO SIEMBRA */}
-      <div className="san-form-group">
-        <label htmlFor="tipoSiembra" className="san-label">Tipo de siembra</label>
-        <select
-          id="tipoSiembra"
-          className="san-input"
-          value={tipoSiembra}
-          onChange={(e) => setTipoSiembra(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="directa">Siembra directa</option>
-          <option value="trasplante">Trasplante</option>
-        </select>
-      </div>
+      {/* ENFERMEDADES */}
+      <section className="san-section">
+        <h2 className="san-section-title">Enfermedades detectadas</h2>
+        <EnfermedadList enfermedades={enfermedades} />
+      </section>
 
-      {/* TIPO RIEGO */}
-      <div className="san-form-group">
-        <label htmlFor="tipoRiego" className="san-label">Tipo de riego</label>
-        <select
-          id="tipoRiego"
-          className="san-input"
-          value={tipoRiego}
-          onChange={(e) => setTipoRiego(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="goteo">Goteo</option>
-          <option value="aspersión">Aspersión</option>
-          <option value="inundación">Inundación</option>
-        </select>
-      </div>
+      {/* TRATAMIENTOS */}
+      <section className="san-section">
+        <h2 className="san-section-title">Tratamientos aplicados</h2>
+        <TratamientoAplicadoList tratamientos={tratamientos} onRefresh={refresh} />
+      </section>
 
-      {/* TIPO SUELO */}
-      <div className="san-form-group">
-        <label htmlFor="tipoSuelo" className="san-label">Tipo de suelo</label>
-        <select
-          id="tipoSuelo"
-          className="san-input"
-          value={tipoSuelo}
-          onChange={(e) => setTipoSuelo(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="arenoso">Arenoso</option>
-          <option value="arcilloso">Arcilloso</option>
-          <option value="franco">Franco</option>
-        </select>
-      </div>
+      {/* ALERTAS */}
+      <section className="san-section">
+        <h2 className="san-section-title">Alertas sanitarias</h2>
+        <AlertaList alertas={alertas} onRefresh={refresh} />
+      </section>
 
-      {/* OBSERVACIONES */}
-      <div className="san-form-group">
-        <label htmlFor="observaciones" className="san-label">Observaciones</label>
-        <textarea
-          id="observaciones"
-          className="san-textarea"
-          value={observaciones}
-          onChange={(e) => setObservaciones(e.target.value)}
-          placeholder="Notas adicionales"
-        />
-      </div>
+      {/* EVENTOS */}
+      <section className="san-section">
+        <h2 className="san-section-title">Eventos sanitarios</h2>
+        <EventoList eventos={eventos} onRefresh={refresh} />
+      </section>
 
-      <button className="san-btn san-btn-primary san-btn-full">
-        Guardar cultivo
-      </button>
-    </form>
+      {/* RECOMENDACIONES */}
+      <section className="san-section">
+        <h2 className="san-section-title">Recomendaciones</h2>
+        <RecomendacionList recomendaciones={recomendaciones} onRefresh={refresh} />
+      </section>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000/api/v1",
+    baseURL: "http://localhost:8000/api/v1"
 });
 
 // Interceptor para añadir el token en TODAS las peticiones

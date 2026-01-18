@@ -35,6 +35,12 @@ import SanitarioPanelPage from "../features/sanitario/pages/SanitarioPanelPage";
 import SanitarioDetallePage from "../features/sanitario/pages/SanitarioDetallePage";
 import TratamientoPage from "../features/sanitario/pages/TratamientoPage";
 
+/* NUEVAS PÁGINAS SANITARIAS */
+import SanitarioRiesgosPage from "../features/sanitario/pages/SanitarioRiesgosPage";
+import SanitarioAlertasPage from "../features/sanitario/pages/SanitarioAlertasPage";
+import SanitarioSugerenciasPage from "../features/sanitario/pages/SanitarioSugerenciasPage";
+import SanitarioTratamientosPage from "../features/sanitario/pages/SanitarioTratamientosPage";
+
 export const AppRouter = () => (
     <Routes>
         {/* Landing pública */}
@@ -94,6 +100,12 @@ export const AppRouter = () => (
 
             {/* Panel sanitario general */}
             <Route path="/sanitario" element={<SanitarioPanelPage />} />
+
+            {/* Secciones sanitarias */}
+            <Route path="/sanitario/riesgos" element={<SanitarioRiesgosPage />} />
+            <Route path="/sanitario/alertas" element={<SanitarioAlertasPage />} />
+            <Route path="/sanitario/sugerencias" element={<SanitarioSugerenciasPage />} />
+            <Route path="/sanitario/tratamientos" element={<SanitarioTratamientosPage />} />
 
             {/* Detalle sanitario de una parcela */}
             <Route path="/sanitario/:parcelaId" element={<SanitarioDetallePage />} />

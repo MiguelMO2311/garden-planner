@@ -1,20 +1,28 @@
-import type { Enfermedad } from "../types";
+import type { EnfermedadDetectada } from "../types";
+
 
 interface Props {
-  enfermedades: Enfermedad[];
+  enfermedades: EnfermedadDetectada [];
 }
 
 export default function EnfermedadList({ enfermedades }: Props) {
   return (
     <div className="san-list">
       {enfermedades.map((e) => (
-        <div key={e.id} className="san-list-item">
-          <h4>{e.nombre}</h4>
-          <p>{e.descripcion}</p>
-          <p>
-            <strong>Severidad:</strong> {e.severidad}
-          </p>
-          <span className="san-list-date">{e.fecha_detectada}</span>
+        <div key={e.id} className="san-card san-enfermedad-card">
+          <div className="san-card-header">
+            <h4 className="san-card-title">{e.nombre}</h4>
+
+            <span className={`badge badge-severidad-${e.severidad.toLowerCase()}`}>
+              {e.severidad}
+            </span>
+          </div>
+
+          <p className="san-card-message">{e.descripcion}</p>
+
+          <div className="san-card-meta">
+            <span>Detectada: {e.fecha_detectada}</span>
+          </div>
         </div>
       ))}
     </div>

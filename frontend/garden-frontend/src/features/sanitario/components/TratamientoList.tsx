@@ -13,23 +13,35 @@ export default function TratamientoAplicadoList({ tratamientos, onRefresh }: Pro
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="san-list">
       {tratamientos.map((t) => (
-        <div key={t.id} className="border rounded-lg p-4 shadow bg-white">
-          <h4 className="font-semibold">Tratamiento #{t.id}</h4>
+        <div key={t.id} className="san-card san-tratamiento-card">
+          
+          {/* CABECERA */}
+          <div className="san-card-header">
+            <h4 className="san-card-title">Tratamiento #{t.id}</h4>
 
-          <p><strong>Inicio:</strong> {t.fecha_inicio}</p>
-          {t.fecha_fin_prevista && (
-            <p><strong>Fin previsto:</strong> {t.fecha_fin_prevista}</p>
-          )}
-          {t.fecha_fin && (
-            <p><strong>Finalizado:</strong> {t.fecha_fin}</p>
-          )}
+            <span className={`badge badge-trat-${t.estado}`}>
+              {t.estado}
+            </span>
+          </div>
 
+          {/* FECHAS */}
+          <div className="san-card-message">
+            <p><strong>Inicio:</strong> {t.fecha_inicio}</p>
+            {t.fecha_fin_prevista && (
+              <p><strong>Fin previsto:</strong> {t.fecha_fin_prevista}</p>
+            )}
+            {t.fecha_fin && (
+              <p><strong>Finalizado:</strong> {t.fecha_fin}</p>
+            )}
+          </div>
+
+          {/* ACCIÓN */}
           {t.estado === "en_progreso" && (
             <button
               onClick={() => handleFinalizar(t.id)}
-              className="mt-2 px-3 py-1 bg-green-600 text-white rounded"
+              className="san-btn san-btn-success san-btn-small"
             >
               Finalizar tratamiento
             </button>

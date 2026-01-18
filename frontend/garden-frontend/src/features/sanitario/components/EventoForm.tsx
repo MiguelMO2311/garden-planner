@@ -38,6 +38,11 @@ export default function EventoForm({ parcelaId, onSubmit }: Props) {
 
   return (
     <form className="san-form" onSubmit={handleSubmit}>
+      <h3 className="san-form-title">Nuevo evento sanitario</h3>
+      <p className="san-form-subtitle">
+        Registra un evento sanitario detectado en la parcela
+      </p>
+
       {/* RIESGO */}
       <div className="san-form-group">
         <label className="san-label" htmlFor="riesgo">Riesgo detectado</label>
@@ -94,7 +99,7 @@ export default function EventoForm({ parcelaId, onSubmit }: Props) {
         />
       </div>
 
-      <button className="san-btn san-btn-full san-btn-primary">
+      <button className="san-btn san-btn-primary san-btn-full">
         Guardar evento sanitario
       </button>
     </form>

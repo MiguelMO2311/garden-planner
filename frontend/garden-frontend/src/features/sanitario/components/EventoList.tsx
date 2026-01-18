@@ -13,52 +13,45 @@ export default function EventoList({ eventos, onRefresh }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="san-list">
       {eventos.map((e) => (
-        <div
-          key={e.id}
-          className="border rounded-lg p-4 shadow-sm bg-white flex flex-col gap-2"
-        >
+        <div key={e.id} className="san-card san-evento-card">
+          
           {/* CABECERA */}
-          <div className="flex justify-between items-center">
-            <h4 className="text-lg font-semibold text-gray-800">
-              {e.riesgo}
-            </h4>
+          <div className="san-card-header">
+            <h4 className="san-card-title">{e.riesgo}</h4>
 
-            <span
-              className={`px-2 py-1 text-xs rounded-full ${
-                e.estado === "activa"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-green-100 text-green-700"
-              }`}
-            >
-              {e.estado}
+            <span className={`badge badge-evento-${e.estado}`}>
+              {e.estado === "activa" ? "Activa" : "Resuelta"}
             </span>
           </div>
 
           {/* OBJETIVO */}
-          <p className="text-gray-700">
+          <p className="san-card-message">
             <strong>Objetivo:</strong> {e.objetivo}
           </p>
 
           {/* NOTAS */}
           {e.notas && (
-            <p className="text-gray-600 text-sm italic">{e.notas}</p>
+            <p className="san-card-notes">{e.notas}</p>
           )}
 
           {/* INFO */}
-          <div className="text-xs text-gray-500">
-            Fecha: {e.fecha} · Probabilidad: {(e.probabilidad * 100).toFixed(0)}%
+          <div className="san-card-meta">
+            <span>Fecha: {e.fecha}</span>
+            <span>Probabilidad: {(e.probabilidad * 100).toFixed(0)}%</span>
           </div>
 
           {/* ACCIONES */}
           {e.estado === "activa" && (
-            <button
-              onClick={() => handleResolver(e.id)}
-              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition mt-2"
-            >
-              Resolver evento
-            </button>
+            <div className="san-card-actions">
+              <button
+                onClick={() => handleResolver(e.id)}
+                className="san-btn san-btn-primary san-btn-small"
+              >
+                Resolver evento
+              </button>
+            </div>
           )}
         </div>
       ))}

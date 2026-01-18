@@ -1,0 +1,337 @@
+/* ============================
+   LISTAS
+============================ */
+.san-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 0.4rem 0;
+}
+
+/* ============================
+   TARJETA BASE
+============================ */
+.san-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.8rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.san-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+
+/* Línea decorativa superior */
+.san-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+  opacity: 0.85;
+}
+
+/* ============================
+   CABECERA DE TARJETA
+============================ */
+.san-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.san-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ============================
+   MENSAJE
+============================ */
+.san-card-message {
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* ============================
+   META INFO
+============================ */
+.san-card-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+}
+
+/* ============================
+   ACCIONES
+============================ */
+.san-card-actions {
+  display: flex;
+  gap: 0.8rem;
+  padding-top: 0.6rem;
+}
+
+/* ============================
+   BOTONES
+============================ */
+.san-btn {
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease;
+}
+
+.san-btn-small {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.san-btn-primary {
+  background: #4dabf7;
+  color: #fff;
+}
+.san-btn-primary:hover {
+  background: #3a8fe0;
+}
+
+.san-btn-success {
+  background: #059669;
+  color: white;
+}
+.san-btn-success:hover {
+  background: #047857;
+}
+
+.san-btn-danger {
+  background: #e03131;
+  color: white;
+}
+.san-btn-danger:hover {
+  background: #c92a2a;
+}
+
+.san-btn-info {
+  background: #3b82f6;
+  color: white;
+}
+.san-btn-info:hover {
+  background: #2563eb;
+}
+
+.san-btn-gray {
+  background: #9ca3af;
+  color: white;
+}
+.san-btn-gray:hover {
+  background: #6b7280;
+}
+
+.san-btn-full {
+  width: 100%;
+}
+
+/* ============================
+   BADGES
+============================ */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Plagas */
+.badge-plaga-baja { background: #d1fae5; color: #065f46; }
+.badge-plaga-media { background: #fef3c7; color: #b45309; }
+.badge-plaga-alta { background: #fee2e2; color: #b91c1c; }
+.badge-plaga-critica { background: #fecaca; color: #7f1d1d; }
+
+/* Enfermedades */
+.badge-severidad-baja { background: #d1fae5; color: #065f46; }
+.badge-severidad-media { background: #fef3c7; color: #b45309; }
+.badge-severidad-alta { background: #fee2e2; color: #b91c1c; }
+.badge-severidad-critica { background: #fecaca; color: #7f1d1d; }
+
+/* Alertas */
+.badge-alerta-pendiente { background: #fef3c7; color: #b45309; }
+.badge-alerta-confirmada { background: #d1fae5; color: #065f46; }
+.badge-alerta-descartada { background: #e5e7eb; color: #4b5563; }
+
+/* Eventos */
+.badge-evento-activa { background: #fee2e2; color: #b91c1c; }
+.badge-evento-resuelta { background: #d1fae5; color: #065f46; }
+
+/* Recomendaciones */
+.badge-reco-pendiente { background: #fef3c7; color: #b45309; }
+.badge-reco-realizada { background: #d1fae5; color: #065f46; }
+.badge-reco-descartada { background: #e5e7eb; color: #4b5563; }
+
+/* Tratamientos */
+.badge-trat-en_progreso { background: #fef3c7; color: #b45309; }
+.badge-trat-finalizado { background: #d1fae5; color: #065f46; }
+
+/* ============================
+   TARJETAS ESPECÍFICAS
+============================ */
+.san-plaga-card::before {
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+}
+
+.san-enfermedad-card::before {
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+}
+
+.san-evento-card::before {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.san-recomendacion-card::before {
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+.san-tratamiento-card::before {
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+}
+
+.san-parcela-card::before {
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+/* ============================
+   INFO BOX
+============================ */
+.san-info-box::before {
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+}
+
+.san-info-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.san-info-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.san-info-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.san-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-top: 0.8rem;
+}
+
+.san-info-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.san-info-item:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+}
+
+.san-info-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.san-info-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ============================
+   FORMULARIOS
+============================ */
+.san-form {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  max-width: 600px;
+}
+
+.san-form-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.san-form-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.san-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.san-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.san-input,
+.san-textarea {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.san-input:focus,
+.san-textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.2);
+}
+
+.san-textarea {
+  min-height: 110px;
+  resize: vertical;
+}

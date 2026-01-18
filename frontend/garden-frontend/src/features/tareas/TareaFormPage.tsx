@@ -39,7 +39,9 @@ export default function TareaFormPage() {
             setParcelas(resParcelas);
 
             const resCultivosParcela = await getCultivosParcela();
-            setCultivosParcela(resCultivosParcela.data);
+            setCultivosParcela(resCultivosParcela ?? []);
+
+
 
             if (id) {
                 const resTarea = await getTarea(Number(id));
