@@ -29,6 +29,7 @@ from app.models import (
     evento_sanitario
 )
 
+
 # Crear tablas
 Base.metadata.create_all(bind=engine)
 
@@ -102,4 +103,18 @@ app.include_router(eventos_sanitarios.router, prefix="/api/v1/eventos-sanitarios
 # NUEVO ROUTER (alertas sanitarias)
 # ---------------------------------------------------------
 from app.api.v1 import alertas_sanitarias
-app.include_router(alertas_sanitarias.router, prefix="/api/v1/alertas-sanitarias")
+app.include_router(alertas_sanitarias.router, prefix="/api/v1")
+
+# ---------------------------------------------------------
+# NUEVO ROUTER (tareas)
+# ---------------------------------------------------------
+from app.api.v1 import tareas
+app.include_router(tareas.router, prefix="/api/v1/tareas")
+
+# ---------------------------------------------------------
+# NUEVO ROUTER (recomentaciones)
+# ---------------------------------------------------------
+from app.api.v1 import recomendaciones
+app.include_router(recomendaciones.router, prefix="/api/v1/recomendaciones")
+
+

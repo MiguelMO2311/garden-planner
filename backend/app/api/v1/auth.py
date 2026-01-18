@@ -8,7 +8,8 @@ from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, Token, UserUpdate, PasswordChange
-from app.core.deps import get_current_user
+from app.core.auth import get_current_user
+
 
 # URL base de tu API (AJUSTA EN PRODUCCIÓN)
 API_BASE_URL = "http://localhost:8000"

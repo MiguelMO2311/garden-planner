@@ -1,5 +1,3 @@
-# app/api/v1/tratamientos_aplicados.py
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date, timedelta
@@ -13,13 +11,15 @@ from app.models.cultivo_parcela import CultivoParcela
 from app.models.tarea import Tarea
 from app.models.user import User
 
-from app.schemas.tratamiento_schema import (
+from app.schemas.tratamiento_aplicado_schema import (
     TratamientoAplicadoCreate,
     TratamientoAplicadoRead
 )
 
-router = APIRouter(tags=["Tratamientos aplicados"])
-
+router = APIRouter(
+    prefix="/tratamientos_aplicados",
+    tags=["Tratamientos aplicados"]
+)
 
 # ---------------------------------------------------------
 # APLICAR TRATAMIENTO A UN CULTIVO EN PARCELA
@@ -30,13 +30,18 @@ def aplicar_tratamiento(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    # 1) Validar cultivo en parcela
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == data.cultivo_parcela_id
-    ).first()
+    # 1) Validar cultivo en parcela y que pertenece al usuario
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == data.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not cultivo:
-        raise HTTPException(404, "Cultivo en parcela no encontrado")
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
 
     # 2) Validar tratamiento base
     tratamiento = db.query(Tratamiento).filter(
@@ -50,16 +55,15 @@ def aplicar_tratamiento(
     fecha_inicio = data.fecha_inicio or date.today()
 
     # 4) Calcular fecha fin prevista
-    if tratamiento.duracion_dias:
-        fecha_fin_prevista = fecha_inicio + timedelta(days=tratamiento.duracion_dias)
-    else:
-        fecha_fin_prevista = None
+    fecha_fin_prevista = (
+        fecha_inicio + timedelta(days=tratamiento.duracion_dias)
+        if tratamiento.duracion_dias else None
+    )
 
-    # 5) Crear tratamiento aplicado
+    # 5) Crear tratamiento aplicado (sin user_id)
     aplicado = TratamientoAplicado(
         tratamiento_id=tratamiento.id,
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         fecha_inicio=fecha_inicio,
         fecha_fin_prevista=fecha_fin_prevista,
         estado="en_progreso",
@@ -70,9 +74,7 @@ def aplicar_tratamiento(
     db.commit()
     db.refresh(aplicado)
 
-    # ---------------------------------------------------------
-    # 6) CREAR TAREA SANITARIA AUTOMÁTICA
-    # ---------------------------------------------------------
+    # 6) Crear tarea sanitaria automática
     tarea = Tarea(
         titulo=f"Aplicar tratamiento: {tratamiento.nombre}",
         descripcion=tratamiento.descripcion or "Tratamiento sanitario",
@@ -101,13 +103,19 @@ def finalizar_tratamiento(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    tratamiento = db.query(TratamientoAplicado).filter(
-        TratamientoAplicado.id == tratamiento_id,
-        TratamientoAplicado.user_id == user.id
-    ).first()
+    # Validar que el tratamiento pertenece a una parcela del usuario
+    tratamiento = (
+        db.query(TratamientoAplicado)
+        .join(CultivoParcela, CultivoParcela.id == TratamientoAplicado.cultivo_parcela_id)
+        .filter(
+            TratamientoAplicado.id == tratamiento_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not tratamiento:
-        raise HTTPException(404, "Tratamiento no encontrado")
+        raise HTTPException(404, "Tratamiento no encontrado o no pertenece al usuario")
 
     tratamiento.estado = "finalizado"
     tratamiento.fecha_fin = date.today()
@@ -136,7 +144,8 @@ def list_tratamientos_aplicados(
 ):
     return (
         db.query(TratamientoAplicado)
-        .filter(TratamientoAplicado.user_id == user.id)
+        .join(CultivoParcela, CultivoParcela.id == TratamientoAplicado.cultivo_parcela_id)
+        .filter(CultivoParcela.user_id == user.id)
         .order_by(TratamientoAplicado.fecha_inicio.desc())
         .all()
     )
@@ -151,12 +160,17 @@ def get_tratamiento_aplicado(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    tratamiento = db.query(TratamientoAplicado).filter(
-        TratamientoAplicado.id == tratamiento_id,
-        TratamientoAplicado.user_id == user.id
-    ).first()
+    tratamiento = (
+        db.query(TratamientoAplicado)
+        .join(CultivoParcela, CultivoParcela.id == TratamientoAplicado.cultivo_parcela_id)
+        .filter(
+            TratamientoAplicado.id == tratamiento_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not tratamiento:
-        raise HTTPException(404, "Tratamiento no encontrado")
+        raise HTTPException(404, "Tratamiento no encontrado o no pertenece al usuario")
 
     return tratamiento

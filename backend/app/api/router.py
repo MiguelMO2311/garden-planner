@@ -13,7 +13,9 @@ from app.api.v1 import (
     plots,
     tareas,
     recomendaciones, 
-    panel_sanitario_router,
+    panel_sanitario,
+    riesgos_climaticos,
+    tratamientos_aplicados,
 )
 
 api_router = APIRouter()
@@ -30,4 +32,10 @@ api_router.include_router(cultivo_parcela.router, prefix="/cultivo-parcela", tag
 api_router.include_router(plots.router, prefix="/plots", tags=["plots"])
 api_router.include_router(tareas.router, prefix="/tareas", tags=["tareas"])
 api_router.include_router(recomendaciones.router, prefix="/recomendaciones", tags=["recomendaciones"])
-api_router.include_router(panel_sanitario_router, prefix="/sanitario", tags=["Sanitario"])
+
+# 🟩 PANEL SANITARIO — NO REPETIR PREFIX AQUÍ
+api_router.include_router(panel_sanitario.router)
+
+# 🟩 RIESGOS Y TRATAMIENTOS — YA TIENEN SU PREFIX INTERNO
+api_router.include_router(riesgos_climaticos.router)
+api_router.include_router(tratamientos_aplicados.router)

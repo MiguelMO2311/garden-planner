@@ -1,6 +1,4 @@
-# app/api/v1/alertas_sanitarias.py
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import date
 
@@ -18,11 +16,49 @@ from app.schemas.alerta_sanitaria_schema import (
     AlertaSanitariaRead
 )
 
-router = APIRouter(tags=["Alertas sanitarias"])
-
+router = APIRouter(
+    prefix="/alertas_sanitarias",
+    tags=["Alertas sanitarias"]
+)
 
 # ---------------------------------------------------------
-# CREAR ALERTA SANITARIA (desde riesgo o manual)
+# LISTAR ALERTAS POR CULTIVO  ← PRIMERO (evita int_parsing)
+# ---------------------------------------------------------
+@router.get("/por_cultivo", response_model=list[AlertaSanitariaRead])
+def list_alertas_por_cultivo(
+    cultivo_parcela_id: int = Query(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    return (
+        db.query(AlertaSanitaria)
+        .join(CultivoParcela, CultivoParcela.id == AlertaSanitaria.cultivo_parcela_id)
+        .filter(
+            CultivoParcela.user_id == user.id,
+            AlertaSanitaria.cultivo_parcela_id == cultivo_parcela_id
+        )
+        .order_by(AlertaSanitaria.fecha.desc())
+        .all()
+    )
+
+# ---------------------------------------------------------
+# LISTAR ALERTAS DEL USUARIO
+# ---------------------------------------------------------
+@router.get("/", response_model=list[AlertaSanitariaRead])
+def list_alertas(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    return (
+        db.query(AlertaSanitaria)
+        .join(CultivoParcela, CultivoParcela.id == AlertaSanitaria.cultivo_parcela_id)
+        .filter(CultivoParcela.user_id == user.id)
+        .order_by(AlertaSanitaria.fecha.desc())
+        .all()
+    )
+
+# ---------------------------------------------------------
+# CREAR ALERTA SANITARIA
 # ---------------------------------------------------------
 @router.post("/", response_model=AlertaSanitariaRead)
 def create_alerta_sanitaria(
@@ -30,16 +66,20 @@ def create_alerta_sanitaria(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == data.cultivo_parcela_id
-    ).first()
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == data.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not cultivo:
-        raise HTTPException(404, "Cultivo en parcela no encontrado")
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
 
     alerta = AlertaSanitaria(
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         fecha=data.fecha or date.today(),
         riesgo=data.riesgo,
         probabilidad=data.probabilidad,
@@ -54,25 +94,8 @@ def create_alerta_sanitaria(
 
     return alerta
 
-
 # ---------------------------------------------------------
-# LISTAR ALERTAS DEL USUARIO
-# ---------------------------------------------------------
-@router.get("/", response_model=list[AlertaSanitariaRead])
-def list_alertas(
-    db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
-):
-    return (
-        db.query(AlertaSanitaria)
-        .filter(AlertaSanitaria.user_id == user.id)
-        .order_by(AlertaSanitaria.fecha.desc())
-        .all()
-    )
-
-
-# ---------------------------------------------------------
-# OBTENER ALERTA POR ID
+# OBTENER ALERTA POR ID  ← DESPUÉS DE /por_cultivo
 # ---------------------------------------------------------
 @router.get("/{alerta_id}", response_model=AlertaSanitariaRead)
 def get_alerta(
@@ -80,16 +103,20 @@ def get_alerta(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    alerta = db.query(AlertaSanitaria).filter(
-        AlertaSanitaria.id == alerta_id,
-        AlertaSanitaria.user_id == user.id
-    ).first()
+    alerta = (
+        db.query(AlertaSanitaria)
+        .join(CultivoParcela, CultivoParcela.id == AlertaSanitaria.cultivo_parcela_id)
+        .filter(
+            AlertaSanitaria.id == alerta_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not alerta:
-        raise HTTPException(404, "Alerta sanitaria no encontrada")
+        raise HTTPException(404, "Alerta sanitaria no encontrada o no pertenece al usuario")
 
     return alerta
-
 
 # ---------------------------------------------------------
 # CONFIRMAR ALERTA → CREAR EVENTO SANITARIO
@@ -100,20 +127,23 @@ def confirmar_alerta(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    alerta = db.query(AlertaSanitaria).filter(
-        AlertaSanitaria.id == alerta_id,
-        AlertaSanitaria.user_id == user.id
-    ).first()
+    alerta = (
+        db.query(AlertaSanitaria)
+        .join(CultivoParcela, CultivoParcela.id == AlertaSanitaria.cultivo_parcela_id)
+        .filter(
+            AlertaSanitaria.id == alerta_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not alerta:
-        raise HTTPException(404, "Alerta sanitaria no encontrada")
+        raise HTTPException(404, "Alerta sanitaria no encontrada o no pertenece al usuario")
 
     alerta.estado = "confirmada"
 
-    # Crear evento sanitario asociado
     evento = EventoSanitario(
         cultivo_parcela_id=alerta.cultivo_parcela_id,
-        user_id=user.id,
         fecha=date.today(),
         riesgo=alerta.riesgo,
         probabilidad=alerta.probabilidad,
@@ -126,10 +156,8 @@ def confirmar_alerta(
     db.commit()
     db.refresh(evento)
 
-    # Crear recomendación automática
     recomendacion = Recomendacion(
         cultivo_parcela_id=alerta.cultivo_parcela_id,
-        user_id=user.id,
         mensaje=f"Revisar cultivo por posible aparición de {alerta.riesgo}",
         fecha_sugerida=date.today(),
         estado="pendiente"
@@ -140,7 +168,6 @@ def confirmar_alerta(
 
     return {"message": "Alerta confirmada y evento sanitario creado", "evento_id": evento.id}
 
-
 # ---------------------------------------------------------
 # DESCARTAR ALERTA
 # ---------------------------------------------------------
@@ -150,13 +177,18 @@ def descartar_alerta(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    alerta = db.query(AlertaSanitaria).filter(
-        AlertaSanitaria.id == alerta_id,
-        AlertaSanitaria.user_id == user.id
-    ).first()
+    alerta = (
+        db.query(AlertaSanitaria)
+        .join(CultivoParcela, CultivoParcela.id == AlertaSanitaria.cultivo_parcela_id)
+        .filter(
+            AlertaSanitaria.id == alerta_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not alerta:
-        raise HTTPException(404, "Alerta sanitaria no encontrada")
+        raise HTTPException(404, "Alerta sanitaria no encontrada o no pertenece al usuario")
 
     alerta.estado = "descartada"
     db.commit()

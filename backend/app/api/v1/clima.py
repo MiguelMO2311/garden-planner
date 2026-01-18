@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from datetime import date, timedelta
 from sqlalchemy.orm import Session
+from app.core.auth import get_current_user
 
 from app.core.database import get_db
 from app.services.weather_service import get_real_weather

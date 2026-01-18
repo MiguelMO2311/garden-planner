@@ -1,5 +1,3 @@
-# app/api/v1/eventos_sanitarios.py
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
@@ -18,11 +16,13 @@ from app.schemas.evento_sanitario_schema import (
     EventoSanitarioRead
 )
 
-router = APIRouter(tags=["Eventos sanitarios"])
-
+router = APIRouter(
+    prefix="/eventos_sanitarios",
+    tags=["Eventos sanitarios"]
+)
 
 # ---------------------------------------------------------
-# CREAR EVENTO SANITARIO (desde alerta o manual)
+# CREAR EVENTO SANITARIO
 # ---------------------------------------------------------
 @router.post("/", response_model=EventoSanitarioRead)
 def create_evento_sanitario(
@@ -30,16 +30,20 @@ def create_evento_sanitario(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == data.cultivo_parcela_id
-    ).first()
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == data.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not cultivo:
-        raise HTTPException(404, "Cultivo en parcela no encontrado")
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
 
     evento = EventoSanitario(
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         fecha=data.fecha or date.today(),
         riesgo=data.riesgo,
         probabilidad=data.probabilidad,
@@ -52,12 +56,9 @@ def create_evento_sanitario(
     db.commit()
     db.refresh(evento)
 
-    # ---------------------------------------------------------
-    # GENERAR RECOMENDACIÓN AUTOMÁTICA
-    # ---------------------------------------------------------
+    # Crear recomendación automática
     recomendacion = Recomendacion(
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         mensaje=f"Revisar posible aparición de {evento.riesgo}",
         fecha_sugerida=date.today(),
         estado="pendiente"
@@ -67,7 +68,6 @@ def create_evento_sanitario(
     db.commit()
 
     return evento
-
 
 # ---------------------------------------------------------
 # LISTAR EVENTOS SANITARIOS DEL USUARIO
@@ -79,11 +79,11 @@ def list_eventos_sanitarios(
 ):
     return (
         db.query(EventoSanitario)
-        .filter(EventoSanitario.user_id == user.id)
+        .join(CultivoParcela, CultivoParcela.id == EventoSanitario.cultivo_parcela_id)
+        .filter(CultivoParcela.user_id == user.id)
         .order_by(EventoSanitario.fecha.desc())
         .all()
     )
-
 
 # ---------------------------------------------------------
 # OBTENER EVENTO SANITARIO POR ID
@@ -94,19 +94,23 @@ def get_evento_sanitario(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    evento = db.query(EventoSanitario).filter(
-        EventoSanitario.id == evento_id,
-        EventoSanitario.user_id == user.id
-    ).first()
+    evento = (
+        db.query(EventoSanitario)
+        .join(CultivoParcela, CultivoParcela.id == EventoSanitario.cultivo_parcela_id)
+        .filter(
+            EventoSanitario.id == evento_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not evento:
-        raise HTTPException(404, "Evento sanitario no encontrado")
+        raise HTTPException(404, "Evento sanitario no encontrado o no pertenece al usuario")
 
     return evento
 
-
 # ---------------------------------------------------------
-# RESOLVER EVENTO SANITARIO (cuando finaliza un tratamiento)
+# RESOLVER EVENTO SANITARIO
 # ---------------------------------------------------------
 @router.post("/{evento_id}/resolver")
 def resolver_evento_sanitario(
@@ -115,22 +119,32 @@ def resolver_evento_sanitario(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    evento = db.query(EventoSanitario).filter(
-        EventoSanitario.id == evento_id,
-        EventoSanitario.user_id == user.id
-    ).first()
+    evento = (
+        db.query(EventoSanitario)
+        .join(CultivoParcela, CultivoParcela.id == EventoSanitario.cultivo_parcela_id)
+        .filter(
+            EventoSanitario.id == evento_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not evento:
-        raise HTTPException(404, "Evento sanitario no encontrado")
+        raise HTTPException(404, "Evento sanitario no encontrado o no pertenece al usuario")
 
     evento.estado = "resuelta"
 
     # Vincular tratamiento aplicado si se pasa
     if tratamiento_aplicado_id:
-        tratamiento = db.query(TratamientoAplicado).filter(
-            TratamientoAplicado.id == tratamiento_aplicado_id,
-            TratamientoAplicado.user_id == user.id
-        ).first()
+        tratamiento = (
+            db.query(TratamientoAplicado)
+            .join(CultivoParcela, CultivoParcela.id == TratamientoAplicado.cultivo_parcela_id)
+            .filter(
+                TratamientoAplicado.id == tratamiento_aplicado_id,
+                CultivoParcela.user_id == user.id
+            )
+            .first()
+        )
 
         if tratamiento:
             evento.tratamiento_id = tratamiento.id

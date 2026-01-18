@@ -1,8 +1,5 @@
-# app/api/v1/panel_sanitario.py
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
-from typing import List
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
@@ -17,156 +14,139 @@ from app.models.recomendacion import Recomendacion
 from app.models.tratamiento_aplicado import TratamientoAplicado
 from app.models.tarea import Tarea
 
-router = APIRouter(tags=["Panel sanitario"])
+router = APIRouter(
+    prefix="/sanitario",
+    tags=["Panel sanitario"]
+)
 
-
-@router.get("/panel", response_model=List[dict])
+@router.get("/panel", summary="Panel sanitario completo del usuario")
 def get_panel_sanitario(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> List[dict]:
+):
 
-    cultivos_parcela = (
-        db.query(CultivoParcela)
-        .join(Plot)
-        .options(
-            joinedload(CultivoParcela.parcela),
-            joinedload(CultivoParcela.cultivo_tipo),
-        )
+    # ---------------------------------------------------------
+    # 1) Parcelas del usuario
+    # ---------------------------------------------------------
+    parcelas_usuario = (
+        db.query(Plot)
         .filter(Plot.user_id == current_user.id)
         .all()
     )
+    ids_parcelas = [p.id for p in parcelas_usuario]
 
-    panel: list[dict] = []
+    # ---------------------------------------------------------
+    # 2) Cultivos del usuario
+    # ---------------------------------------------------------
+    cultivos_usuario = (
+        db.query(CultivoParcela)
+        .options(joinedload(CultivoParcela.cultivo_tipo))
+        .filter(CultivoParcela.parcela_id.in_(ids_parcelas))
+        .all()
+    )
+    ids_cultivos = [c.id for c in cultivos_usuario]
 
-    for cp in cultivos_parcela:
+    # ---------------------------------------------------------
+    # 3) Datos sanitarios asociados a esos cultivos
+    # ---------------------------------------------------------
+    riesgos = (
+        db.query(RiesgoClimatico)
+        .filter(RiesgoClimatico.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(RiesgoClimatico.fecha.desc())
+        .all()
+    )
 
-        # -----------------------
-        # RIESGOS CLIMÁTICOS
-        # -----------------------
-        riesgos = (
-            db.query(RiesgoClimatico)
-            .filter(
-                RiesgoClimatico.cultivo_parcela_id == cp.id,
-                RiesgoClimatico.user_id == current_user.id
-            )
-            .all()
-        )
-        riesgos_activos = [r for r in riesgos if r.estado == "activo"]
-        riesgos_historial = [r for r in riesgos if r.estado != "activo"]
+    alertas = (
+        db.query(AlertaSanitaria)
+        .filter(AlertaSanitaria.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(AlertaSanitaria.fecha.desc())
+        .all()
+    )
 
-        # -----------------------
-        # ALERTAS SANITARIAS
-        # -----------------------
-        alertas = (
-            db.query(AlertaSanitaria)
-            .filter(
-                AlertaSanitaria.cultivo_parcela_id == cp.id,
-                AlertaSanitaria.user_id == current_user.id
-            )
-            .all()
-        )
-        alertas_pendientes = [a for a in alertas if a.estado == "pendiente"]
-        alertas_confirmadas = [a for a in alertas if a.estado == "confirmada"]
-        alertas_descartadas = [a for a in alertas if a.estado == "descartada"]
+    eventos = (
+        db.query(EventoSanitario)
+        .filter(EventoSanitario.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(EventoSanitario.fecha.desc())
+        .all()
+    )
 
-        # -----------------------
-        # EVENTOS SANITARIOS
-        # -----------------------
-        eventos = (
-            db.query(EventoSanitario)
-            .filter(
-                EventoSanitario.cultivo_parcela_id == cp.id,
-                EventoSanitario.user_id == current_user.id
-            )
-            .all()
-        )
-        eventos_activos = [e for e in eventos if e.estado == "activa"]
-        eventos_resueltos = [e for e in eventos if e.estado == "resuelta"]
+    recomendaciones = (
+        db.query(Recomendacion)
+        .filter(Recomendacion.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(Recomendacion.fecha_sugerida.desc())
+        .all()
+    )
 
-        # -----------------------
-        # RECOMENDACIONES
-        # -----------------------
-        recomendaciones = (
-            db.query(Recomendacion)
-            .filter(
-                Recomendacion.cultivo_parcela_id == cp.id,
-                Recomendacion.user_id == current_user.id
-            )
-            .all()
-        )
-        recomendaciones_pendientes = [r for r in recomendaciones if r.estado == "pendiente"]
-        recomendaciones_realizadas = [r for r in recomendaciones if r.estado == "realizada"]
-        recomendaciones_descartadas = [r for r in recomendaciones if r.estado == "descartada"]
+    tratamientos = (
+        db.query(TratamientoAplicado)
+        .filter(TratamientoAplicado.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(TratamientoAplicado.fecha_inicio.desc())
+        .all()
+    )
 
-        # -----------------------
-        # TRATAMIENTOS APLICADOS
-        # -----------------------
-        tratamientos = (
-            db.query(TratamientoAplicado)
-            .filter(
-                TratamientoAplicado.cultivo_parcela_id == cp.id,
-                TratamientoAplicado.user_id == current_user.id
-            )
-            .all()
-        )
-        tratamientos_en_progreso = [t for t in tratamientos if t.estado == "en_progreso"]
-        tratamientos_finalizados = [t for t in tratamientos if t.estado == "finalizado"]
+    tareas = (
+        db.query(Tarea)
+        .filter(Tarea.cultivo_parcela_id.in_(ids_cultivos))
+        .order_by(Tarea.fecha.desc())
+        .all()
+    )
 
-        # -----------------------
-        # TAREAS SANITARIAS
-        # -----------------------
-        tareas = (
-            db.query(Tarea)
-            .filter(
-                Tarea.cultivo_parcela_id == cp.id,
-                Tarea.user_id == current_user.id
-            )
-            .all()
-        )
-        tareas_sanitarias = [t for t in tareas if t.origen == "sanitario"]
-        tareas_sanitarias_pendientes = [
-            t for t in tareas_sanitarias if t.estado in ("pendiente", "en_progreso")
-        ]
-        tareas_sanitarias_completadas = [
-            t for t in tareas_sanitarias if t.estado in ("completada", "finalizada")
-        ]
+    # ---------------------------------------------------------
+    # 4) Construcción del panel por cultivo
+    # ---------------------------------------------------------
+    panel_items = []
 
-        panel.append(
-            {
-                "cultivo_parcela_id": cp.id,
-                "parcela_id": cp.parcela_id,
-                "parcela_nombre": cp.parcela.nombre if cp.parcela else None,
-                "cultivo_tipo_id": cp.cultivo_tipo_id,
-                "cultivo_tipo_nombre": cp.cultivo_tipo.nombre if cp.cultivo_tipo else None,
+    for cultivo in cultivos_usuario:
+        parcela = next(p for p in parcelas_usuario if p.id == cultivo.parcela_id)
 
-                "riesgos": {
-                    "activos": len(riesgos_activos),
-                    "historial": len(riesgos_historial),
-                },
-                "alertas": {
-                    "pendientes": len(alertas_pendientes),
-                    "confirmadas": len(alertas_confirmadas),
-                    "descartadas": len(alertas_descartadas),
-                },
-                "eventos": {
-                    "activos": len(eventos_activos),
-                    "resueltos": len(eventos_resueltos),
-                },
-                "recomendaciones": {
-                    "pendientes": len(recomendaciones_pendientes),
-                    "realizadas": len(recomendaciones_realizadas),
-                    "descartadas": len(recomendaciones_descartadas),
-                },
-                "tratamientos": {
-                    "en_progreso": len(tratamientos_en_progreso),
-                    "finalizados": len(tratamientos_finalizados),
-                },
-                "tareas_sanitarias": {
-                    "pendientes": len(tareas_sanitarias_pendientes),
-                    "completadas": len(tareas_sanitarias_completadas),
-                },
-            }
-        )
+        r_cultivo = [r for r in riesgos if r.cultivo_parcela_id == cultivo.id]
+        a_cultivo = [a for a in alertas if a.cultivo_parcela_id == cultivo.id]
+        e_cultivo = [e for e in eventos if e.cultivo_parcela_id == cultivo.id]
+        reco_cultivo = [r for r in recomendaciones if r.cultivo_parcela_id == cultivo.id]
+        tto_cultivo = [t for t in tratamientos if t.cultivo_parcela_id == cultivo.id]
+        tareas_cultivo = [t for t in tareas if t.cultivo_parcela_id == cultivo.id]
 
-    return panel
+        panel_items.append({
+            "parcela_id": parcela.id,
+            "parcela_nombre": parcela.name,
+            "cultivo_parcela_id": cultivo.id,
+            "cultivo_tipo_id": cultivo.cultivo_tipo_id,
+            "cultivo_tipo_nombre": cultivo.cultivo_tipo.nombre if cultivo.cultivo_tipo else None,
+
+            "riesgos": {
+                "activos": sum(1 for r in r_cultivo if r.estado == "activo"),
+                "historial": sum(1 for r in r_cultivo if r.estado != "activo"),
+            },
+
+            "alertas": {
+                "pendientes": sum(1 for a in a_cultivo if a.estado == "pendiente"),
+                "confirmadas": sum(1 for a in a_cultivo if a.estado == "confirmada"),
+                "descartadas": sum(1 for a in a_cultivo if a.estado == "descartada"),
+            },
+
+            "eventos": {
+                "activos": sum(1 for e in e_cultivo if e.estado == "activa"),
+                "resueltos": sum(1 for e in e_cultivo if e.estado == "resuelta"),
+            },
+
+            "recomendaciones": {
+                "pendientes": sum(1 for r in reco_cultivo if r.estado == "pendiente"),
+                "realizadas": sum(1 for r in reco_cultivo if r.estado == "realizada"),
+                "descartadas": sum(1 for r in reco_cultivo if r.estado == "descartada"),
+            },
+
+            "tratamientos": {
+                "en_progreso": sum(1 for t in tto_cultivo if t.estado == "en_progreso"),
+                "finalizados": sum(1 for t in tto_cultivo if t.estado == "finalizado"),
+            },
+
+            "tareas_sanitarias": {
+                "pendientes": sum(1 for t in tareas_cultivo if t.estado == "pendiente"),
+                "completadas": sum(1 for t in tareas_cultivo if t.estado == "completada"),
+            },
+
+            "plagas": {"activas": 0, "historial": 0},
+            "enfermedades": {"activas": 0, "historial": 0},
+        })
+
+    return panel_items

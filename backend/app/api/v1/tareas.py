@@ -17,26 +17,29 @@ router = APIRouter()
 
 
 # ---------------------------------------------------------
-# LISTAR TAREAS
+# LISTAR TAREAS (ROBUSTO PARA SQLITE)
 # ---------------------------------------------------------
 @router.get("/", response_model=List[TareaRead])
 def list_tareas(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return (
+    tareas = (
         db.query(Tarea)
         .options(
-            joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+            joinedload(Tarea.parcela, innerjoin=False),
+            joinedload(Tarea.cultivo_parcela, innerjoin=False).joinedload(
+                CultivoParcela.parcela, innerjoin=False
+            )
         )
         .filter(Tarea.user_id == current_user.id)
         .all()
     )
+    return tareas
 
 
 # ---------------------------------------------------------
-# OBTENER UNA TAREA
+# OBTENER UNA TAREA (ROBUSTO)
 # ---------------------------------------------------------
 @router.get("/{tarea_id}", response_model=TareaRead)
 def get_tarea(
@@ -47,8 +50,10 @@ def get_tarea(
     tarea = (
         db.query(Tarea)
         .options(
-            joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+            joinedload(Tarea.parcela, innerjoin=False),
+            joinedload(Tarea.cultivo_parcela, innerjoin=False).joinedload(
+                CultivoParcela.parcela, innerjoin=False
+            )
         )
         .filter(
             Tarea.id == tarea_id,
@@ -64,7 +69,7 @@ def get_tarea(
 
 
 # ---------------------------------------------------------
-# CREAR TAREA
+# CREAR TAREA (ROBUSTO)
 # ---------------------------------------------------------
 @router.post("/", response_model=TareaRead, status_code=201)
 def create_tarea(
@@ -103,12 +108,14 @@ def create_tarea(
     db.commit()
     db.refresh(db_tarea)
 
-    # 🔥 Recargar con relaciones completas
+    # Recargar con relaciones completas (robusto)
     db_tarea = (
         db.query(Tarea)
         .options(
-            joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+            joinedload(Tarea.parcela, innerjoin=False),
+            joinedload(Tarea.cultivo_parcela, innerjoin=False).joinedload(
+                CultivoParcela.parcela, innerjoin=False
+            )
         )
         .filter(Tarea.id == db_tarea.id)
         .first()
@@ -118,7 +125,7 @@ def create_tarea(
 
 
 # ---------------------------------------------------------
-# ACTUALIZAR TAREA
+# ACTUALIZAR TAREA (ROBUSTO)
 # ---------------------------------------------------------
 @router.put("/{tarea_id}", response_model=TareaRead)
 def update_tarea(
@@ -164,12 +171,14 @@ def update_tarea(
     db.commit()
     db.refresh(db_tarea)
 
-    # 🔥 Recargar con relaciones completas
+    # Recargar con relaciones completas (robusto)
     db_tarea = (
         db.query(Tarea)
         .options(
-            joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+            joinedload(Tarea.parcela, innerjoin=False),
+            joinedload(Tarea.cultivo_parcela, innerjoin=False).joinedload(
+                CultivoParcela.parcela, innerjoin=False
+            )
         )
         .filter(Tarea.id == db_tarea.id)
         .first()
@@ -204,10 +213,10 @@ def delete_tarea(
 
     return None
 
-# ---------------------------------------------------------
-#  TAREA DESDE RECOMENDACION
-# ---------------------------------------------------------
 
+# ---------------------------------------------------------
+#  TAREA DESDE RECOMENDACION (ROBUSTO)
+# ---------------------------------------------------------
 @router.post("/from-recommendation", response_model=TareaRead, status_code=201)
 def create_tarea_from_recommendation(
     data: TareaFromRecommendation,
@@ -261,12 +270,14 @@ def create_tarea_from_recommendation(
     db.commit()
     db.refresh(db_tarea)
 
-    # 6) Recargar con relaciones completas
+    # 6) Recargar con relaciones completas (robusto)
     db_tarea = (
         db.query(Tarea)
         .options(
-            joinedload(Tarea.parcela),
-            joinedload(Tarea.cultivo_parcela).joinedload(CultivoParcela.parcela)
+            joinedload(Tarea.parcela, innerjoin=False),
+            joinedload(Tarea.cultivo_parcela, innerjoin=False).joinedload(
+                CultivoParcela.parcela, innerjoin=False
+            )
         )
         .filter(Tarea.id == db_tarea.id)
         .first()

@@ -1,6 +1,4 @@
-# app/api/v1/recomendaciones.py
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import date, timedelta
 
@@ -20,39 +18,40 @@ from app.schemas.recomendacion_schema import (
     RecomendacionRead
 )
 
-router = APIRouter(tags=["Recomendaciones"])
-
+router = APIRouter(
+    prefix="",
+    tags=["Recomendaciones"]
+)
 
 # ---------------------------------------------------------
-# CREAR RECOMENDACIÓN
+# RECOMENDACIONES POR CULTIVO  ← PRIMERO (evita int_parsing)
 # ---------------------------------------------------------
-@router.post("/", response_model=RecomendacionRead)
-def create_recomendacion(
-    data: RecomendacionCreate,
+@router.get("/por_cultivo", response_model=list[RecomendacionRead])
+def recomendaciones_por_cultivo(
+    cultivo_parcela_id: int = Query(...),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == data.cultivo_parcela_id
-    ).first()
-
-    if not cultivo:
-        raise HTTPException(404, "Cultivo en parcela no encontrado")
-
-    rec = Recomendacion(
-        cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
-        mensaje=data.mensaje,
-        fecha_sugerida=data.fecha_sugerida,
-        estado="pendiente"
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
     )
 
-    db.add(rec)
-    db.commit()
-    db.refresh(rec)
+    if not cultivo:
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
 
-    return rec
+    recomendaciones = (
+        db.query(Recomendacion)
+        .filter(Recomendacion.cultivo_parcela_id == cultivo.id)
+        .order_by(Recomendacion.fecha_sugerida)
+        .all()
+    )
 
+    return recomendaciones
 
 # ---------------------------------------------------------
 # LISTAR RECOMENDACIONES DEL USUARIO
@@ -64,14 +63,48 @@ def list_recomendaciones(
 ):
     return (
         db.query(Recomendacion)
-        .filter(Recomendacion.user_id == user.id)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(CultivoParcela.user_id == user.id)
         .order_by(Recomendacion.fecha_sugerida)
         .all()
     )
 
+# ---------------------------------------------------------
+# CREAR RECOMENDACIÓN
+# ---------------------------------------------------------
+@router.post("/", response_model=RecomendacionRead)
+def create_recomendacion(
+    data: RecomendacionCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == data.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
+
+    if not cultivo:
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
+
+    rec = Recomendacion(
+        cultivo_parcela_id=cultivo.id,
+        mensaje=data.mensaje,
+        fecha_sugerida=data.fecha_sugerida,
+        estado="pendiente"
+    )
+
+    db.add(rec)
+    db.commit()
+    db.refresh(rec)
+
+    return rec
 
 # ---------------------------------------------------------
-# OBTENER RECOMENDACIÓN POR ID
+# OBTENER RECOMENDACIÓN POR ID  ← DESPUÉS DE /por_cultivo
 # ---------------------------------------------------------
 @router.get("/{rec_id}", response_model=RecomendacionRead)
 def get_recomendacion(
@@ -79,16 +112,20 @@ def get_recomendacion(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    rec = db.query(Recomendacion).filter(
-        Recomendacion.id == rec_id,
-        Recomendacion.user_id == user.id
-    ).first()
+    rec = (
+        db.query(Recomendacion)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(
+            Recomendacion.id == rec_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not rec:
-        raise HTTPException(404, "Recomendación no encontrada")
+        raise HTTPException(404, "Recomendación no encontrada o no pertenece al usuario")
 
     return rec
-
 
 # ---------------------------------------------------------
 # DESCARTAR RECOMENDACIÓN
@@ -99,19 +136,23 @@ def descartar_recomendacion(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    rec = db.query(Recomendacion).filter(
-        Recomendacion.id == rec_id,
-        Recomendacion.user_id == user.id
-    ).first()
+    rec = (
+        db.query(Recomendacion)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(
+            Recomendacion.id == rec_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not rec:
-        raise HTTPException(404, "Recomendación no encontrada")
+        raise HTTPException(404, "Recomendación no encontrada o no pertenece al usuario")
 
     rec.estado = "descartada"
     db.commit()
 
     return {"message": "Recomendación descartada"}
-
 
 # ---------------------------------------------------------
 # MARCAR COMO REALIZADA
@@ -122,19 +163,23 @@ def realizar_recomendacion(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    rec = db.query(Recomendacion).filter(
-        Recomendacion.id == rec_id,
-        Recomendacion.user_id == user.id
-    ).first()
+    rec = (
+        db.query(Recomendacion)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(
+            Recomendacion.id == rec_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not rec:
-        raise HTTPException(404, "Recomendación no encontrada")
+        raise HTTPException(404, "Recomendación no encontrada o no pertenece al usuario")
 
     rec.estado = "realizada"
     db.commit()
 
     return {"message": "Recomendación marcada como realizada"}
-
 
 # ---------------------------------------------------------
 # ACTIVAR RECOMENDACIÓN → APLICAR TRATAMIENTO
@@ -146,13 +191,18 @@ def activar_recomendacion(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    rec = db.query(Recomendacion).filter(
-        Recomendacion.id == rec_id,
-        Recomendacion.user_id == user.id
-    ).first()
+    rec = (
+        db.query(Recomendacion)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(
+            Recomendacion.id == rec_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not rec:
-        raise HTTPException(404, "Recomendación no encontrada")
+        raise HTTPException(404, "Recomendación no encontrada o no pertenece al usuario")
 
     tratamiento = db.query(Tratamiento).filter(
         Tratamiento.id == tratamiento_id
@@ -161,15 +211,18 @@ def activar_recomendacion(
     if not tratamiento:
         raise HTTPException(404, "Tratamiento no encontrado")
 
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == rec.cultivo_parcela_id
-    ).first()
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == rec.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
-    # Crear tratamiento aplicado
     aplicado = TratamientoAplicado(
         tratamiento_id=tratamiento.id,
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         fecha_inicio=date.today(),
         fecha_fin_prevista=(
             date.today() + timedelta(days=tratamiento.duracion_dias)
@@ -183,7 +236,6 @@ def activar_recomendacion(
     db.commit()
     db.refresh(aplicado)
 
-    # Crear tarea sanitaria
     tarea = Tarea(
         titulo=f"Aplicar tratamiento: {tratamiento.nombre}",
         descripcion=tratamiento.descripcion,
@@ -199,9 +251,53 @@ def activar_recomendacion(
 
     db.add(tarea)
 
-    # Marcar recomendación como realizada
     rec.estado = "realizada"
-
     db.commit()
 
     return rec
+
+# ---------------------------------------------------------
+# RECOMENDACIONES POR PARCELA
+# ---------------------------------------------------------
+@router.get("/parcelas/{plot_id}", response_model=list[RecomendacionRead])
+def recomendaciones_por_parcela(
+    plot_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    from app.models.plot import Plot
+
+    parcela = (
+        db.query(Plot)
+        .filter(Plot.id == plot_id, Plot.user_id == user.id)
+        .first()
+    )
+
+    if not parcela:
+        raise HTTPException(404, "Parcela no encontrada o no pertenece al usuario")
+
+    cultivo_activo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.parcela_id == plot_id,
+            CultivoParcela.estado == "activo",
+            CultivoParcela.fecha_cosecha.is_(None)
+        )
+        .first()
+    )
+
+    if not cultivo_activo:
+        return []
+
+    recomendaciones = (
+        db.query(Recomendacion)
+        .join(CultivoParcela, CultivoParcela.id == Recomendacion.cultivo_parcela_id)
+        .filter(
+            Recomendacion.cultivo_parcela_id == cultivo_activo.id,
+            CultivoParcela.user_id == user.id
+        )
+        .order_by(Recomendacion.fecha_sugerida)
+        .all()
+    )
+
+    return recomendaciones

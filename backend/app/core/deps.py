@@ -1,41 +1,20 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+# app/core/deps.py
+
 from sqlalchemy.orm import Session
-from jose import JWTError
+from fastapi import Depends
 
-from app.core.jwt import decode_token
 from app.core.database import get_db
-from app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+"""
+Este archivo contiene SOLO dependencias auxiliares.
+NO debe existir aquí ningún get_current_user.
+La autenticación se gestiona exclusivamente en app/core/auth.py
+"""
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-) -> User:
+# Dependencia estándar para obtener la sesión de BD
+def get_db_dep(db: Session = Depends(get_db)):
     try:
-        payload = decode_token(token)
-        user_id = payload.get("sub")
-
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: missing subject"
-            )
-
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
-
-    user = db.query(User).filter(User.id == user_id).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-
-    return user
+        yield db
+    finally:
+        db.close()

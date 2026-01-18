@@ -1,6 +1,4 @@
-# app/api/v1/riesgos_climaticos.py
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import date
 
@@ -17,8 +15,10 @@ from app.schemas.riesgo_climatico_schema import (
     RiesgoClimaticoRead
 )
 
-router = APIRouter(tags=["Riesgos climáticos"])
-
+router = APIRouter(
+    prefix="/riesgos_climaticos",
+    tags=["Riesgos climáticos"]
+)
 
 # ---------------------------------------------------------
 # CREAR RIESGO CLIMÁTICO
@@ -29,16 +29,20 @@ def create_riesgo(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    cultivo = db.query(CultivoParcela).filter(
-        CultivoParcela.id == data.cultivo_parcela_id
-    ).first()
+    cultivo = (
+        db.query(CultivoParcela)
+        .filter(
+            CultivoParcela.id == data.cultivo_parcela_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not cultivo:
-        raise HTTPException(404, "Cultivo en parcela no encontrado")
+        raise HTTPException(404, "Cultivo en parcela no encontrado o no pertenece al usuario")
 
     riesgo = RiesgoClimatico(
         cultivo_parcela_id=cultivo.id,
-        user_id=user.id,
         fecha=data.fecha or date.today(),
         riesgo=data.riesgo,
         probabilidad=data.probabilidad,
@@ -52,15 +56,11 @@ def create_riesgo(
     db.commit()
     db.refresh(riesgo)
 
-    # ---------------------------------------------------------
-    # GENERAR ALERTA AUTOMÁTICA SI SUPERA UMBRAL
-    # ---------------------------------------------------------
-    UMBRAL_ALERTA = 0.6  # 60%
+    UMBRAL_ALERTA = 0.6
 
     if riesgo.probabilidad >= UMBRAL_ALERTA:
         alerta = AlertaSanitaria(
             cultivo_parcela_id=cultivo.id,
-            user_id=user.id,
             fecha=riesgo.fecha,
             riesgo=riesgo.riesgo,
             probabilidad=riesgo.probabilidad,
@@ -73,6 +73,26 @@ def create_riesgo(
 
     return riesgo
 
+# ---------------------------------------------------------
+# LISTAR RIESGOS POR CULTIVO  ← MOVIDO ARRIBA
+# ---------------------------------------------------------
+@router.get("/por_cultivo", response_model=list[RiesgoClimaticoRead])
+def list_riesgos_por_cultivo(
+    cultivo_parcela_id: int = Query(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    riesgos = (
+        db.query(RiesgoClimatico)
+        .join(CultivoParcela, CultivoParcela.id == RiesgoClimatico.cultivo_parcela_id)
+        .filter(
+            CultivoParcela.user_id == user.id,
+            RiesgoClimatico.cultivo_parcela_id == cultivo_parcela_id
+        )
+        .order_by(RiesgoClimatico.fecha.desc())
+        .all()
+    )
+    return riesgos
 
 # ---------------------------------------------------------
 # LISTAR RIESGOS DEL USUARIO
@@ -84,14 +104,14 @@ def list_riesgos(
 ):
     return (
         db.query(RiesgoClimatico)
-        .filter(RiesgoClimatico.user_id == user.id)
+        .join(CultivoParcela, CultivoParcela.id == RiesgoClimatico.cultivo_parcela_id)
+        .filter(CultivoParcela.user_id == user.id)
         .order_by(RiesgoClimatico.fecha.desc())
         .all()
     )
 
-
 # ---------------------------------------------------------
-# OBTENER RIESGO POR ID
+# OBTENER RIESGO POR ID  ← AHORA ESTÁ DEBAJO
 # ---------------------------------------------------------
 @router.get("/{riesgo_id}", response_model=RiesgoClimaticoRead)
 def get_riesgo(
@@ -99,16 +119,20 @@ def get_riesgo(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    riesgo = db.query(RiesgoClimatico).filter(
-        RiesgoClimatico.id == riesgo_id,
-        RiesgoClimatico.user_id == user.id
-    ).first()
+    riesgo = (
+        db.query(RiesgoClimatico)
+        .join(CultivoParcela, CultivoParcela.id == RiesgoClimatico.cultivo_parcela_id)
+        .filter(
+            RiesgoClimatico.id == riesgo_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not riesgo:
-        raise HTTPException(404, "Riesgo no encontrado")
+        raise HTTPException(404, "Riesgo no encontrado o no pertenece al usuario")
 
     return riesgo
-
 
 # ---------------------------------------------------------
 # ARCHIVAR RIESGO
@@ -119,13 +143,18 @@ def archivar_riesgo(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user)
 ):
-    riesgo = db.query(RiesgoClimatico).filter(
-        RiesgoClimatico.id == riesgo_id,
-        RiesgoClimatico.user_id == user.id
-    ).first()
+    riesgo = (
+        db.query(RiesgoClimatico)
+        .join(CultivoParcela, CultivoParcela.id == RiesgoClimatico.cultivo_parcela_id)
+        .filter(
+            RiesgoClimatico.id == riesgo_id,
+            CultivoParcela.user_id == user.id
+        )
+        .first()
+    )
 
     if not riesgo:
-        raise HTTPException(404, "Riesgo no encontrado")
+        raise HTTPException(404, "Riesgo no encontrado o no pertenece al usuario")
 
     riesgo.estado = "archivado"
     db.commit()
