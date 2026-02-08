@@ -1,6 +1,8 @@
-/* src/features/cultivos_tipo/cultivos_tipo.css */
+/* ------------------------------------------------------ */
+/* FONDO GENERAL                                           */
+/* ------------------------------------------------------ */
 
-.cultivos-bg {
+.cultivo-tipo-bg {
     background-image: url("../../assets/backgrounds/parcelas-bg.webp");
     background-size: cover;
     background-position: center;
@@ -9,7 +11,11 @@
     padding: 2rem;
 }
 
-.cultivos-card {
+/* ------------------------------------------------------ */
+/* TARJETAS / CARDS                                        */
+/* ------------------------------------------------------ */
+
+.cultivo-tipo-card {
     background: rgba(255, 255, 255, 0.85);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
@@ -18,23 +24,36 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.cultivos-title {
+/* ------------------------------------------------------ */
+/* TÍTULOS                                                 */
+/* ------------------------------------------------------ */
+
+.cultivo-tipo-title {
+    margin: 0;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #198754;
 }
 
-.cultivos-table-container {
+/* ------------------------------------------------------ */
+/* TABLA                                                   */
+/* ------------------------------------------------------ */
+
+.cultivo-tipo-table-container {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.cultivos-table-container .btn {
+.cultivo-tipo-table-container .btn {
     min-width: 80px;
 }
 
-/* Botones de acción estilo SaaS */
+/* ------------------------------------------------------ */
+/* BOTONES DE ACCIÓN ESTILO SAAS                          */
+/* ------------------------------------------------------ */
+
 .btn-saas-outline {
     background: transparent;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -52,28 +71,19 @@
 }
 
 /* ------------------------------------------------------ */
-/* HEADER DE PAGINA: CULTIVOS (CATÁLOGO)                  */
-/* FONDO PASTEL VERDE                                     */
+/* HEADER DEL DASHBOARD                                    */
 /* ------------------------------------------------------ */
 
-.dashboard-page-header {
+.cultivo-tipo-header {
     padding: 1.5rem;
     border-radius: 16px;
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: top;
-    background-color: white;
-    /* fallback */
+    background-color: white; /* fallback */
 }
 
-/* Fondo pastel verde de Cultivos */
-.dashboard-card-cultivos {
+/* Fondo pastel verde */
+.cultivo-tipo-header-bg {
     background-image: url("../../assets/backgrounds/cultivosDashboard-bg.webp");
-}
-
-/* Título dentro del header */
-.cultivos-title {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
 }

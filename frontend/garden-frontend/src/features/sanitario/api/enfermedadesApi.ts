@@ -1,20 +1,19 @@
 // src/features/sanitario/api/enfermedadesApi.ts
-
 import api from "../../../api/axios";
 import type { Enfermedad, EnfermedadDetectada } from "../types";
 import { getPanelSanitario } from "./panelSanitarioApi";
 
-//
-// CATÁLOGO DE ENFERMEDADES
-//
+/* =========================================================
+   CATÁLOGO DE ENFERMEDADES
+   ========================================================= */
 export const getEnfermedadesCatalogo = async (): Promise<Enfermedad[]> => {
-  const res = await api.get(`/enfermedades`);
+  const res = await api.get("/enfermedades");
   return res.data;
 };
 
-//
-// ENFERMEDADES DETECTADAS EN PARCELA (API REAL)
-//
+/* =========================================================
+   ENFERMEDADES DETECTADAS POR PARCELA
+   ========================================================= */
 export const getEnfermedadesDetectadas = async (
   parcelaId: number
 ): Promise<EnfermedadDetectada[]> => {
@@ -22,21 +21,27 @@ export const getEnfermedadesDetectadas = async (
   return res.data;
 };
 
-//
-// ENFERMEDADES DETECTADAS GLOBALES (para /sanitario/enfermedades)
-//
+/* =========================================================
+   ENFERMEDADES DETECTADAS GLOBALES
+   ========================================================= */
 export const getEnfermedadesDetectadasGlobal = async (): Promise<EnfermedadDetectada[]> => {
-  // 1. Obtener el panel sanitario
   const panel = await getPanelSanitario();
 
-  // 2. Extraer todos los parcela_id
-  const ids = panel.map((p) => p.parcela_id);
+  const ids = [...new Set(panel.map((p) => p.parcela_id))];
 
-  // 3. Llamar a la API real por cada parcela
+  if (ids.length === 0) return [];
+
   const results = await Promise.all(
-    ids.map((id) => api.get(`/enfermedades/parcela/${id}`))
+    ids.map(async (id) => {
+      try {
+        const res = await api.get(`/enfermedades/parcela/${id}`);
+        return res.data as EnfermedadDetectada[];
+      } catch (err) {
+        console.error(`Error cargando enfermedades para parcela ${id}:`, err);
+        return [];
+      }
+    })
   );
 
-  // 4. Unificar resultados
-  return results.flatMap((r) => r.data);
+  return results.flat();
 };

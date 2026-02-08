@@ -1,149 +1,159 @@
-import { useState } from "react";
-import type { CultivoTipoCreate, Plaga, Enfermedad } from "../types";
+import type { CultivoTipoCreate } from "../types";
 
+interface CatalogItem {
+  id: number;
+  nombre: string;
+}
 
 interface Props {
-  plagasCatalogo: Plaga[];
-  enfermedadesCatalogo: Enfermedad[];
+  plagasCatalogo: CatalogItem[];
+  enfermedadesCatalogo: CatalogItem[];
+  form: CultivoTipoCreate;
+  setForm: React.Dispatch<React.SetStateAction<CultivoTipoCreate>>;
   onSubmit: (data: CultivoTipoCreate) => void;
 }
 
 export default function CultivoTipoForm({
   plagasCatalogo,
   enfermedadesCatalogo,
+  form,
+  setForm,
   onSubmit,
 }: Props) {
-  const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [ciclo, setCiclo] = useState("");
-  const [tipoSiembra, setTipoSiembra] = useState("");
-  const [tipoRiego, setTipoRiego] = useState("");
-  const [tipoSuelo, setTipoSuelo] = useState("");
-  const [observaciones, setObservaciones] = useState("");
 
-  // MULTISELECTS — deben ser string[] porque tu tipo lo exige
-  const [plagas, setPlagas] = useState<string[]>([]);
-  const [enfermedades, setEnfermedades] = useState<string[]>([]);
+  type FieldValue = string | number | null | string[];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    onSubmit({
-      nombre,
-      descripcion,
-      ciclo,
-      tipo_siembra: tipoSiembra,
-      tipo_riego: tipoRiego,
-      tipo_suelo: tipoSuelo,
-      observaciones,
-      plagas,
-      enfermedades,
-    });
+  const handleChange = (field: keyof CultivoTipoCreate, value: FieldValue) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
-    <form className="san-form" onSubmit={handleSubmit}>
+    <form
+      className="san-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(form);
+      }}
+    >
       {/* NOMBRE */}
       <div className="san-form-group">
         <label htmlFor="nombre" className="san-label">Nombre</label>
         <input
           id="nombre"
           className="san-input"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={form.nombre}
+          onChange={(e) => handleChange("nombre", e.target.value)}
           placeholder="Nombre del cultivo"
           required
         />
       </div>
 
-      {/* DESCRIPCIÓN */}
+      {/* NOMBRE LATÍN */}
       <div className="san-form-group">
-        <label htmlFor="descripcion" className="san-label">Descripción</label>
-        <textarea
-          id="descripcion"
-          className="san-textarea"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Descripción del cultivo"
-        />
-      </div>
-
-      {/* CICLO */}
-      <div className="san-form-group">
-        <label htmlFor="ciclo" className="san-label">Ciclo</label>
+        <label htmlFor="nombreLatin" className="san-label">Nombre latín</label>
         <input
-          id="ciclo"
+          id="nombreLatin"
           className="san-input"
-          value={ciclo}
-          onChange={(e) => setCiclo(e.target.value)}
-          placeholder="Ej: anual, perenne..."
+          value={form.nombre_latin ?? ""}
+          onChange={(e) => handleChange("nombre_latin", e.target.value)}
+          placeholder="Nombre científico"
         />
       </div>
 
-      {/* TIPO SIEMBRA */}
+      {/* VARIEDAD */}
       <div className="san-form-group">
-        <label htmlFor="tipoSiembra" className="san-label">Tipo de siembra</label>
-        <select
-          id="tipoSiembra"
+        <label htmlFor="variedad" className="san-label">Variedad</label>
+        <input
+          id="variedad"
           className="san-input"
-          value={tipoSiembra}
-          onChange={(e) => setTipoSiembra(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="directa">Siembra directa</option>
-          <option value="trasplante">Trasplante</option>
-        </select>
+          value={form.variedad ?? ""}
+          onChange={(e) => handleChange("variedad", e.target.value)}
+          placeholder="Ej: Picual, Roma..."
+        />
       </div>
 
-      {/* TIPO RIEGO */}
+      {/* TIPO */}
       <div className="san-form-group">
-        <label htmlFor="tipoRiego" className="san-label">Tipo de riego</label>
-        <select
-          id="tipoRiego"
+        <label htmlFor="tipo" className="san-label">Tipo</label>
+        <input
+          id="tipo"
           className="san-input"
-          value={tipoRiego}
-          onChange={(e) => setTipoRiego(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="goteo">Goteo</option>
-          <option value="aspersión">Aspersión</option>
-          <option value="inundación">Inundación</option>
-        </select>
+          value={form.tipo ?? ""}
+          onChange={(e) => handleChange("tipo", e.target.value)}
+          placeholder="Árbol, hortaliza..."
+        />
       </div>
 
-      {/* TIPO SUELO */}
+      {/* TEMPORADA ÓPTIMA */}
       <div className="san-form-group">
-        <label htmlFor="tipoSuelo" className="san-label">Tipo de suelo</label>
-        <select
-          id="tipoSuelo"
+        <label htmlFor="temporada" className="san-label">Temporada óptima</label>
+        <input
+          id="temporada"
           className="san-input"
-          value={tipoSuelo}
-          onChange={(e) => setTipoSuelo(e.target.value)}
-          required
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="arenoso">Arenoso</option>
-          <option value="arcilloso">Arcilloso</option>
-          <option value="franco">Franco</option>
-        </select>
+          value={form.temporada_optima ?? ""}
+          onChange={(e) => handleChange("temporada_optima", e.target.value)}
+          placeholder="Primavera, verano..."
+        />
+      </div>
+
+      {/* DÍAS CRECIMIENTO */}
+      <div className="san-form-group">
+        <label htmlFor="dias" className="san-label">Días de crecimiento</label>
+        <input
+          id="dias"
+          type="number"
+          className="san-input"
+          value={form.dias_crecimiento ?? ""}
+          onChange={(e) =>
+            handleChange("dias_crecimiento", Number(e.target.value))
+          }
+          placeholder="Ej: 90"
+        />
+      </div>
+
+      {/* LITROS AGUA */}
+      <div className="san-form-group">
+        <label htmlFor="agua" className="san-label">Litros de agua/semana</label>
+        <input
+          id="agua"
+          type="number"
+          className="san-input"
+          value={form.litros_agua_semana ?? ""}
+          onChange={(e) =>
+            handleChange("litros_agua_semana", Number(e.target.value))
+          }
+          placeholder="Ej: 5"
+        />
+      </div>
+
+      {/* FASE LUNAR */}
+      <div className="san-form-group">
+        <label htmlFor="fase" className="san-label">Fase lunar</label>
+        <input
+          id="fase"
+          className="san-input"
+          value={form.fase_lunar ?? ""}
+          onChange={(e) => handleChange("fase_lunar", e.target.value)}
+          placeholder="Creciente, menguante..."
+        />
       </div>
 
       {/* PLAGAS */}
       <div className="san-form-group">
-        <label htmlFor="plagas" className="san-label">Plagas asociadas</label>
+        <label htmlFor="plagas" className="san-label">Plagas</label>
         <select
           id="plagas"
           className="san-input"
           multiple
-          value={plagas}
+          value={form.plagas ?? []}
           onChange={(e) =>
-            setPlagas(Array.from(e.target.selectedOptions, (opt) => opt.value))
+            handleChange(
+              "plagas",
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
           }
-          title="Selecciona una o varias plagas"
         >
-          {plagasCatalogo.map((p) => (
+          {(plagasCatalogo ?? []).map((p) => (
             <option key={p.id} value={String(p.id)}>
               {p.nombre}
             </option>
@@ -153,18 +163,20 @@ export default function CultivoTipoForm({
 
       {/* ENFERMEDADES */}
       <div className="san-form-group">
-        <label htmlFor="enfermedades" className="san-label">Enfermedades asociadas</label>
+        <label htmlFor="enfermedades" className="san-label">Enfermedades</label>
         <select
           id="enfermedades"
           className="san-input"
           multiple
-          value={enfermedades}
+          value={form.enfermedades ?? []}
           onChange={(e) =>
-            setEnfermedades(Array.from(e.target.selectedOptions, (opt) => opt.value))
+            handleChange(
+              "enfermedades",
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
           }
-          title="Selecciona una o varias enfermedades"
         >
-          {enfermedadesCatalogo.map((e) => (
+          {(enfermedadesCatalogo ?? []).map((e) => (
             <option key={e.id} value={String(e.id)}>
               {e.nombre}
             </option>
@@ -172,14 +184,14 @@ export default function CultivoTipoForm({
         </select>
       </div>
 
-      {/* OBSERVACIONES */}
+      {/* NOTAS */}
       <div className="san-form-group">
-        <label htmlFor="observaciones" className="san-label">Observaciones</label>
+        <label htmlFor="notas" className="san-label">Notas</label>
         <textarea
-          id="observaciones"
+          id="notas"
           className="san-textarea"
-          value={observaciones}
-          onChange={(e) => setObservaciones(e.target.value)}
+          value={form.notas ?? ""}
+          onChange={(e) => handleChange("notas", e.target.value)}
           placeholder="Notas adicionales"
         />
       </div>

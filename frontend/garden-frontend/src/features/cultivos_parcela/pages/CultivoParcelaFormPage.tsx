@@ -13,9 +13,15 @@ import {
 import { getCultivosTipo } from "../../cultivos_tipo/api/cultivosApi";
 import { getParcelas } from "../../parcelas/api/parcelasApi";
 
+// IMPORTAMOS LAS FUNCIONES CORRECTAS
+import { getPlagasCatalogo } from "../../sanitario/api/plagasApi";
+import { getEnfermedadesCatalogo } from "../../sanitario/api/enfermedadesApi";
+
+import type { Plaga, Enfermedad } from "../../sanitario/types";
+
 import CultivoParcelaForm from "../components/CultivoParcelaForm";
 
-import type { CultivoParcelaCreate, CultivoParcela } from "../types";
+import type { CultivoParcela, CultivoParcelaFormData } from "../types";
 import type { CultivoTipo } from "../../cultivos_tipo/types";
 import type { Parcela } from "../../parcelas/types";
 
@@ -26,10 +32,12 @@ export default function CultivoParcelaFormPage() {
     const isEditing = Boolean(id);
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState<CultivoParcelaCreate>({
+    const [formData, setFormData] = useState<CultivoParcelaFormData>({
         cultivo_tipo_id: 0,
+        cultivo_tipo: undefined,
         parcela_id: 0,
         fecha_siembra: "",
+        fecha_muerte: "",
         estado: "activo",
         plagas_detectadas: [],
         enfermedades_detectadas: [],
@@ -37,27 +45,38 @@ export default function CultivoParcelaFormPage() {
         notas: "",
     });
 
-    // Campo calculado por backend (solo lectura)
     const [fechaCosecha, setFechaCosecha] = useState<string>("");
 
     const [cultivosTipo, setCultivosTipo] = useState<CultivoTipo[]>([]);
     const [parcelas, setParcelas] = useState<Parcela[]>([]);
+    const [plagas, setPlagas] = useState<Plaga[]>([]);
+    const [enfermedades, setEnfermedades] = useState<Enfermedad[]>([]);
 
     useEffect(() => {
         async function loadData() {
-            const [cultivosTipoRes, parcelasRes] = await Promise.all([
-                getCultivosTipo(),   // devuelve CultivoTipo[]
-                getParcelas(),       // devuelve Parcela[]
+            const [
+                cultivosTipoRes,
+                parcelasRes,
+                plagasRes,
+                enfermedadesRes
+            ] = await Promise.all([
+                getCultivosTipo(),
+                getParcelas(),
+                getPlagasCatalogo(),
+                getEnfermedadesCatalogo(),
             ]);
 
             setCultivosTipo(cultivosTipoRes);
             setParcelas(parcelasRes);
+            setPlagas(plagasRes);
+            setEnfermedades(enfermedadesRes);
 
-            if (isEditing) {
+            if (isEditing && id) {
                 const cultivo: CultivoParcela = await getCultivoParcela(Number(id));
 
                 setFormData({
                     cultivo_tipo_id: cultivo.cultivo_tipo_id,
+                    cultivo_tipo: cultivo.cultivo_tipo,
                     parcela_id: cultivo.parcela_id,
                     fecha_siembra: cultivo.fecha_siembra ?? "",
                     fecha_muerte: cultivo.fecha_muerte ?? "",
@@ -79,7 +98,7 @@ export default function CultivoParcelaFormPage() {
         e.preventDefault();
 
         try {
-            if (isEditing) {
+            if (isEditing && id) {
                 const updated = await updateCultivoParcela(Number(id), formData);
                 setFechaCosecha(updated.fecha_cosecha ?? "");
                 showToast("Cultivo actualizado", "success");
@@ -96,7 +115,7 @@ export default function CultivoParcelaFormPage() {
     };
 
     const handleDelete = async () => {
-        if (!isEditing) return;
+        if (!isEditing || !id) return;
 
         try {
             await deleteCultivoParcela(Number(id));
@@ -118,8 +137,11 @@ export default function CultivoParcelaFormPage() {
                 setForm={setFormData}
                 cultivosTipo={cultivosTipo}
                 parcelas={parcelas}
+                plagas={plagas}
+                enfermedades={enfermedades}
                 fechaCosecha={fechaCosecha}
                 onSubmit={handleSubmit}
+                isEditing={isEditing}
             />
 
             {isEditing && (

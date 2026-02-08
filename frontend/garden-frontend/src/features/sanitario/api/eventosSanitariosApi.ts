@@ -4,7 +4,7 @@ import type { EventoSanitario } from "../types";
 import { getPanelSanitario } from "./panelSanitarioApi";
 
 /* =========================================================
-   EVENTOS SANITARIOS POR PARCELA (API REAL)
+   EVENTOS SANITARIOS POR PARCELA
    ========================================================= */
 export const getEventosSanitarios = async (
   parcelaId: number
@@ -30,20 +30,26 @@ export const resolverEvento = async (id: number) => {
 };
 
 /* =========================================================
-   EVENTOS SANITARIOS GLOBALES (para /sanitario/eventos)
+   EVENTOS SANITARIOS GLOBALES
    ========================================================= */
 export const getEventosSanitariosGlobal = async (): Promise<EventoSanitario[]> => {
-  // 1. Obtener el panel sanitario
   const panel = await getPanelSanitario();
 
-  // 2. Extraer todos los parcela_id
-  const ids = panel.map((p) => p.parcela_id);
+  const ids = [...new Set(panel.map((p) => p.parcela_id))];
 
-  // 3. Llamar a la API real por cada parcela
+  if (ids.length === 0) return [];
+
   const results = await Promise.all(
-    ids.map((id) => api.get(`/eventos-sanitarios/parcela/${id}`))
+    ids.map(async (id) => {
+      try {
+        const res = await api.get(`/eventos-sanitarios/parcela/${id}`);
+        return res.data as EventoSanitario[];
+      } catch (err) {
+        console.error(`Error cargando eventos sanitarios para parcela ${id}:`, err);
+        return [];
+      }
+    })
   );
 
-  // 4. Unificar resultados
-  return results.flatMap((r) => r.data);
+  return results.flat();
 };

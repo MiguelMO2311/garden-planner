@@ -1,5 +1,8 @@
 // src/features/cultivos_tipo/types.ts
 
+// ---------------------------------------------------------
+// MODELO COMPLETO QUE DEVUELVE EL BACKEND
+// ---------------------------------------------------------
 export interface CultivoTipo {
     id: number;
 
@@ -26,11 +29,14 @@ export interface CultivoTipo {
 
     notas: string | null;
 
-    user_id: number;
 }
 
+// ---------------------------------------------------------
+// MODELO PARA CREAR UN CULTIVO
+// ---------------------------------------------------------
 export interface CultivoTipoCreate {
     nombre: string;
+
     nombre_latin?: string | null;
     variedad?: string | null;
 
@@ -54,4 +60,7 @@ export interface CultivoTipoCreate {
     notas?: string | null;
 }
 
+// ---------------------------------------------------------
+// MODELO PARA ACTUALIZAR (PATCH/PUT)
+// ---------------------------------------------------------
 export type CultivoTipoUpdate = Partial<CultivoTipoCreate>;

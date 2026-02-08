@@ -73,21 +73,14 @@ export const getCultivoParcela = async (id: number) => {
 export const createCultivoParcela = async (data: CultivoParcelaCreate) => {
     const payload = {
         ...data,
-        plagas_detectadas: JSON.stringify(
-            Array.isArray(data.plagas_detectadas) ? data.plagas_detectadas : []
-        ),
-        enfermedades_detectadas: JSON.stringify(
-            Array.isArray(data.enfermedades_detectadas) ? data.enfermedades_detectadas : []
-        ),
-        tratamientos: JSON.stringify(
-            Array.isArray(data.tratamientos) ? data.tratamientos : []
-        ),
+        plagas_detectadas: data.plagas_detectadas ?? [],
+        enfermedades_detectadas: data.enfermedades_detectadas ?? [],
+        tratamientos: data.tratamientos ?? [],
     };
 
     const res = await api.post("/cultivo-parcela/", payload);
     return normalizeCultivoParcela(res.data as RawCultivoParcela);
 };
-
 // ---------------------------------------------------------
 // UPDATE
 // ---------------------------------------------------------
@@ -97,15 +90,9 @@ export const updateCultivoParcela = async (
 ) => {
     const payload = {
         ...data,
-        plagas_detectadas: JSON.stringify(
-            Array.isArray(data.plagas_detectadas) ? data.plagas_detectadas : []
-        ),
-        enfermedades_detectadas: JSON.stringify(
-            Array.isArray(data.enfermedades_detectadas) ? data.enfermedades_detectadas : []
-        ),
-        tratamientos: JSON.stringify(
-            Array.isArray(data.tratamientos) ? data.tratamientos : []
-        ),
+        plagas_detectadas: data.plagas_detectadas ?? [],
+        enfermedades_detectadas: data.enfermedades_detectadas ?? [],
+        tratamientos: data.tratamientos ?? [],
     };
 
     const res = await api.put(`/cultivo-parcela/${id}/`, payload);

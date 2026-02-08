@@ -8,6 +8,8 @@ import {
     getCultivoTipo,
     updateCultivoTipo,
     deleteCultivoTipo,
+    getPlagasCatalogo,
+    getEnfermedadesCatalogo,
 } from "../api/cultivosApi";
 
 import { showToast } from "../../../utils/toast";
@@ -19,7 +21,6 @@ export default function CultivoTipoFormPage() {
     const isEditing = Boolean(id);
     const navigate = useNavigate();
 
-    // Estado principal del formulario
     const [formData, setFormData] = useState<CultivoTipoCreate>({
         nombre: "",
         nombre_latin: "",
@@ -39,6 +40,20 @@ export default function CultivoTipoFormPage() {
         exigencia_nutrientes: "",
         notas: "",
     });
+
+    const [plagasCatalogo, setPlagasCatalogo] = useState<{ id: number; nombre: string }[]>([]);
+    const [enfermedadesCatalogo, setEnfermedadesCatalogo] = useState<{ id: number; nombre: string }[]>([]);
+
+    // Cargar catálogos
+    useEffect(() => {
+        const loadCatalogs = async () => {
+            const plagas = await getPlagasCatalogo();
+            const enfermedades = await getEnfermedadesCatalogo();
+            setPlagasCatalogo(plagas);
+            setEnfermedadesCatalogo(enfermedades);
+        };
+        loadCatalogs();
+    }, []);
 
     // Cargar datos si estamos editando
     useEffect(() => {
@@ -71,15 +86,13 @@ export default function CultivoTipoFormPage() {
         fetch();
     }, [id, isEditing]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmitData = async (data: CultivoTipoCreate) => {
         try {
             if (isEditing) {
-                await updateCultivoTipo(Number(id), formData);
+                await updateCultivoTipo(Number(id), data);
                 showToast("Cultivo actualizado correctamente", "success");
             } else {
-                await createCultivoTipo(formData);
+                await createCultivoTipo(data);
                 showToast("Cultivo creado correctamente", "success");
             }
 
@@ -120,9 +133,11 @@ export default function CultivoTipoFormPage() {
             </div>
 
             <CultivoTipoForm
+                plagasCatalogo={plagasCatalogo}
+                enfermedadesCatalogo={enfermedadesCatalogo}
                 form={formData}
                 setForm={setFormData}
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmitData}
             />
         </div>
     );
