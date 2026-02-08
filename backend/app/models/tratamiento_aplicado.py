@@ -26,8 +26,5 @@ class TratamientoAplicado(Base):
     estado = Column(String, default="en_progreso")
     observaciones = Column(String, nullable=True)
 
-    # 🔥 RELACIÓN CORRECTA Y NECESARIA
     tratamiento = relationship("Tratamiento", back_populates="aplicaciones")
-
-    # 🔥 RELACIÓN SANITARIA CORRECTA
     cultivo_parcela = relationship("CultivoParcela", back_populates="tratamientos_aplicados")

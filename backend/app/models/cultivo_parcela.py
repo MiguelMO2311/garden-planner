@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float
+import json
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Float, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class CultivoParcela(Base):
-    __tablename__ = "cultivos_parcela"  # 🔥 importante: plural
+    __tablename__ = "cultivos_parcela"
 
     id = Column(Integer, primary_key=True, index=True)
     litros_agua_semana = Column(Float, nullable=True)
@@ -25,20 +26,79 @@ class CultivoParcela(Base):
     tareas = relationship("Tarea", back_populates="cultivo_parcela", cascade="all, delete-orphan")
     planes = relationship("CultivoPlan", back_populates="cultivo")
 
-    # Relaciones sanitarias
-    plagas = relationship("Plaga", back_populates="cultivo_parcela", cascade="all, delete-orphan")
-    enfermedades = relationship("Enfermedad", back_populates="cultivo_parcela", cascade="all, delete-orphan")
-    tratamientos_aplicados = relationship("TratamientoAplicado", back_populates="cultivo_parcela", cascade="all, delete-orphan")
-    recomendaciones = relationship("Recomendacion", back_populates="cultivo_parcela", cascade="all, delete-orphan")
+    # ---------------------------------------------------------
+    # 🔥 CAMPOS JSON (SQLite → TEXT)
+    # ---------------------------------------------------------
+    plagas_detectadas_raw = Column("plagas_detectadas", Text, default="[]")
+    enfermedades_detectadas_raw = Column("enfermedades_detectadas", Text, default="[]")
+    tratamientos_raw = Column("tratamientos", Text, default="[]")
 
-    # Evento sanitario
+    # ---------------------------------------------------------
+    # 🔥 PROPIEDADES PYTHON PARA FASTAPI (listas reales)
+    # ---------------------------------------------------------
+    @property
+    def plagas_detectadas(self):
+        try:
+            return json.loads(self.plagas_detectadas_raw or "[]")
+        except:
+            return []
+
+    @plagas_detectadas.setter
+    def plagas_detectadas(self, value):
+        self.plagas_detectadas_raw = json.dumps(value or [])
+
+    @property
+    def enfermedades_detectadas(self):
+        try:
+            return json.loads(self.enfermedades_detectadas_raw or "[]")
+        except:
+            return []
+
+    @enfermedades_detectadas.setter
+    def enfermedades_detectadas(self, value):
+        self.enfermedades_detectadas_raw = json.dumps(value or [])
+
+    @property
+    def tratamientos(self):
+        try:
+            return json.loads(self.tratamientos_raw or "[]")
+        except:
+            return []
+
+    @tratamientos.setter
+    def tratamientos(self, value):
+        self.tratamientos_raw = json.dumps(value or [])
+
+    # ---------------------------------------------------------
+    # 🔥 RELACIONES SANITARIAS (ORM reales)
+    # ---------------------------------------------------------
+    plagas = relationship("Plaga", back_populates="cultivo_parcela", cascade="all, delete-orphan")
+
+    # ⭐ ESTA RELACIÓN FALTABA — ES LA QUE ROMPÍA TODO
+    enfermedades_detectadas_rel = relationship(
+        "Enfermedad",
+        back_populates="cultivo_parcela",
+        cascade="all, delete-orphan"
+    )
+
+    tratamientos_aplicados = relationship(
+        "TratamientoAplicado",
+        back_populates="cultivo_parcela",
+        cascade="all, delete-orphan"
+    )
+
+    recomendaciones = relationship(
+        "Recomendacion",
+        back_populates="cultivo_parcela",
+        cascade="all, delete-orphan"
+    )
+
     eventos_sanitarios = relationship(
         "EventoSanitario",
         back_populates="cultivo_parcela",
         cascade="all, delete-orphan"
     )
 
-    # 🔥 Alerta sanitaria (faltaba)
     alertas_sanitarias = relationship(
         "AlertaSanitaria",
         back_populates="cultivo_parcela",
@@ -46,7 +106,7 @@ class CultivoParcela(Base):
     )
 
     riesgos_climaticos = relationship(
-    "RiesgoClimatico",
-    back_populates="cultivo_parcela",
-    cascade="all, delete-orphan"
+        "RiesgoClimatico",
+        back_populates="cultivo_parcela",
+        cascade="all, delete-orphan"
     )

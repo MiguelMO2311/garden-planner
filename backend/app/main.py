@@ -25,15 +25,22 @@ from app.models import (
     plaga,
     enfermedad,
     cultivo_tipo_plaga,
-    cultivo_tipo_enfermedad,
-    evento_sanitario
+    evento_sanitario,
+    sugerencia_sanitaria,   # ← FALTABA ESTE
+    tratamiento,
+    tratamiento_aplicado
 )
 
 
-# Crear tablas
+# ---------------------------------------------------------
+# CREAR TABLAS
+# ---------------------------------------------------------
 Base.metadata.create_all(bind=engine)
 
-# Crear usuario admin
+
+# ---------------------------------------------------------
+# CREAR USUARIO ADMIN
+# ---------------------------------------------------------
 def create_admin_user():
     db = SessionLocal()
     admin = db.query(User).filter(User.email == "admin@example.com").first()
@@ -52,10 +59,16 @@ def create_admin_user():
 
 create_admin_user()
 
-# Crear app
+
+# ---------------------------------------------------------
+# CREAR APP FASTAPI
+# ---------------------------------------------------------
 app = FastAPI(title=settings.PROJECT_NAME)
 
-# Archivos estáticos
+
+# ---------------------------------------------------------
+# ARCHIVOS ESTÁTICOS
+# ---------------------------------------------------------
 from fastapi.staticfiles import StaticFiles
 import os
 
@@ -63,7 +76,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+
+# ---------------------------------------------------------
 # CORS
+# ---------------------------------------------------------
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -77,44 +93,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers principales
+
+# ---------------------------------------------------------
+# ROUTER PRINCIPAL
+# ---------------------------------------------------------
 app.include_router(api_router, prefix="/api/v1")
 
+
 # ---------------------------------------------------------
-# NUEVOS ROUTERS (plagas y enfermedades)
+# ROUTERS ADICIONALES
 # ---------------------------------------------------------
 from app.api.v1 import plagas, enfermedades
-
 app.include_router(plagas.router, prefix="/api/v1/plagas")
 app.include_router(enfermedades.router, prefix="/api/v1/enfermedades")
 
-print(">>> RUTAS REGISTRADAS EN FASTAPI:")
-for route in app.routes:
-    methods = getattr(route, "methods", None)
-    print(" -", route.path, methods)
-
-# ---------------------------------------------------------
-# NUEVO ROUTER (eventos sanitarios)
-# ---------------------------------------------------------
 from app.api.v1 import eventos_sanitarios
 app.include_router(eventos_sanitarios.router, prefix="/api/v1/eventos-sanitarios")
 
-# ---------------------------------------------------------
-# NUEVO ROUTER (alertas sanitarias)
-# ---------------------------------------------------------
 from app.api.v1 import alertas_sanitarias
 app.include_router(alertas_sanitarias.router, prefix="/api/v1")
 
-# ---------------------------------------------------------
-# NUEVO ROUTER (tareas)
-# ---------------------------------------------------------
 from app.api.v1 import tareas
 app.include_router(tareas.router, prefix="/api/v1/tareas")
 
-# ---------------------------------------------------------
-# NUEVO ROUTER (recomentaciones)
-# ---------------------------------------------------------
 from app.api.v1 import recomendaciones
 app.include_router(recomendaciones.router, prefix="/api/v1/recomendaciones")
 
 
+# ---------------------------------------------------------
+# MOSTRAR RUTAS REGISTRADAS
+# ---------------------------------------------------------
+print(">>> RUTAS REGISTRADAS EN FASTAPI:")
+for route in app.routes:
+    methods = getattr(route, "methods", None)
+    print(" -", route.path, methods)

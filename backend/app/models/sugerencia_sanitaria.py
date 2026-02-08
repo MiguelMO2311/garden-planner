@@ -6,7 +6,7 @@ class SugerenciaSanitaria(Base):
     __tablename__ = "sugerencias_sanitarias"
 
     id = Column(Integer, primary_key=True, index=True)
-    cultivo_parcela_id = Column(Integer, ForeignKey("cultivo_parcela.id", ondelete="CASCADE"))
+    cultivo_parcela_id = Column(Integer, ForeignKey("cultivos_parcela.id", ondelete="CASCADE"))
     fecha = Column(Date, nullable=False)
 
     riesgo = Column(String, nullable=False)

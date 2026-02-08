@@ -10,7 +10,6 @@ from .climate_event import ClimateEvent
 from .plaga import Plaga
 from .enfermedad import Enfermedad
 from .cultivo_tipo_plaga import CultivoTipoPlaga
-from .cultivo_tipo_enfermedad import CultivoTipoEnfermedad
 from .tratamiento import Tratamiento
 from .tratamiento_plaga import TratamientoPlaga
 from .tratamiento_enfermedad import TratamientoEnfermedad
@@ -19,7 +18,8 @@ from .alerta_sanitaria import AlertaSanitaria
 from .riesgo_climatico import RiesgoClimatico
 from .tratamiento_aplicado import TratamientoAplicado
 from .recomendacion import Recomendacion
+from .sugerencia_sanitaria import SugerenciaSanitaria
+from .cultivo_tipo_enfermedad import CultivoTipoEnfermedad
 
 
-# ⚠️ User SIEMPRE al final
 from .user import User

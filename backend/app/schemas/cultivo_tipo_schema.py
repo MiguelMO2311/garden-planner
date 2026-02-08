@@ -1,44 +1,24 @@
 # app/schemas/cultivo_tipo_schema.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
-from enum import Enum
 
-class TipoCultivo(str, Enum):
-    fruto = "Fruto"
-    hoja = "Hoja"
-    raiz = "Raíz"
-    flor = "Flor"
-    leguminosa = "Leguminosa"
-    tuberculo = "Tubérculo"
-    aromatica = "Aromática"
-    arbol = "Árbol"
-    fruto_seco = "Fruto seco"
-    frutal = "Frutal"
-
-class FaseLunar(str, Enum):
-    creciente = "Creciente"
-    llena = "Llena"
-    nueva = "Nueva"
-    menguante = "Menguante"
-
-
+# 🔥 Ya NO usamos Enum aquí para evitar errores con valores antiguos.
+# Si quieres usar Enum en el frontend, perfecto, pero NO en el backend.
 class CultivoTipoBase(BaseModel):
     nombre: str
     nombre_latin: Optional[str] = None
     variedad: Optional[str] = None
 
-    # En el modelo SQLAlchemy son String, pero aquí mantenemos Enum (Pydantic lo convierte)
-    tipo: Optional[TipoCultivo] = None
+    tipo: Optional[str] = None
     temporada_optima: Optional[str] = None
     dias_crecimiento: Optional[int] = None
     litros_agua_semana: Optional[float] = None
 
-    fase_lunar: Optional[FaseLunar] = None
+    fase_lunar: Optional[str] = None
 
-    # En SQLite se guardan como JSON
-    plagas: list[str] | None = None
-    enfermedades: list[str] | None = None
+    plagas: Optional[List[str]] = []
+    enfermedades: Optional[List[str]] = []
 
     plazo_seguridad: Optional[int] = None
     frecuencia_tratamiento: Optional[int] = None
@@ -48,6 +28,15 @@ class CultivoTipoBase(BaseModel):
     exigencia_nutrientes: Optional[str] = None
 
     notas: Optional[str] = None
+
+    # 🔥 Normalizadores para evitar errores con SQLite
+    @field_validator("plagas", "enfermedades", mode="before")
+    def ensure_list_of_strings(cls, v):
+        if v is None:
+            return []
+        if isinstance(v, list):
+            return [str(item) for item in v]
+        return []
 
 
 class CultivoTipoCreate(CultivoTipoBase):
@@ -59,12 +48,12 @@ class CultivoTipoUpdate(BaseModel):
     nombre_latin: Optional[str] = None
     variedad: Optional[str] = None
 
-    tipo: Optional[TipoCultivo] = None
+    tipo: Optional[str] = None
     temporada_optima: Optional[str] = None
     dias_crecimiento: Optional[int] = None
     litros_agua_semana: Optional[float] = None
 
-    fase_lunar: Optional[FaseLunar] = None
+    fase_lunar: Optional[str] = None
     plagas: Optional[List[str]] = None
     enfermedades: Optional[List[str]] = None
 
@@ -80,7 +69,7 @@ class CultivoTipoUpdate(BaseModel):
 
 class CultivoTipoRead(CultivoTipoBase):
     id: int
-    user_id: int
+    user_id: Optional[int] = None
 
     class Config:
         from_attributes = True

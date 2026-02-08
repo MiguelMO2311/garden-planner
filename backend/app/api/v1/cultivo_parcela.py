@@ -20,7 +20,7 @@ router = APIRouter(tags=["Cultivos en parcela"])
 
 
 # ---------------------------------------------------------
-# LISTAR CULTIVOS EN PARCELA
+# LISTAR CULTIVOS EN PARCELA (solo los del usuario)
 # ---------------------------------------------------------
 @router.get("/", response_model=List[CultivoParcelaRead])
 def list_cultivo_parcela(
@@ -43,8 +43,9 @@ def list_cultivo_parcela(
 
     return query.all()
 
+
 # ---------------------------------------------------------
-# OBTENER CULTIVO EN PARCELA POR ID
+# OBTENER CULTIVO EN PARCELA POR ID (solo si es del usuario)
 # ---------------------------------------------------------
 @router.get("/{cultivo_parcela_id}", response_model=CultivoParcelaRead)
 def get_cultivo_parcela(
@@ -74,6 +75,8 @@ def get_cultivo_parcela(
 
 # ---------------------------------------------------------
 # CREAR CULTIVO EN PARCELA
+# ✔ Cualquier cultivo tipo global es válido
+# ✔ Solo se valida que la parcela sea del usuario
 # ---------------------------------------------------------
 @router.post("/", response_model=CultivoParcelaRead, status_code=status.HTTP_201_CREATED)
 def create_cultivo_parcela(
@@ -81,17 +84,16 @@ def create_cultivo_parcela(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Cultivo tipo global → NO se valida user_id
     cultivo_tipo = (
         db.query(CultivoTipo)
-        .filter(
-            CultivoTipo.id == cultivo_in.cultivo_tipo_id,
-            CultivoTipo.user_id == current_user.id,
-        )
+        .filter(CultivoTipo.id == cultivo_in.cultivo_tipo_id)
         .first()
     )
     if not cultivo_tipo:
         raise HTTPException(status_code=404, detail="Cultivo tipo no válido")
 
+    # La parcela sí debe pertenecer al usuario
     parcela = (
         db.query(Plot)
         .filter(
@@ -118,7 +120,7 @@ def create_cultivo_parcela(
     db.commit()
     db.refresh(cultivo)
 
-    # 🔥 Recargar con relaciones para que el schema pueda serializarlo
+    # Recargar con relaciones
     cultivo = (
         db.query(CultivoParcela)
         .options(
@@ -134,6 +136,8 @@ def create_cultivo_parcela(
 
 # ---------------------------------------------------------
 # ACTUALIZAR CULTIVO EN PARCELA
+# ✔ Solo si pertenece al usuario
+# ✔ Cultivo tipo global permitido
 # ---------------------------------------------------------
 @router.put("/{cultivo_parcela_id}", response_model=CultivoParcelaRead)
 def update_cultivo_parcela(
@@ -156,19 +160,17 @@ def update_cultivo_parcela(
 
     data = cultivo_in.model_dump(exclude_unset=True)
 
-    # Validaciones
+    # Validar cultivo tipo global
     if "cultivo_tipo_id" in data:
         cultivo_tipo = (
             db.query(CultivoTipo)
-            .filter(
-                CultivoTipo.id == data["cultivo_tipo_id"],
-                CultivoTipo.user_id == current_user.id,
-            )
+            .filter(CultivoTipo.id == data["cultivo_tipo_id"])
             .first()
         )
         if not cultivo_tipo:
             raise HTTPException(status_code=404, detail="Cultivo tipo no válido")
 
+    # Validar parcela del usuario
     if "parcela_id" in data:
         parcela = (
             db.query(Plot)
@@ -196,7 +198,7 @@ def update_cultivo_parcela(
     db.commit()
     db.refresh(cultivo)
 
-    # 🔥 Recargar con relaciones
+    # Recargar con relaciones
     cultivo = (
         db.query(CultivoParcela)
         .options(
@@ -211,7 +213,7 @@ def update_cultivo_parcela(
 
 
 # ---------------------------------------------------------
-# ELIMINAR CULTIVO EN PARCELA
+# ELIMINAR CULTIVO EN PARCELA (solo si es del usuario)
 # ---------------------------------------------------------
 @router.delete("/{cultivo_parcela_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_cultivo_parcela(

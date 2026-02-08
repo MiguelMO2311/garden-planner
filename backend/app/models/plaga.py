@@ -12,7 +12,7 @@ class Plaga(Base):
     cultivo_parcela_id = Column(
         Integer,
         ForeignKey("cultivos_parcela.id", ondelete="CASCADE"),
-        nullable=False
+        nullable=True
     )
 
     cultivo_parcela = relationship("CultivoParcela", back_populates="plagas")

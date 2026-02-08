@@ -3,22 +3,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.core.database import Base
-import enum
-
-class TipoCultivo(str, enum.Enum):
-    fruto = "Fruto"
-    hoja = "Hoja"
-    raiz = "Raíz"
-    flor = "Flor"
-    leguminosa = "Leguminosa"
-    tuberculo = "Tubérculo"
-    aromatica = "Aromática"
-
-class FaseLunar(str, enum.Enum):
-    creciente = "Creciente"
-    llena = "Llena"
-    nueva = "Nueva"
-    menguante = "Menguante"
 
 class CultivoTipo(Base):
     __tablename__ = "cultivo_tipo"
@@ -37,8 +21,9 @@ class CultivoTipo(Base):
 
     fase_lunar = Column(String, nullable=True)
 
-    plagas = Column(JSON, nullable=True)
-    enfermedades = Column(JSON, nullable=True)
+    # JSON (SQLite lo guarda como TEXT)
+    plagas = Column(JSON, nullable=True, default=list)
+    enfermedades = Column(JSON, nullable=True, default=list)
 
     plazo_seguridad = Column(Integer, nullable=True)
     frecuencia_tratamiento = Column(Integer, nullable=True)
@@ -49,7 +34,15 @@ class CultivoTipo(Base):
 
     notas = Column(String, nullable=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    user = relationship("User", back_populates="cultivo_tipo")
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    user = relationship("User", back_populates="cultivo_tipo", lazy="joined")
 
+    # Relación con cultivos en parcela
     cultivos_parcela = relationship("CultivoParcela", back_populates="cultivo_tipo")
+
+    # ⭐ RELACIÓN QUE FALTABA (causante del error)
+    enfermedades_catalogo = relationship(
+        "EnfermedadCatalogo",
+        back_populates="cultivo_tipo",
+        cascade="all, delete-orphan"
+    )

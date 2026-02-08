@@ -13,8 +13,9 @@ class Tratamiento(Base):
     descripcion = Column(String, nullable=True)
     productos = Column(String, nullable=True)
     estaciones = Column(JSON, nullable=True)
+    marcas_comerciales = Column(JSON, nullable=True)
 
-    # 🔥 aplicaciones reales sobre cultivos en parcela
+    # Aplicaciones reales sobre cultivos en parcela
     aplicaciones = relationship(
         "TratamientoAplicado",
         back_populates="tratamiento",
